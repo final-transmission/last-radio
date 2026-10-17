@@ -437,6 +437,15 @@
   .busy .bar-fill { background: var(--accent); transition: width 1s linear; }
   .busy-cancel { margin-top: 10px; padding: 8px 12px; font-size: 13px; }
   button.secondary:disabled { opacity: .4; cursor: not-allowed; }
+  .trade-form { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-top: 8px; }
+  .trade-form select { flex: 1 1 130px; width: auto; min-width: 0; padding: 9px 10px; font-size: 13px; }
+  .trade-form input { width: 60px; background: var(--bg-elevated); border: 1px solid var(--border); color: var(--text); border-radius: 3px; padding: 8px; font: inherit; }
+  .trade-form button { width: auto; padding: 9px 12px; font-size: 13px; }
+  .trade-arrow { color: var(--accent); font-weight: 700; }
+  .trade { display: flex; align-items: center; gap: 8px; padding: 8px 0; border-bottom: 1px dashed var(--border); font-size: 13px; }
+  .trade .tinfo { flex: 1; min-width: 0; }
+  .trade .tinfo small { display: block; color: var(--text-dim); font-size: 11px; }
+  .trade button { width: auto; padding: 6px 10px; font-size: 12px; }
   .bag-weight { font: 700 11px var(--font-mono); color: var(--text-dim); margin-bottom: 10px; font-variant-numeric: tabular-nums; }
   .bag-weight .bar-bg { margin-top: 4px; }
   .bag-cat { font: 700 10px var(--font-mono); letter-spacing: 2px; color: var(--text-dim); margin: 12px 0 4px; border-bottom: 1px solid var(--border); padding-bottom: 3px; }
@@ -572,7 +581,16 @@
           <input type="text" id="talkInput" maxlength="200" placeholder="가까이 있는 사람에게 말을 건네세요" aria-label="대화 내용">
           <button class="primary" id="talkBtn" type="button">말하기</button>
         </div>
-        <div class="muted">같은 건물(또는 같은 거리)에 있는 생존자끼리만 보여요. 건물을 조사하면 그 건물 안으로 들어가고, 위에서 같은 지역의 다른 건물로 바로 걸어갈 수 있어요.</div>
+        <div class="bag-cat" style="margin-top:16px">🤝 물물교환</div>
+        <div id="tradeList"></div>
+        <div class="trade-form">
+          <select id="tgGive" aria-label="내줄 아이템"></select><input type="number" id="tgGiveN" min="1" max="99" value="1" aria-label="내줄 개수">
+          <span class="trade-arrow">⇄</span>
+          <select id="tgWant" aria-label="받을 아이템"></select><input type="number" id="tgWantN" min="1" max="99" value="1" aria-label="받을 개수">
+          <button class="secondary" id="tgPost" type="button">교환 제안</button>
+        </div>
+        <div class="char-msg" id="tradeMsg" role="status"></div>
+        <div class="muted">같은 건물(또는 같은 거리)에 있는 생존자끼리만 보여요. 교환을 제안하면 내줄 물건은 거래가 끝날 때까지 맡겨 둬요. 건물을 조사하면 그 건물 안으로 들어가고, 위에서 같은 지역의 다른 건물로 바로 걸어갈 수 있어요.</div>
         <div class="char-msg" id="talkMsg" role="status"></div>
       </div>
       <div class="card" id="shelterCard" hidden>
@@ -1156,6 +1174,7 @@ const FIREBASE_CONFIG = {
     if (chat.length) renderChat();
     if (db && roomKey() !== talkLoc) subscribeTalk();
     renderTalk();
+    renderTrades();
     if (db && (myDoc.party || '') !== (shelterKey || '')) subscribeShelter();
     renderShelter();
     renderShelterCard();
@@ -2128,7 +2147,7 @@ const FIREBASE_CONFIG = {
     $('talkCard').hidden = m !== 'talk';
     $('shelterCard').hidden = m !== 'shelter';
     try { localStorage.setItem('survival_log_comm', m); } catch(e) {}
-    if (m === 'talk') { talkFirst = true; renderTalk(); }
+    if (m === 'talk') { talkFirst = true; renderTalk(); renderTrades(); }
     if (m === 'shelter') { shelterFirst = true; renderShelter(); }
   }
   $('commRadio').addEventListener('click', () => setComm('radio'));
@@ -2136,6 +2155,92 @@ const FIREBASE_CONFIG = {
   $('commShelter').addEventListener('click', () => setComm('shelter'));
 
   let talkFirst = true;
+  // ---------- 물물교환 ----------
+  let trades = [], tradeUnsub = null, tradeBusy = false;
+  function sameRoom(t) { return t.loc === myDoc.loc && (t.spot == null ? null : t.spot) === mySpot(); }
+  function tItem(x) { return ITEMS[x.id] ? ITEMS[x.id].ic + ' ' + ITEMS[x.id].n + ' ×' + x.n : '?'; }
+  function tradeMsg(t, ok) { const m = $('tradeMsg'); m.textContent = t; m.className = 'char-msg ' + (ok ? 'ok' : 'err'); }
+  function renderTrades() {
+    if (!myDoc || $('talkCard').hidden) return;
+    const mine = trades.filter(t => t.fromKey === myKey && t.status === 'open');
+    const here = trades.filter(t => t.fromKey !== myKey && t.status === 'open' && sameRoom(t));
+    const dead = myDoc.status === 'dead';
+    const row = (t, me) => `<div class="trade"><div class="tinfo">${tItem(t.give)} <span class="trade-arrow">⇄</span> ${tItem(t.want)}<small>${me ? '내 제안' + (sameRoom(t) ? '' : ' · ' + placeName(t.loc, t.spot)) : escapeHtml(String(t.from || '').slice(0, 12)) + '님의 제안 · 왼쪽을 주고 오른쪽을 원함'}</small></div>${me ? `<button class="secondary" type="button" data-tcancel="${escapeHtml(t.id)}">취소</button>` : `<button class="primary" type="button" data-taccept="${escapeHtml(t.id)}"${dead || inv(t.want.id) < t.want.n ? ' disabled' : ''}>교환</button>`}</div>`;
+    $('tradeList').innerHTML = mine.map(t => row(t, true)).join('') + here.map(t => row(t, false)).join('') || '<div class="muted" style="margin:0">이곳에 걸린 교환 제안이 없다.</div>';
+    const gSel = $('tgGive'), wSel = $('tgWant');
+    if (document.activeElement !== gSel) {
+      const cur = gSel.value, v = invOf(myDoc);
+      gSel.innerHTML = '<option value="">내줄 것</option>' + Object.keys(v).filter(k => ITEMS[k] && v[k] > 0).map(k => `<option value="${k}">${ITEMS[k].ic} ${ITEMS[k].n} (${v[k]})</option>`).join('');
+      if (v[cur] > 0) gSel.value = cur;
+    }
+    if (!wSel.options.length) wSel.innerHTML = '<option value="">받을 것</option>' + Object.keys(ITEMS).filter(k => k !== 'rotten').map(k => `<option value="${k}">${ITEMS[k].ic} ${ITEMS[k].n}</option>`).join('');
+    $('tgPost').disabled = dead;
+  }
+  $('tgPost').addEventListener('click', async () => {
+    if (!myDoc || !db || tradeBusy || myDoc.status === 'dead') return;
+    const g = $('tgGive').value, w = $('tgWant').value;
+    const gn = Math.max(1, Math.min(99, parseInt($('tgGiveN').value, 10) || 1)), wn = Math.max(1, Math.min(99, parseInt($('tgWantN').value, 10) || 1));
+    if (!g || !w) { tradeMsg('내줄 것과 받을 것을 고르세요.'); return; }
+    if (inv(g) < gn) { tradeMsg('내줄 물건이 모자라요.'); return; }
+    tradeBusy = true;
+    try {
+      addItem(g, -gn);
+      await db.collection('trades').add({ fromKey: myKey, from: myName, loc: myDoc.loc, spot: mySpot(), give: { id: g, n: gn }, want: { id: w, n: wn }, status: 'open', ts: Date.now() });
+      addLog('🤝 ' + placeName(myDoc.loc, mySpot()) + '에 교환을 걸었다: ' + ITEMS[g].n + ' ×' + gn + ' ⇄ ' + ITEMS[w].n + ' ×' + wn);
+      tradeMsg('교환 제안을 걸었어요. 내줄 물건은 맡겨 뒀어요.', true);
+      renderStatus(); await saveDoc();
+    } catch(e) { addItem(g, gn); tradeMsg('제안하지 못했어요. 잠시 후 다시 시도해보세요.'); }
+    tradeBusy = false;
+  });
+  $('tradeList').addEventListener('click', async (e) => {
+    const ab = e.target.closest('button[data-taccept]'), cb = e.target.closest('button[data-tcancel]');
+    if ((!ab && !cb) || tradeBusy || !db) return;
+    const id = (ab || cb).dataset[ab ? 'taccept' : 'tcancel'];
+    tradeBusy = true;
+    try {
+      const snap = await db.doc('trades/' + id).get();
+      const t = snap && snap.exists ? snap.data() : null;
+      if (!t || t.status !== 'open') { tradeMsg('이미 끝난 교환이에요.'); return; }
+      if (cb) {
+        if (t.fromKey !== myKey) return;
+        await db.doc('trades/' + id).set(Object.assign({}, t, { status: 'cancel', claimed: true }));
+        addItem(t.give.id, t.give.n);
+        addLog('🤝 교환 제안을 거둬들였다. (' + ITEMS[t.give.id].n + ' ×' + t.give.n + ' 돌려받음)');
+        tradeMsg('제안을 취소했어요.', true);
+      } else {
+        if (myDoc.status === 'dead' || !sameRoom(t)) return;
+        if (inv(t.want.id) < t.want.n) { tradeMsg('상대가 원하는 물건이 모자라요.'); return; }
+        const extra = (ITEMS[t.give.id].wt || 0) * t.give.n - (ITEMS[t.want.id].wt || 0) * t.want.n;
+        if (!canCarry(Math.max(0, extra))) { tradeMsg('가방이 꽉 차서 받을 수 없어요.'); return; }
+        await db.doc('trades/' + id).set(Object.assign({}, t, { status: 'done', acceptKey: myKey, acceptName: myName, doneTs: Date.now(), claimed: false }));
+        addItem(t.want.id, -t.want.n); addItem(t.give.id, t.give.n);
+        addLog('🤝 ' + String(t.from || '누군가').slice(0, 12) + '님과 교환했다. (' + ITEMS[t.want.id].n + ' ×' + t.want.n + ' 주고 ' + ITEMS[t.give.id].n + ' ×' + t.give.n + ' 받음)');
+        tradeMsg('교환했어요!', true); sfx('done');
+      }
+      renderStatus(); await saveDoc();
+    } catch(err) { tradeMsg('교환하지 못했어요. 잠시 후 다시 시도해보세요.'); }
+    finally { tradeBusy = false; }
+  });
+  // 내 제안이 성사됐으면 받을 물건을 챙긴다
+  let claiming = false;
+  async function claimTrades() {
+    if (claiming || !myDoc || !db) return;
+    const done = trades.filter(t => t.fromKey === myKey && t.status === 'done' && !t.claimed);
+    if (!done.length) return;
+    claiming = true;
+    try {
+      for (const t of done) {
+        const snap = await db.doc('trades/' + t.id).get();
+        const cur = snap && snap.exists ? snap.data() : null;
+        if (!cur || cur.claimed) continue;
+        await db.doc('trades/' + t.id).set(Object.assign({}, cur, { claimed: true }));
+        addItem(cur.want.id, cur.want.n);
+        addLog('🤝 ' + String(cur.acceptName || '누군가').slice(0, 12) + '님이 교환에 응했다. (' + ITEMS[cur.want.id].n + ' ×' + cur.want.n + ' 받음)');
+      }
+      renderStatus(); await saveDoc();
+    } catch(e) {}
+    claiming = false;
+  }
   // 같은 지역 안에서 어느 건물에 있는지 (null이면 거리)
   function spotOf(d) { return typeof d.spot === 'number' && SPOTS[d.loc] && SPOTS[d.loc][d.spot] ? d.spot : null; }
   function mySpot() { return spotOf(myDoc); }
@@ -3141,6 +3246,12 @@ const FIREBASE_CONFIG = {
       } catch(e) {}
       try {
         if (memoUnsub) memoUnsub();
+        if (tradeUnsub) tradeUnsub();
+        tradeUnsub = db.collection('trades').orderBy('ts', 'desc').limit(100).onSnapshot((snap) => {
+          trades = (snap && snap.docs) ? snap.docs.map(d => { const v = d.data(); return v ? Object.assign({ id: d.id }, v) : null; }).filter(t => t && t.give && t.want) : [];
+          claimTrades();
+          renderTrades();
+        }, () => {});
         memoUnsub = db.collection('memos').onSnapshot((snap) => {
           memos = (snap && snap.docs) ? snap.docs.map(d => { const v = d.data(); return v ? Object.assign({ id: d.id }, v) : null; }).filter(m => m && DISTRICTS[m.loc] && typeof m.text === 'string') : [];
           renderStatus();
@@ -3750,6 +3861,8 @@ const FIREBASE_CONFIG = {
     setAuthTab('login');
     if (unsub) { try { unsub(); } catch(e){} unsub = null; }
     if (memoUnsub) { try { memoUnsub(); } catch(e){} memoUnsub = null; }
+    if (tradeUnsub) { try { tradeUnsub(); } catch(e){} tradeUnsub = null; }
+    trades = [];
     if (chatUnsub) { try { chatUnsub(); } catch(e){} chatUnsub = null; }
     if (talkUnsub) { try { talkUnsub(); } catch(e){} talkUnsub = null; }
     talk = []; talkLoc = null;
@@ -3800,7 +3913,7 @@ const FIREBASE_CONFIG = {
 </div>
 <script>
 (function(){
-  var BUILD_ID = '20261017171011';
+  var BUILD_ID = '20261017171129';
   function check(){
     fetch('version.txt?t=' + Date.now(), { cache: 'no-store' }).then(function(r){ return r.ok ? r.text() : ''; }).then(function(v){
       v = (v || '').trim();
