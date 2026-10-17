@@ -9,6 +9,11 @@ service cloud.firestore {
       allow write: if signedIn() && coll != 'users';
     }
 
+    // 캐릭터별 일지 (survivors/{key}/private/log)
+    match /{coll}/{docId}/{sub}/{subId} {
+      allow read, write: if signedIn();
+    }
+
     // 계정 ↔ 캐릭터 연결 정보: 본인만 쓸 수 있다
     match /users/{uid} {
       allow read: if signedIn();

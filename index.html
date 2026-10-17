@@ -867,7 +867,7 @@ const FIREBASE_CONFIG = {
       name, day: 1, hp: 100, sat: 80, hyd: 80, fat: 15,
       food: 3, water: 3, med: 1,
       zombieKills: 0, weaponCounts: {}, party: '', epitaph: null,
-      status: 'alive', actedToday: false, log: [], avatar: null, bio: '', weapons: [], loc: null, visited: [], searched: {}, items: { paper: 0, pages: 0, pencil: 0, pen: 0 }, injuries: [], infection: 0, infectionPart: null, turned: false, updatedAt: Date.now()
+      status: 'alive', actedToday: false, log: [], bio: '', weapons: [], loc: null, visited: [], searched: {}, items: { paper: 0, pages: 0, pencil: 0, pen: 0 }, injuries: [], infection: 0, infectionPart: null, turned: false, updatedAt: Date.now()
     };
   }
 
@@ -1108,7 +1108,7 @@ const FIREBASE_CONFIG = {
     $('whoHp').textContent = myDoc.status === 'dead' ? '💀 Day ' + myDoc.day : '♥' + Math.max(0, myDoc.hp) + ' · D' + myDoc.day;
     setAvatarEl($('whoAvatar'), myDoc);
     setAvatarEl($('charAvatar'), myDoc);
-    $('avatarRemoveBtn').disabled = !myDoc.avatar;
+    $('avatarRemoveBtn').disabled = !avatarOf(myDoc);
     if (document.activeElement !== $('renameInput')) $('renameInput').value = myName;
     if (!bioDirty && document.activeElement !== $('bioInput')) { $('bioInput').value = myDoc.bio || ''; updateBioCount(); }
 
@@ -1133,9 +1133,12 @@ const FIREBASE_CONFIG = {
     `).join('');
   }
 
+  let avatars = {}, avatarUnsub = null;
+  function avatarOf(d) { const k = keyOf(d); return Object.prototype.hasOwnProperty.call(avatars, k) ? avatars[k] : d.avatar; }
   function validAvatar(a) { return typeof a === 'string' && a.length < 60000 && /^data:image\/jpeg;base64,[A-Za-z0-9+\/=]+$/.test(a); }
   function avatarHtml(d, cls) {
-    if (validAvatar(d.avatar)) return `<img class="avatar ${cls||''}" src="${d.avatar}" alt="">`;
+    const av = avatarOf(d);
+    if (validAvatar(av)) return `<img class="avatar ${cls||''}" src="${av}" alt="">`;
     return `<span class="avatar ${cls||''}">${escapeHtml(Array.from(d.name || '?')[0])}</span>`;
   }
   function bioHtml(d) {
@@ -1145,7 +1148,8 @@ const FIREBASE_CONFIG = {
   }
   function setAvatarEl(el, d) {
     el.innerHTML = '';
-    if (validAvatar(d.avatar)) { const img = document.createElement('img'); img.src = d.avatar; img.alt = ''; img.style.cssText = 'width:100%;height:100%;border-radius:50%;object-fit:cover;'; el.appendChild(img); }
+    const av = avatarOf(d);
+    if (validAvatar(av)) { const img = document.createElement('img'); img.src = av; img.alt = ''; img.style.cssText = 'width:100%;height:100%;border-radius:50%;object-fit:cover;'; el.appendChild(img); }
     else el.textContent = Array.from(d.name || '?')[0];
   }
 
@@ -1162,7 +1166,8 @@ const FIREBASE_CONFIG = {
   }
 
   function polPhoto(d) {
-    return validAvatar(d.avatar) ? `<div class="ph"><img src="${d.avatar}" alt=""></div>` : `<div class="ph"><span>${escapeHtml(Array.from(d.name || '?')[0])}</span></div>`;
+    const av = avatarOf(d);
+    return validAvatar(av) ? `<div class="ph"><img src="${av}" alt=""></div>` : `<div class="ph"><span>${escapeHtml(Array.from(d.name || '?')[0])}</span></div>`;
   }
   function polBio(d) {
     const b = typeof d.bio === 'string' ? d.bio.trim().slice(0, 500) : '';
@@ -1202,14 +1207,33 @@ const FIREBASE_CONFIG = {
     return db;
   }
 
+  // 캐릭터 문서는 모두가 실시간으로 받아보므로 작게 유지한다.
+  // 일지는 본인만 보는 survivors/{key}/private/log, 프로필 사진은 avatars/{key}에 따로 저장한다.
+  let logDirty = false;
+  function logRef(key) { return db.doc('survivors/' + key + '/private/log'); }
   async function saveDoc() {
     if (!db) { permNotice.style.display = 'block'; return; }
     myDoc.updatedAt = Date.now();
-    try { await db.doc('survivors/' + myKey).set(myDoc); permNotice.style.display = 'none'; }
+    const out = Object.assign({}, myDoc);
+    delete out.log; delete out.avatar;
+    try {
+      await db.doc('survivors/' + myKey).set(out);
+      if (logDirty) { logDirty = false; await logRef(myKey).set({ entries: myDoc.log.slice(-300) }); }
+      permNotice.style.display = 'none';
+    }
     catch(e) { permNotice.style.display = 'block'; }
   }
+  // 다른 생존자의 일지에 한 줄 남긴다 (약탈당함, 쉘터에서 쫓겨남 등)
+  async function appendLogTo(key, entry) {
+    try {
+      const snap = await logRef(key).get();
+      const entries = snap && snap.exists && Array.isArray(snap.data().entries) ? snap.data().entries.slice() : [];
+      entries.push(entry);
+      await logRef(key).set({ entries: entries.slice(-300) });
+    } catch(e) {}
+  }
 
-  function addLog(text) { myDoc.log.push({ day: myDoc.day, text, ts: Date.now() }); if (myDoc.log.length > 300) myDoc.log = myDoc.log.slice(-300); }
+  function addLog(text) { myDoc.log.push({ day: myDoc.day, text, ts: Date.now() }); if (myDoc.log.length > 300) myDoc.log = myDoc.log.slice(-300); logDirty = true; }
 
   function useWeapon(name) {
     if (!myDoc.weaponCounts) myDoc.weaponCounts = {};
@@ -2296,8 +2320,8 @@ const FIREBASE_CONFIG = {
       const t = snap && snap.exists ? JSON.parse(JSON.stringify(snap.data())) : null;
       if (t && t.party === myDoc.party) {
         t.party = '';
-        t.log = t.log || [];
-        t.log.push({ day: t.day, text: '「' + myDoc.party + '」 쉘터에서 쫓겨났다. 짐을 챙겨 문밖으로 나왔다.', ts: Date.now() });
+        delete t.log; delete t.avatar;
+        await appendLogTo(kkey, { day: t.day, text: '「' + myDoc.party + '」 쉘터에서 쫓겨났다. 짐을 챙겨 문밖으로 나왔다.', ts: Date.now() });
         t.updatedAt = Date.now();
         name = t.name || name;
         await db.doc('survivors/' + kkey).set(t);
@@ -2675,16 +2699,16 @@ const FIREBASE_CONFIG = {
       targetDoc.food = (targetDoc.food || 0) - stealFood;
       targetDoc.water = (targetDoc.water || 0) - stealWater;
       myDoc.food += stealFood; myDoc.water += stealWater;
-      targetDoc.log = targetDoc.log || [];
-      targetDoc.log.push({ day: targetDoc.day, text: '누군가 은신처를 뒤지고 갔다. 밤사이 인기척을 느꼈어야 했는데. (식량 -' + stealFood + ', 물 -' + stealWater + ')', ts: Date.now() });
+      delete targetDoc.log; delete targetDoc.avatar;
+      await appendLogTo(targetKey, { day: targetDoc.day, text: '누군가 은신처를 뒤지고 갔다. 밤사이 인기척을 느꼈어야 했는데. (식량 -' + stealFood + ', 물 -' + stealWater + ')', ts: Date.now() });
       targetDoc.updatedAt = Date.now();
       addLog(targetName + '의 은신처를 몰래 뒤져 물건을 훔쳤다. (식량 +' + stealFood + ', 물 +' + stealWater + ')');
       try { await db.doc('survivors/' + targetKey).set(targetDoc); } catch(e) {}
     } else if (r < 0.8) {
       const dmg = rint(10,20);
       myDoc.hp = clamp(myDoc.hp - dmg);
-      targetDoc.log = targetDoc.log || [];
-      targetDoc.log.push({ day: targetDoc.day, text: '누군가 습격해왔지만 가까스로 물리쳤다.', ts: Date.now() });
+      delete targetDoc.log; delete targetDoc.avatar;
+      await appendLogTo(targetKey, { day: targetDoc.day, text: '누군가 습격해왔지만 가까스로 물리쳤다.', ts: Date.now() });
       targetDoc.updatedAt = Date.now();
       addLog(targetName + '을(를) 습격하려다 들켜 얻어맞고 도망쳤다. (체력 -' + dmg + ')' + injure('human'));
       try { await db.doc('survivors/' + targetKey).set(targetDoc); } catch(e) {}
@@ -2825,6 +2849,17 @@ const FIREBASE_CONFIG = {
         const existing = await db.doc('survivors/' + key).get();
         myDoc = (existing && existing.exists) ? JSON.parse(JSON.stringify(existing.data())) : defaultDoc(name);
       } catch(e) { myDoc = defaultDoc(name); }
+      // 예전 형식(일지·사진이 캐릭터 문서 안에 있음)이면 따로 옮기고, 아니면 따로 저장된 일지를 불러온다
+      logDirty = false;
+      if (Array.isArray(myDoc.log) && myDoc.log.length) logDirty = true;
+      else {
+        try { const lg = await logRef(key).get(); myDoc.log = lg && lg.exists && Array.isArray(lg.data().entries) ? lg.data().entries : []; }
+        catch(e) { myDoc.log = []; }
+      }
+      if (typeof myDoc.avatar === 'string' && myDoc.avatar) {
+        try { await db.doc('avatars/' + key).set({ data: myDoc.avatar, ts: Date.now() }); avatars[key] = myDoc.avatar; } catch(e) {}
+      }
+      delete myDoc.avatar;
       if (!myDoc.log) myDoc.log = [];
       if (myAccount && !myDoc.account) myDoc.account = myAccount;
       myDoc.key = key;
@@ -2837,7 +2872,6 @@ const FIREBASE_CONFIG = {
       if (myDoc.water === undefined) myDoc.water = 3;
       if (myDoc.party === undefined) myDoc.party = '';
       if (myDoc.epitaph === undefined) myDoc.epitaph = null;
-      if (myDoc.avatar === undefined) myDoc.avatar = null;
       if (typeof myDoc.bio !== 'string') myDoc.bio = '';
       if (!Array.isArray(myDoc.weapons)) myDoc.weapons = [];
       if (!myDoc.searched || typeof myDoc.searched !== 'object' || Array.isArray(myDoc.searched)) myDoc.searched = {};
@@ -2855,6 +2889,14 @@ const FIREBASE_CONFIG = {
       await saveDoc();
       try {
         if (unsub) unsub();
+        if (avatarUnsub) avatarUnsub();
+        avatarUnsub = db.collection('avatars').onSnapshot((snap) => {
+          const next = {};
+          (snap && snap.docs ? snap.docs : []).forEach(d => { const v = d.data(); if (v && typeof v.data === 'string') next[d.id] = v.data; });
+          avatars = next;
+          renderBoard(latestDocs);
+          renderStatus();
+        }, () => {});
         unsub = db.collection('survivors').onSnapshot((snap) => {
           latestDocs = (snap && snap.docs) ? snap.docs.map(d => d.data()).filter(Boolean) : [];
           renderBoard(latestDocs);
@@ -3101,19 +3143,22 @@ const FIREBASE_CONFIG = {
     const file = e.target.files && e.target.files[0];
     e.target.value = '';
     if (!file || !myDoc) return;
-    try { myDoc.avatar = await fileToAvatar(file); }
+    let a;
+    try { a = await fileToAvatar(file); }
     catch(err) { charMsg('이 사진은 읽을 수 없어요. JPG나 PNG 파일로 다시 시도해보세요.', 'err'); return; }
+    if (!db) { permNotice.style.display = 'block'; return; }
+    avatars[myKey] = a;
     renderStatus();
-    await saveDoc();
-    charMsg('프로필 사진을 등록했어요.', 'ok');
+    try { await db.doc('avatars/' + myKey).set({ data: a, ts: Date.now() }); charMsg('프로필 사진을 등록했어요.', 'ok'); }
+    catch(err) { charMsg('사진을 저장하지 못했어요. 잠시 후 다시 시도해보세요.', 'err'); }
   });
 
   $('avatarRemoveBtn').addEventListener('click', async () => {
-    if (!myDoc || !myDoc.avatar) return;
-    myDoc.avatar = null;
+    if (!myDoc || !avatarOf(myDoc) || !db) return;
+    avatars[myKey] = null;
     renderStatus();
-    await saveDoc();
-    charMsg('프로필 사진을 지웠어요.', 'ok');
+    try { await db.doc('avatars/' + myKey).delete(); charMsg('프로필 사진을 지웠어요.', 'ok'); }
+    catch(err) { charMsg('사진을 지우지 못했어요. 잠시 후 다시 시도해보세요.', 'err'); }
   });
 
   function canMed() { return myDoc && myDoc.status !== 'dead' && myDoc.med > 0 && (myDoc.infection > 0 || myDoc.injuries.some(i => i.type !== 'bite')); }
@@ -3183,10 +3228,15 @@ const FIREBASE_CONFIG = {
       next.name = v;
       next.log.push({ day: next.day, text: oldName + '라는 이름은 버렸다. 이제부터 나는 ' + v + '(이)다.', ts: Date.now() });
       next.updatedAt = Date.now();
-      await db.doc('survivors/' + docId(v)).set(next);
+      const nextOut = Object.assign({}, next); delete nextOut.log; delete nextOut.avatar;
+      await db.doc('survivors/' + docId(v)).set(nextOut);
       try { await db.doc('survivors/' + myKey).delete(); } catch(e) {}
+      const oldKey = myKey;
       next.key = docId(v);
       myName = v; myDoc = next; myKey = next.key;
+      logDirty = true;
+      const av = avatars[oldKey];
+      if (av) { try { await db.doc('avatars/' + myKey).set({ data: av, ts: Date.now() }); await db.doc('avatars/' + oldKey).delete(); avatars[myKey] = av; } catch(e) {} }
       await saveDoc();
       saveName(v);
       $('whoLabel').textContent = v + '님';
@@ -3202,6 +3252,8 @@ const FIREBASE_CONFIG = {
     clearSession();
     try { firebase.auth().signOut(); } catch(e) {}
     myAccount = null; myKey = null;
+    if (avatarUnsub) { try { avatarUnsub(); } catch(e){} avatarUnsub = null; }
+    avatars = {};
     setAuthTab('login');
     if (unsub) { try { unsub(); } catch(e){} unsub = null; }
     if (memoUnsub) { try { memoUnsub(); } catch(e){} memoUnsub = null; }
