@@ -243,6 +243,11 @@
   .inv b { color: var(--text); }
   .m-pin rect { fill: var(--m-paper); stroke: var(--m-ink-dim); stroke-width: .8; }
   .m-pin line { stroke: #2c3f93; stroke-width: .7; }
+  #tabAdmin { max-width: 760px; margin-left: auto; margin-right: auto; }
+  .adm { display: flex; align-items: center; gap: 8px; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
+  .adm .ainfo { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+  .adm .ainfo small { display: block; color: var(--text-dim); font-size: 11px; }
+  .adm button { width: auto; padding: 6px 9px; font-size: 12px; white-space: nowrap; }
   #tabBoard { max-width: 980px; margin: 16px auto 0; }
   #loginCard, .tabs, #tabChar, #tabJournal, #tabShelter, #permNotice, .play-grid { max-width: 640px; margin-left: auto; margin-right: auto; }
   .play-grid { display: flex; flex-direction: column; }
@@ -515,6 +520,7 @@
       <button class="tab" role="tab" aria-selected="false" data-tab="shelter" id="tabBtnShelter">🏚️ 쉘터</button>
       <button class="tab" role="tab" aria-selected="false" data-tab="journal" id="tabBtnJournal">📔 일지</button>
       <button class="tab" role="tab" aria-selected="false" data-tab="char" id="tabBtnChar">👤 캐릭터</button>
+      <button class="tab" role="tab" aria-selected="false" data-tab="admin" id="tabBtnAdmin" hidden>🛠 관리</button>
     </nav>
 
     <div class="play-grid" id="playGrid">
@@ -744,6 +750,23 @@
         <div id="buildList"></div>
         <div class="char-msg" id="buildMsg" role="status"></div>
       </div>
+    </div>
+
+    <div id="tabAdmin" hidden>
+      <div class="card">
+        <h2>🛠 생존자 관리</h2>
+        <div class="muted" style="margin:0 0 8px">버그로 망가진 캐릭터를 고치거나 정리할 때 써요. 되돌릴 수 없으니 신중하게 눌러 주세요.</div>
+        <div id="adminSurvivors"></div>
+      </div>
+      <div class="card">
+        <h2>📻 전체 무전 정리</h2>
+        <div id="adminRadio"></div>
+      </div>
+      <div class="card">
+        <h2>📌 메모 정리</h2>
+        <div id="adminMemos"></div>
+      </div>
+      <div class="char-msg" id="adminMsg" role="status"></div>
     </div>
 
     <div id="tabJournal" hidden>
@@ -1144,6 +1167,7 @@
     if (!bioDirty && document.activeElement !== $('bioInput')) { $('bioInput').value = myDoc.bio || ''; updateBioCount(); }
 
     renderBody();
+    renderAdmin();
     $('linkCard').hidden = !!myDoc.account;
     renderMemos();
     if (chat.length) renderChat();
@@ -2672,7 +2696,7 @@
     $('chatLog').innerHTML = '<div class="rd-sys">지지직... 주파수를 맞추는 중...</div>';
     try {
       chatUnsub = db.collection(chCollection()).orderBy('ts', 'desc').limit(80).onSnapshot((snap) => {
-        chat = (snap && snap.docs) ? snap.docs.map(d => d.data()).filter(m => m && typeof m.text === 'string').reverse() : [];
+        chat = (snap && snap.docs) ? snap.docs.map(d => { const v = d.data(); return v ? Object.assign({ _id: d.id }, v) : null; }).filter(m => m && typeof m.text === 'string').reverse() : [];
         chatArrived();
         renderChat();
       }, () => { $('chatLog').innerHTML = '<div class="rd-sys">무전이 끊겼다. 잠시 후 다시 들어와 보세요.</div>'; });
@@ -3141,6 +3165,7 @@
       } catch(e) {}
     }
     myAccount = accountId || null;
+    if (!myLoginId) myLoginId = accountId || null;
     $('authMsg').textContent = '';
     myKey = key;
     myName = name;
@@ -3244,6 +3269,60 @@
     const v = $('nameInput').value.trim();
     if (!v) { $('nameInput').focus(); return; }
     enterGame(docId(v), v, null);
+  });
+
+  // ---------- 관리자 ----------
+  // 여기 적힌 로그인 아이디로 들어오면 🛠 관리 탭이 보인다
+  const ADMIN_IDS = ['__ADMIN__'];
+  let myLoginId = null;
+  function isAdmin() { return !!myLoginId && ADMIN_IDS.includes(String(myLoginId).toLowerCase()); }
+  function adminMsg(t, ok) { const m = $('adminMsg'); m.textContent = t; m.className = 'char-msg ' + (ok ? 'ok' : 'err'); }
+  function renderAdmin() {
+    $('tabBtnAdmin').hidden = !isAdmin();
+    if (!isAdmin() || $('tabAdmin').hidden) return;
+    const docs = latestDocs.slice().sort((a, b) => (a.status === 'dead') - (b.status === 'dead') || String(a.name).localeCompare(String(b.name)));
+    $('adminSurvivors').innerHTML = docs.map(d => {
+      const k = escapeHtml(keyOf(d)), D = DISTRICTS[d.loc];
+      return `<div class="adm"><div class="ainfo"><b>${escapeHtml(d.name)}</b>${isMe(d) ? ' (나)' : ''}<small>${d.status === 'dead' ? '🪦 사망' : '♥' + Math.max(0, +d.hp || 0)} · ${D ? D.n : '위치 없음'} · 생존 ${survDays(d)}일${d.party ? ' · 🏚️ ' + escapeHtml(d.party) : ''}</small></div>
+        <button class="secondary" type="button" data-adm="revive" data-k="${k}">부활·회복</button>
+        <button class="secondary" type="button" data-adm="unparty" data-k="${k}"${d.party ? '' : ' disabled'}>쉘터 빼기</button>
+        <button class="secondary" type="button" data-adm="delete" data-k="${k}"${isMe(d) ? ' disabled' : ''}>삭제</button></div>`;
+    }).join('') || '<div class="muted">생존자가 없어요.</div>';
+    const glob = radioCh ? [] : chat.slice(-30).reverse();
+    $('adminRadio').innerHTML = radioCh ? '<div class="muted">무전기를 전체 채널(7)로 맞추면 여기서 정리할 수 있어요.</div>'
+      : glob.map(m => `<div class="adm"><div class="ainfo">${escapeHtml(String(m.text).slice(0, 80))}<small>${escapeHtml(String(m.author || '').slice(0, 12))} · ${hhmm(m.ts)}</small></div><button class="secondary" type="button" data-adm="radio" data-k="${escapeHtml(m._id || '')}">지우기</button></div>`).join('') || '<div class="muted">무전이 없어요.</div>';
+    $('adminMemos').innerHTML = memos.slice().sort((a, b) => (b.ts || 0) - (a.ts || 0)).slice(0, 40).map(m => `<div class="adm"><div class="ainfo">${escapeHtml(String(m.text).slice(0, 80))}<small>${escapeHtml(String(m.author || '').slice(0, 12))} · ${DISTRICTS[m.loc] ? DISTRICTS[m.loc].n : ''}</small></div><button class="secondary" type="button" data-adm="memo" data-k="${escapeHtml(m.id)}">지우기</button></div>`).join('') || '<div class="muted">메모가 없어요.</div>';
+  }
+  $('tabAdmin').addEventListener('click', async (e) => {
+    const b = e.target.closest('button[data-adm]');
+    if (!b || b.disabled || !isAdmin() || !db) return;
+    const act = b.dataset.adm, k = b.dataset.k;
+    if (b.dataset.confirm !== '1') { b.dataset.confirm = '1'; b.textContent = '정말?'; return; }
+    b.disabled = true;
+    try {
+      if (act === 'radio') { await db.collection('radio').doc(k).delete(); adminMsg('무전을 지웠어요.', true); }
+      else if (act === 'memo') { await db.collection('memos').doc(k).delete(); adminMsg('메모를 지웠어요.', true); }
+      else if (act === 'delete') { await db.doc('survivors/' + k).delete(); try { await db.doc('avatars/' + k).delete(); } catch(err) {} adminMsg('캐릭터를 지웠어요.', true); }
+      else {
+        if (k === myKey) {
+          if (act === 'revive') { Object.assign(myDoc, { status: 'alive', hp: 100, sat: 80, hyd: 80, fat: 15, infection: 0, infectionPart: null, turned: false, injuries: [], epitaph: null }); addLog('🛠 관리자의 손길로 다시 일어섰다.'); }
+          else myDoc.party = '';
+          renderStatus(); await saveDoc();
+        } else {
+          const snap = await db.doc('survivors/' + k).get();
+          const t = snap && snap.exists ? JSON.parse(JSON.stringify(snap.data())) : null;
+          if (t) {
+            delete t.log; delete t.avatar;
+            if (act === 'revive') Object.assign(t, { status: 'alive', hp: 100, sat: 80, hyd: 80, fat: 15, infection: 0, infectionPart: null, turned: false, injuries: [], epitaph: null, busy: null });
+            else t.party = '';
+            t.updatedAt = Date.now();
+            await db.doc('survivors/' + k).set(t);
+            if (act === 'revive') await appendLogTo(k, { day: t.day, text: '🛠 관리자의 손길로 다시 일어섰다.', ts: Date.now() });
+          }
+        }
+        adminMsg(act === 'revive' ? '부활·회복시켰어요.' : '쉘터에서 뺐어요.', true);
+      }
+    } catch(err) { adminMsg('처리하지 못했어요: ' + (err && err.message || '')); b.disabled = false; }
   });
 
   // ---------- 계정: 아이디/비밀번호로 어느 기기에서든 같은 캐릭터 ----------
@@ -3414,6 +3493,8 @@
     $('tabJournal').hidden = t !== 'journal';
     $('tabShelter').hidden = t !== 'shelter';
     $('tabBoard').hidden = t !== 'board';
+    $('tabAdmin').hidden = t !== 'admin';
+    if (t === 'admin') renderAdmin();
     if (t === 'play' && myDoc) renderMap();
     document.querySelectorAll('.tab').forEach(b => { const on = b.dataset.tab === t; b.classList.toggle('active', on); b.setAttribute('aria-selected', on); });
     $('charMsg').textContent = '';
@@ -3810,7 +3891,8 @@
   $('switchUser').addEventListener('click', () => {
     clearSavedName();
     clearSession();
-    myAccount = null; myKey = null;
+    myAccount = null; myKey = null; myLoginId = null;
+    $('tabBtnAdmin').hidden = true;
     if (avatarUnsub) { try { avatarUnsub(); } catch(e){} avatarUnsub = null; }
     avatars = {};
     setAuthTab('login');

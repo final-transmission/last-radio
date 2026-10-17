@@ -97,6 +97,7 @@ R("""      const key = 'acct-' + docId(id);
       await db.doc('users/' + uid).set({ id, name, key, createdAt: Date.now() });
       $('suPw').value = ''; $('suPw2').value = '';
       signingUp = false;
+      myLoginId = id;
       await enterGame(key, name, uid);
     } catch(e) {
       signingUp = false;
@@ -112,6 +113,7 @@ R("  function loadSession() {", """  // Firebase 인증은 이메일 형식이 �
     const snap = await db.doc('users/' + user.uid).get();
     if (!snap.exists) return;
     const u = snap.data();
+    myLoginId = u.id;
     await enterGame(u.key, u.name, user.uid);
   }
   function loadSession() {""")
