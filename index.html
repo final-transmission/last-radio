@@ -729,6 +729,12 @@
         <div id="storageLog" class="st-log"></div>
         <div class="char-msg" id="storageMsg" role="status"></div>
       </div>
+      <div class="card" id="buildCard" hidden>
+        <h2>🏗️ 쉘터 시설</h2>
+        <div class="muted" style="margin:0 0 8px">재료는 쉘터 창고에서 꺼내 써요. 나무판자·못·고철은 철물점, 창고, 스튜디오 같은 곳에서 구할 수 있어요.</div>
+        <div id="buildList"></div>
+        <div class="char-msg" id="buildMsg" role="status"></div>
+      </div>
     </div>
 
     <div id="tabJournal" hidden>
@@ -1363,7 +1369,7 @@ const FIREBASE_CONFIG = {
     const note = injure('fight');
     if (!quiet) addLog('☠ 밤새 무리가 ' + DISTRICTS[myDoc.loc].n + '을(를) 휩쓸었다. ' + (inside ? '문을 걸어 잠그고 버텼지만 ' : '') + '무사하지 못했다. (체력 -' + dmg + ')' + note);
   }
-  function shelterBarricade() { return 0; }
+  function shelterBarricade() { return myDoc && myDoc.party && shelterDoc && shelterDoc.builds ? Math.min(3, +shelterDoc.builds.barricade || 0) : 0; }
   function applyPassiveDay() {
     myDoc.sat = clamp(myDoc.sat - rint(8,14));
     myDoc.hyd = clamp(myDoc.hyd - rint(10,16));
@@ -2269,6 +2275,7 @@ const FIREBASE_CONFIG = {
     }
     renderPolicy();
     renderStorage();
+    renderBuilds();
   }
   // ---------- 쉘터 가입 방식 / 초대 ----------
   async function updateShelter(mutate) {
@@ -2417,6 +2424,72 @@ const FIREBASE_CONFIG = {
     } catch(err) { msg.textContent = '창고를 쓰지 못했어요. 잠시 후 다시 시도해보세요.'; msg.className = 'char-msg err'; }
     storageBusy = false;
   });
+
+  // ---------- 쉘터 시설 ----------
+  const BUILDS = [
+    { id:'rain', n:'빗물 수집기', ic:'🪣', max:1, cost:() => ({ planks:4, nails:6, scrap:2 }), desc:'매일 창고에 받아둔 빗물 2개' },
+    { id:'garden', n:'쉘터 텃밭', ic:'🥬', max:1, cost:() => ({ planks:6, nails:4 }), desc:'매일 창고에 텃밭 채소 2개' },
+    { id:'barricade', n:'바리케이드', ic:'🚧', max:3, cost:lv => ({ planks:5 * lv, nails:8 * lv, scrap:3 * lv }), desc:'단계마다 무리 습격 피해 -25% (동료 전원)' }
+  ];
+  const PRODUCE = { rain: { rainwater: 2 }, garden: { veggies: 2 } };
+  function renderBuilds() {
+    const has = !!(myDoc && myDoc.party);
+    $('buildCard').hidden = !has;
+    if (!has) return;
+    const st = normalizeStorage(shelterDoc && shelterDoc.storage), bl = (shelterDoc && shelterDoc.builds) || {};
+    const dead = myDoc.status === 'dead';
+    $('buildList').innerHTML = BUILDS.map(B => {
+      const lv = +bl[B.id] || 0, done = lv >= B.max, cost = B.cost(lv + 1);
+      const ok = !done && Object.keys(cost).every(k => (+st[k] || 0) >= cost[k]);
+      const costTxt = done ? '완성됨' : Object.keys(cost).map(k => ITEMS[k].n + ' ' + (+st[k] || 0) + '/' + cost[k]).join(' · ');
+      return `<div class="bag-row"><span class="bic">${B.ic}</span><div class="bnm">${B.n}${B.max > 1 ? ' <b>Lv' + lv + '/' + B.max + '</b>' : lv ? ' <b>✓</b>' : ''}<small>${B.desc} · ${costTxt}</small></div><button class="secondary" type="button" data-build="${B.id}"${dead || !ok ? ' disabled' : ''}>${done ? '완성' : lv ? '강화' : '짓기'}</button></div>`;
+    }).join('');
+    shelterProduce();
+  }
+  $('buildList').addEventListener('click', async (e) => {
+    const b = e.target.closest('button[data-build]');
+    if (!b || b.disabled || !db || !myDoc.party) return;
+    const B = BUILDS.find(x => x.id === b.dataset.build), msg = $('buildMsg');
+    b.disabled = true;
+    let lvNow = 0;
+    try {
+      const ok = await updateShelter(d => {
+        d.storage = normalizeStorage(d.storage); d.builds = d.builds || {};
+        const lv = +d.builds[B.id] || 0, cost = B.cost(lv + 1);
+        if (lv >= B.max || !Object.keys(cost).every(k => (+d.storage[k] || 0) >= cost[k])) return false;
+        Object.keys(cost).forEach(k => { d.storage[k] -= cost[k]; if (d.storage[k] <= 0) delete d.storage[k]; });
+        d.builds[B.id] = lvNow = lv + 1;
+        if (PRODUCE[B.id] && !d.prodDay) d.prodDay = worldDay();
+        d.storageLog = (Array.isArray(d.storageLog) ? d.storageLog : []).concat({ who: myName, text: B.n + (B.max > 1 ? ' Lv' + lvNow : '') + ' 건설에 재료를 썼다', ts: Date.now() }).slice(-20);
+      });
+      if (ok) {
+        await shelterSys(myDoc.party, '님이 ' + B.n + (B.max > 1 ? '을(를) Lv' + lvNow + '로 강화했다' : '을(를) 지었다'));
+        addLog('🏗️ 쉘터에 ' + B.n + (B.max > 1 ? ' Lv' + lvNow : '') + '을(를) 세웠다.');
+        msg.textContent = B.n + ' 완료!'; msg.className = 'char-msg ok';
+        sfx('done'); renderStatus(); await saveDoc();
+      } else { msg.textContent = '재료가 모자라요.'; msg.className = 'char-msg err'; }
+    } catch(err) { msg.textContent = '짓지 못했어요. 잠시 후 다시 시도해보세요.'; msg.className = 'char-msg err'; }
+  });
+  // 빗물 수집기·텃밭이 지난 날들만큼 창고에 쌓인다 (최대 10일치). 동료 누구든 접속하면 처리된다
+  let producing = false;
+  async function shelterProduce() {
+    if (producing || !db || !shelterDoc || !shelterDoc.builds || !myDoc.party || myDoc.status === 'dead') return;
+    const bl = shelterDoc.builds, wd = worldDay();
+    if (!Object.keys(PRODUCE).some(k => bl[k]) || (+shelterDoc.prodDay || wd) >= wd) return;
+    producing = true;
+    try {
+      await updateShelter(d => {
+        const from = +d.prodDay || wd, days = Math.min(10, wd - from);
+        if (days <= 0) return false;
+        d.storage = normalizeStorage(d.storage);
+        const got = {};
+        Object.keys(PRODUCE).forEach(b => { if (d.builds && d.builds[b]) Object.keys(PRODUCE[b]).forEach(k => { const n = PRODUCE[b][k] * days; d.storage[k] = (+d.storage[k] || 0) + n; got[k] = (got[k] || 0) + n; }); });
+        d.prodDay = wd;
+        d.storageLog = (Array.isArray(d.storageLog) ? d.storageLog : []).concat({ who: '쉘터', text: days + '일치 수확: ' + lootText(got), ts: Date.now() }).slice(-20);
+      });
+    } catch(e) {}
+    producing = false;
+  }
 
   async function saveNotice() {
     if (!isFounder() || !db) return;
@@ -3727,7 +3800,7 @@ const FIREBASE_CONFIG = {
 </div>
 <script>
 (function(){
-  var BUILD_ID = '20261017170917';
+  var BUILD_ID = '20261017171011';
   function check(){
     fetch('version.txt?t=' + Date.now(), { cache: 'no-store' }).then(function(r){ return r.ok ? r.text() : ''; }).then(function(v){
       v = (v || '').trim();
