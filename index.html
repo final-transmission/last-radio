@@ -228,6 +228,8 @@
   .map-spot { cursor: pointer; outline: none; }
   .map-spot.sel .m-bld, .map-spot:focus-visible .m-bld { stroke: var(--m-ink); stroke-width: 2.5; }
   .map-spot.dep { opacity: .55; }
+  .m-horde { font-size: 13px; fill: #c0281e; paint-order: stroke; stroke: var(--m-land); stroke-width: 2px; }
+  @media (prefers-reduced-motion: no-preference) { .m-horde { animation: curPulse 1.2s ease-in-out infinite; } }
   .map-legend { display: grid; grid-template-columns: repeat(auto-fill, minmax(92px, 1fr)); gap: 6px 10px; font-size: 11px; color: var(--text-dim); margin-top: 12px; }
   .map-legend span { display: inline-flex; align-items: center; gap: 6px; }
   .map-legend i { width: 15px; height: 15px; border-radius: 2px; display: inline-flex; align-items: center; justify-content: center; font-style: normal; font-size: 9px; font-weight: 700; color: #fff; flex-shrink: 0; }
@@ -442,6 +444,9 @@
   .bag-row .bnm b { font-family: var(--font-mono); color: var(--accent); }
   .bag-row .bnm small { display: block; font-size: 11px; color: var(--text-dim); }
   .bag-row button { width: auto; padding: 7px 10px; font-size: 12px; white-space: nowrap; }
+  .wx { margin-left: auto; font: 700 12px var(--font-mono); color: var(--text-dim); letter-spacing: 1px; }
+  .is-night .map-svg { filter: brightness(.62) saturate(.7) hue-rotate(-8deg); transition: filter 2s; }
+  .map-svg { transition: filter 2s; }
   .owned { font-size: 12px; color: var(--text-dim); margin-top: 6px; line-height: 1.5; }
   .owned b { color: var(--text); font-weight: 500; }
   .action-grid button.action.raid { background: repeating-linear-gradient(-45deg, transparent 0 8px, var(--danger-wash) 8px 16px), var(--bg-elevated); }
@@ -511,7 +516,7 @@
 
     <div class="play-grid" id="playGrid">
     <div class="card radio-card">
-      <h2>📻 오늘의 무전 <span class="rec">● 수신 중</span></h2>
+      <h2>📻 오늘의 무전 <span class="rec">● 수신 중</span><span class="wx" id="wxBadge"></span></h2>
       <div class="radio-text" id="radioText">수신 중...</div>
     </div>
 
@@ -913,8 +918,11 @@ const FIREBASE_CONFIG = {
     '드물게 비가 내리겠습니다. 빗물을 받아두기 좋은 날입니다.'
   ];
   function renderRadio() {
-    const idx = hashStr('radio-day-' + worldDay()) % RADIO_LINES.length;
-    $('radioText').textContent = RADIO_LINES[idx];
+    const day = worldDay(), w = weatherOf(day), hz = hordeOf(day);
+    const idx = hashStr('radio-day-' + day) % RADIO_LINES.length;
+    const wxLine = { clear:'오늘은 맑겠습니다.', cloudy:'하루 종일 흐리겠습니다.', rain:'비가 내리겠습니다. 빗물을 받아두십시오.', fog:'짙은 안개가 끼겠습니다. 이동을 자제하십시오.' }[w.id];
+    $('radioText').textContent = hz ? '⚠ 긴급 경보. ' + DISTRICTS[hz].n + ' 방면으로 대규모 무리가 이동 중입니다. 오늘 하루 그 지역을 피하십시오. ' + wxLine : RADIO_LINES[idx] + ' ' + wxLine;
+    $('wxBadge').textContent = w.ic + ' ' + w.n;
   }
 
   // ---------- 신체 / 감염 ----------
@@ -1100,7 +1108,8 @@ const FIREBASE_CONFIG = {
     const here = DISTRICTS[myDoc.loc];
     if (here) {
       $('locLine').innerHTML = '📍 현재 위치: <b>' + here.n + '</b> · 다른 지역으로 가려면 지도에서 이웃 지역을 누르세요';
-      $('exploreInfo').textContent = here.desc + ' (지역 위험도 ' + Math.round(here.danger * 100) + '%)';
+      const ct = conditionText(myDoc.loc);
+      $('exploreInfo').textContent = here.desc + ' (지역 위험도 ' + Math.round(here.danger * 100) + '%)' + (ct ? ' · ' + ct : '');
       renderSpots();
     }
     if (!$('playGrid').hidden) renderMap();
@@ -1267,6 +1276,7 @@ const FIREBASE_CONFIG = {
     if (myDoc.sat <= 0) { myDoc.hp = clamp(myDoc.hp - 8); addLog('며칠째 제대로 못 먹어 몸이 쇠약해졌다.'); }
     if (myDoc.hyd <= 0) { myDoc.hp = clamp(myDoc.hp - 10); addLog('갈증으로 입술이 갈라지고 정신이 아득해졌다.'); }
     if (myDoc.fat >= 95) { myDoc.hp = clamp(myDoc.hp - 4); addLog('며칠간 제대로 못 자 반응이 느려졌다. 위험한 신호다.'); }
+    hordeHit(false);
     progressBody(true);
   }
 
@@ -1284,6 +1294,42 @@ const FIREBASE_CONFIG = {
   function worldDay() { return Math.max(1, Math.floor((Date.now() - WORLD_EPOCH) / WORLD_DAY_MS) + 1); }
   function msToNextDay() { const t = (Date.now() - WORLD_EPOCH) % WORLD_DAY_MS; return WORLD_DAY_MS - (t < 0 ? t + WORLD_DAY_MS : t); }
   function mmss(ms) { const s = Math.ceil(ms / 1000); return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); }
+  // ---------- 밤낮 · 날씨 · 무리 습격 (세계 시간으로 정해져 모두에게 같다) ----------
+  // 하루(30분)의 시작이 아침 6시. 20시~5시는 밤
+  function gameHour() { const t = ((Date.now() - WORLD_EPOCH) % WORLD_DAY_MS + WORLD_DAY_MS) % WORLD_DAY_MS; return (6 + t / WORLD_DAY_MS * 24) % 24; }
+  function gameClock() { const h = gameHour(); return String(Math.floor(h)).padStart(2, '0') + ':' + String(Math.floor((h % 1) * 60)).padStart(2, '0'); }
+  function isNight() { const h = gameHour(); return h >= 20 || h < 5; }
+  const WEATHERS = [
+    { id:'clear', n:'맑음', ic:'☀️', w:55 }, { id:'cloudy', n:'흐림', ic:'☁️', w:15 },
+    { id:'rain', n:'비', ic:'🌧️', w:18 }, { id:'fog', n:'안개', ic:'🌫️', w:12 }
+  ];
+  function weatherOf(day) {
+    let r = hashStr('weather-' + day) % 100;
+    for (const w of WEATHERS) { if (r < w.w) return w; r -= w.w; }
+    return WEATHERS[0];
+  }
+  // 하루에 30% 확률로 한 지역에 대규모 무리가 몰려온다
+  function hordeOf(day) {
+    if (hashStr('horde-' + day) % 100 >= 30) return null;
+    const keys = Object.keys(DISTRICTS);
+    return keys[hashStr('horde-at-' + day) % keys.length];
+  }
+  // 상황에 따른 위험도 배수: 밤 ×1.4, 안개(이동 ×1.5, 조사 ×1.15), 무리가 있는 지역 ×1.8
+  function dangerMult(loc, kind) {
+    let m = isNight() ? 1.4 : 1;
+    const w = weatherOf(worldDay());
+    if (w.id === 'fog') m *= kind === 'move' ? 1.5 : 1.15;
+    if (hordeOf(worldDay()) === loc) m *= 1.8;
+    return m;
+  }
+  function conditionText(loc) {
+    const t = [];
+    if (isNight()) t.push('밤이라 더 위험해요');
+    if (weatherOf(worldDay()).id === 'fog') t.push('안개 때문에 앞이 잘 안 보여요');
+    if (hordeOf(worldDay()) === loc) t.push('☠ 오늘 이 지역에 무리가 몰려왔어요');
+    return t.join(' · ');
+  }
+
   function survDays(d) { const day = +d.day || 1, born = +d.born || 1; return Math.max(1, day - born + 1); }
 
   // 예전 방식(각자 따로 세던 날짜)으로 만든 캐릭터를 세계 시간에 맞춘다
@@ -1299,6 +1345,18 @@ const FIREBASE_CONFIG = {
     if (!myDoc.born) myDoc.born = myDoc.day;
   }
 
+  // 그날 무리가 몰려온 지역에 있었다면 하루가 끝날 때 습격당할 수 있다
+  function hordeHit(quiet) {
+    if (hordeOf(myDoc.day) !== myDoc.loc || Math.random() >= 0.5) return;
+    let dmg = rint(10, 20);
+    const inside = typeof myDoc.spot === 'number';
+    if (inside) dmg = Math.round(dmg * 0.5);
+    dmg = Math.round(dmg * (1 - 0.25 * shelterBarricade()));
+    myDoc.hp = clamp(myDoc.hp - dmg);
+    const note = injure('fight');
+    if (!quiet) addLog('☠ 밤새 무리가 ' + DISTRICTS[myDoc.loc].n + '을(를) 휩쓸었다. ' + (inside ? '문을 걸어 잠그고 버텼지만 ' : '') + '무사하지 못했다. (체력 -' + dmg + ')' + note);
+  }
+  function shelterBarricade() { return 0; }
   function applyPassiveDay() {
     myDoc.sat = clamp(myDoc.sat - rint(8,14));
     myDoc.hyd = clamp(myDoc.hyd - rint(10,16));
@@ -1308,6 +1366,7 @@ const FIREBASE_CONFIG = {
     if (myDoc.sat <= 0) myDoc.hp = clamp(myDoc.hp - 8);
     if (myDoc.hyd <= 0) myDoc.hp = clamp(myDoc.hp - 10);
     if (myDoc.fat >= 95) myDoc.hp = clamp(myDoc.hp - 4);
+    hordeHit(true);
     progressBody(false);
   }
 
@@ -1346,7 +1405,9 @@ const FIREBASE_CONFIG = {
   function updateClock() {
     if (!myDoc) return;
     const dead = myDoc.status === 'dead', left = mmss(msToNextDay());
-    $('actionHint').textContent = dead ? '' : '· Day ' + myDoc.day + ' · 다음 날까지 ' + left;
+    const w = weatherOf(worldDay());
+    $('actionHint').textContent = dead ? '' : '· Day ' + myDoc.day + ' · ' + (isNight() ? '🌙 ' : '🕗 ') + gameClock() + ' · ' + w.ic + ' ' + w.n + ' · 다음 날까지 ' + left;
+    document.documentElement.classList.toggle('is-night', isNight());
   }
   let clockDay = 0;
   setInterval(async () => {
@@ -1450,9 +1511,10 @@ const FIREBASE_CONFIG = {
 
   function doForage() {
     const bonus = partyBonusActive();
-    const r = Math.random();
+    let r = Math.random();
+    if (Math.random() < 0.15 * (dangerMult(myDoc.loc, 'forage') - 1)) r = 0.75;
     if (r < 0.32) { const got = rollLoot(SPOT_LOOT.forage.food.concat(GENERAL_LOOT.food), 2 + (bonus?1:0)); addLog(pick(FORAGE_FOOD) + ' (' + lootText(got) + ')' + (bonus ? ' (쉘터 동료와 함께해 +1)' : '')); }
-    else if (r < 0.55) { const got = rollLoot(['rainwater','rainwater','water','soda'], 2 + (bonus?1:0)); addLog(pick(FORAGE_WATER) + ' (' + lootText(got) + ')' + (bonus ? ' (쉘터 동료와 함께해 +1)' : '')); }
+    else if (r < 0.55) { const got = rollLoot(['rainwater','rainwater','water','soda'], 2 + (bonus?1:0) + (weatherOf(worldDay()).id === 'rain' ? 1 : 0)); addLog(pick(FORAGE_WATER) + ' (' + lootText(got) + ')' + (bonus ? ' (쉘터 동료와 함께해 +1)' : '')); }
     else if (r < 0.70) { const got = rollLoot(['bandage','painkillers','green_herb','disinfectant','antibiotics'], 1); addLog(pick(FORAGE_MED) + ' (' + lootText(got) + ')'); }
     else if (r < 0.85) { const dmg = bonus ? 7 : 10; myDoc.hp = clamp(myDoc.hp - dmg); addLog(pick(FORAGE_SCARE) + injure('forage')); }
     else { addLog(pick(FORAGE_NOTHING)); }
@@ -1643,6 +1705,7 @@ const FIREBASE_CONFIG = {
         h += `<text class="m-lbl" x="${lx}" y="${ly}" text-anchor="${D.la || 'middle'}">${D.n}</text>`;
         const nm = memos.filter(m => m.loc === id).length;
         if (nm) h += `<g class="m-pin" transform="translate(${D.x - 17},${D.y - 17}) rotate(-10)"><rect width="8" height="9" rx=".5"/><line x1="1.5" y1="3" x2="6.5" y2="3"/><line x1="1.5" y1="5" x2="6.5" y2="5"/><line x1="1.5" y1="7" x2="5" y2="7"/></g>`;
+        if (hordeOf(worldDay()) === id) h += `<text x="${D.x - 12}" y="${D.y + 4}" text-anchor="end" class="m-horde">☠</text>`;
         if (counts[id]) h += `<circle class="m-badge" cx="${D.x + 10}" cy="${D.y - 10}" r="5.5"/><text class="m-badge-t" x="${D.x + 10}" y="${D.y - 10}">${counts[id]}</text>`;
       } else {
         h += `<rect class="m-blk unk" x="${D.x - 8}" y="${D.y - 8}" width="16" height="16" rx="2"/>`;
@@ -1664,7 +1727,7 @@ const FIREBASE_CONFIG = {
     if (known) {
       const here = latestDocs.filter(d => !isMe(d) && d.status !== 'dead' && d.loc === id).map(d => escapeHtml(d.name));
       h += `<div class="facts"><span class="pill">위험도 ${dangerWord(D.danger)} · ${Math.round(D.danger * 100)}%</span>`;
-      h += `<span class="pill">조사 구역 ${(SPOTS[id] || []).length}곳</span></div>`;
+      h += `<span class="pill">조사 구역 ${(SPOTS[id] || []).length}곳</span>${hordeOf(worldDay()) === id ? '<span class="pill" style="color:var(--danger)">☠ 오늘 무리 출몰</span>' : ''}</div>`;
       h += `<div class="facts">` + (SPOTS[id] || []).map(([t, n], i) => `<span class="pill" title="${SPOT_TYPES[t].n}">${SPOT_TYPES[t].ic} ${n}${myDoc.searched[spotKey(id, i)] != null ? ' ✓' : ''}</span>`).join('') + `</div>`;
       const nm = memos.filter(m => m.loc === id).length;
       if (nm) h += `<p class="muted" style="margin-top:10px">📌 ${isCur ? '이곳에 메모 ' + nm + '장이 붙어 있다. 메모 카드에서 읽을 수 있다.' : '메모 ' + nm + '장이 붙어 있다. 직접 가야 읽을 수 있다.'}</p>`;
@@ -1816,7 +1879,7 @@ const FIREBASE_CONFIG = {
     if (!to || !(ADJ[myDoc.loc] || []).includes(id)) return;
     const first = !myDoc.visited.includes(id);
     let text = from.n + '에서 ' + to.n + '(으)로 이동했다. ';
-    if (Math.random() < to.danger * 0.5) {
+    if (Math.random() < Math.min(0.85, to.danger * 0.5 * dangerMult(id, 'move'))) {
       const dmg = rint(5, 14);
       myDoc.hp = clamp(myDoc.hp - dmg);
       text += pick(TRAVEL_ENCOUNTER) + ' (체력 -' + dmg + ')' + injure('forage') + ' ';
@@ -1881,6 +1944,24 @@ const FIREBASE_CONFIG = {
       const src = audioCtx.createBufferSource(), bp = audioCtx.createBiquadFilter(), g = audioCtx.createGain();
       bp.type = 'bandpass'; bp.frequency.value = 1800; bp.Q.value = 0.8; g.gain.value = 0.12;
       src.buffer = buf; src.connect(bp); bp.connect(g); g.connect(audioCtx.destination); src.start();
+    } catch(e) {}
+  }
+  // 짧은 효과음: 전부 소리 끄기 노브를 따른다
+  function tone(f1, f2, dur, type, vol, delay) {
+    const t0 = audioCtx.currentTime + (delay || 0), o = audioCtx.createOscillator(), g = audioCtx.createGain();
+    o.type = type || 'sine'; o.frequency.setValueAtTime(f1, t0); if (f2) o.frequency.exponentialRampToValueAtTime(f2, t0 + dur);
+    g.gain.setValueAtTime(vol || 0.08, t0); g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+    o.connect(g); g.connect(audioCtx.destination); o.start(t0); o.stop(t0 + dur + 0.02);
+  }
+  function sfx(kind) {
+    if (rdMuted || !audioCtx) return;
+    try {
+      if (kind === 'done') { tone(660, 0, 0.12, 'sine', 0.06); tone(880, 0, 0.18, 'sine', 0.06, 0.1); }
+      else if (kind === 'eat') { tone(300, 200, 0.06, 'square', 0.03); tone(320, 210, 0.06, 'square', 0.03, 0.09); }
+      else if (kind === 'heal') { tone(440, 660, 0.35, 'sine', 0.06); }
+      else if (kind === 'hurt') { tone(120, 50, 0.25, 'triangle', 0.15); staticBurst(0.12); }
+      else if (kind === 'zombie') { tone(95, 70, 0.7, 'sawtooth', 0.05); tone(110, 80, 0.6, 'sawtooth', 0.04, 0.05); }
+      else if (kind === 'break') { tone(900, 200, 0.15, 'square', 0.05); staticBurst(0.1); }
     } catch(e) {}
   }
   function blinkLed(cls) { const l = $('rdLed'); l.className = 'rd-led ' + cls; setTimeout(() => { l.className = 'rd-led'; }, 700); }
@@ -2629,7 +2710,7 @@ const FIREBASE_CONFIG = {
     if (!D || !S) return;
     const T = SPOT_TYPES[S[0]], key = spotKey(loc, i), depleted = !!spotState(loc, i).depleted;
     const bonus = partyBonusActive();
-    const danger = spotDanger(loc, i) * (bonus ? 0.75 : 1);
+    const danger = Math.min(0.85, spotDanger(loc, i) * (bonus ? 0.75 : 1) * dangerMult(loc, 'explore'));
     const parts = [];
     let head = S[1] + ' 조사. ';
     myDoc.searched[key] = myDoc.day;
@@ -2667,7 +2748,8 @@ const FIREBASE_CONFIG = {
     const bonus = partyBonusActive();
     const t = WEAPON_TIER[weapon] || 0;
     const pSucc = 0.25 + 0.05 * t, pKill = pSucc + 0.25 + 0.03 * t, pHurt = pKill + 0.25 - 0.04 * t;
-    const r = Math.random();
+    let r = Math.random();
+    if (Math.random() < 0.15 * (dangerMult(myDoc.loc, 'hunt') - 1)) r = pKill + 0.001;
     if (r < pSucc) {
       const gain = rint(2,4) + (bonus?1:0);
       addItem('raw_meat', gain);
@@ -2694,9 +2776,10 @@ const FIREBASE_CONFIG = {
     addLog(pick(['벽에 등을 기대고 잠깐 숨을 골랐다.', '물 한 모금 마시고 신발 끈을 다시 맸다. 조금 나아졌다.', '창밖을 살피며 잠시 눈을 붙였다.']) + ' (피로 감소)');
   }
   function doSleep() {
-    myDoc.fat = clamp(myDoc.fat - rint(50,65));
-    myDoc.hp = clamp(myDoc.hp + rint(8,14));
-    addLog(pick(REST_TEXTS) + ' (푹 잤다. 피로 크게 감소, 체력 회복)');
+    const night = isNight();
+    myDoc.fat = clamp(myDoc.fat - rint(50,65) - (night ? 10 : 0));
+    myDoc.hp = clamp(myDoc.hp + rint(8,14) + (night ? 3 : 0));
+    addLog(pick(REST_TEXTS) + (night ? ' (밤에 푹 잤다. 피로 크게 감소, 체력 회복)' : ' (푹 잤다. 피로 크게 감소, 체력 회복)'));
   }
 
   // 약탈은 잠시 꺼 둔다. 다시 켜려면 true로 바꾸고 raidBtn·raidRow의 hidden을 지운다.
@@ -2811,6 +2894,7 @@ const FIREBASE_CONFIG = {
     completing = true;
     try {
       myDoc.busy = null;
+      const hp0 = myDoc.hp;
       if (myDoc.status !== 'dead') {
         const t = b.type;
         if (t === 'farm') doFarm();
@@ -2824,6 +2908,8 @@ const FIREBASE_CONFIG = {
         else if (t === 'med') { if (canUseMed(b.arg)) useMed(b.arg); }
         activityCost(b.min || 0, t === 'rest' || t === 'sleep');
         checkDeath();
+        if (myDoc.hp < hp0) { sfx('zombie'); sfx('hurt'); }
+        else sfx(t === 'med' ? 'heal' : t === 'rest' || t === 'sleep' ? 'none' : 'done');
       }
       renderStatus();
       await saveDoc();
@@ -3376,7 +3462,7 @@ const FIREBASE_CONFIG = {
     if (!it) return;
     if (it.cat === 'med') { startAction('med', id); return; }
     const t = consumeItem(id, false, false);
-    if (t) { $('bagMsg').textContent = t; renderStatus(); await saveDoc(); }
+    if (t) { sfx('eat'); $('bagMsg').textContent = t; renderStatus(); await saveDoc(); }
   });
 
   $('medBtn').addEventListener('click', () => { const id = bestMed(); if (id) startAction('med', id); });
@@ -3507,7 +3593,7 @@ const FIREBASE_CONFIG = {
 </div>
 <script>
 (function(){
-  var BUILD_ID = '20261017170346';
+  var BUILD_ID = '20261017170703';
   function check(){
     fetch('version.txt?t=' + Date.now(), { cache: 'no-store' }).then(function(r){ return r.ok ? r.text() : ''; }).then(function(v){
       v = (v || '').trim();
