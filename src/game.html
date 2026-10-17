@@ -245,7 +245,7 @@
   #loginCard, .tabs, #tabChar, #tabJournal, #tabShelter, #permNotice, .play-grid { max-width: 640px; margin-left: auto; margin-right: auto; }
   .play-grid { display: flex; flex-direction: column; }
   .play-grid > #tabPlay, .play-grid > #tabMap { display: contents; }
-  #mapCard { order: 1; } #actionsCard { order: 2; } #mapInfo { order: 3; } .comm-tabs, .radio-dev, #talkCard, #shelterCard { order: 4; } #memoCard { order: 6; }
+  #mapCard { order: 1; } #actionsCard { order: 2; } #mapInfo { order: 3; } .comm-tabs, .radio-dev, #talkCard, #shelterCard { order: 4; } #bagCard { order: 5; } #memoCard { order: 6; }
   @media (min-width: 900px) {
     .play-grid { max-width: none; display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 0 20px; align-items: start; }
     .play-grid > .radio-card { grid-column: 1 / -1; }
@@ -426,6 +426,14 @@
   .busy-left { font-family: var(--font-mono); color: var(--accent); font-variant-numeric: tabular-nums; }
   .busy .bar-fill { background: var(--accent); transition: width 1s linear; }
   .busy-cancel { margin-top: 10px; padding: 8px 12px; font-size: 13px; }
+  .bag-cat { font: 700 10px var(--font-mono); letter-spacing: 2px; color: var(--text-dim); margin: 12px 0 4px; border-bottom: 1px solid var(--border); padding-bottom: 3px; }
+  .bag-cat:first-child { margin-top: 0; }
+  .bag-row { display: flex; align-items: center; gap: 10px; padding: 6px 0; }
+  .bag-row .bic { font-size: 20px; width: 26px; text-align: center; flex-shrink: 0; }
+  .bag-row .bnm { flex: 1; min-width: 0; font-size: 14px; }
+  .bag-row .bnm b { font-family: var(--font-mono); color: var(--accent); }
+  .bag-row .bnm small { display: block; font-size: 11px; color: var(--text-dim); }
+  .bag-row button { width: auto; padding: 7px 10px; font-size: 12px; white-space: nowrap; }
   .owned { font-size: 12px; color: var(--text-dim); margin-top: 6px; line-height: 1.5; }
   .owned b { color: var(--text); font-weight: 500; }
   .action-grid button.action.raid { background: repeating-linear-gradient(-45deg, transparent 0 8px, var(--danger-wash) 8px 16px), var(--bg-elevated); }
@@ -597,6 +605,13 @@
       </div>
     </div>
 
+    <div class="card" id="bagCard">
+      <h2>🎒 배낭</h2>
+      <div id="bagList"></div>
+      <div class="char-msg" id="bagMsg" role="status"></div>
+      <div class="muted">배고프거나 목마르면 배낭에서 알아서 꺼내 먹어요. 의료품은 1분이 걸려요.</div>
+    </div>
+
     <div class="card" id="memoCard">
       <h2>📌 이 지역에 남겨진 메모</h2>
       <div class="memo-list" id="memoList"></div>
@@ -637,9 +652,9 @@
       </div>
 
       <div class="res-grid">
-        <div class="res"><div class="val" id="foodVal">3</div><div class="lbl">🍖 식량</div></div>
-        <div class="res"><div class="val" id="waterVal">3</div><div class="lbl">💧 물</div></div>
-        <div class="res"><div class="val" id="medVal">1</div><div class="lbl">💊 의약품</div></div>
+        <div class="res"><div class="val" id="foodVal">3</div><div class="lbl">🥫 음식</div></div>
+        <div class="res"><div class="val" id="waterVal">3</div><div class="lbl">💧 음료</div></div>
+        <div class="res"><div class="val" id="medVal">1</div><div class="lbl">🩹 의료품</div></div>
       </div>
 
       <div class="badge-row">
@@ -775,7 +790,7 @@
           <div class="mc-foot">정면 기준 · 그림의 R이 캐릭터의 오른쪽, L이 왼쪽 · 빨간 동그라미 번호는 부상 기록 번호 · 점선 원은 감염이 시작된 부위</div>
         </div>
         <button class="secondary" id="medBtn" type="button" style="margin-top:14px">💊 의약품 사용</button>
-        <div class="muted">의약품 치료는 1분이 걸려요. 감염 중이면 진행을 늦추고, 아니면 가장 심한 상처를 치료해요.</div>
+        <div class="muted">응급 처치는 지금 상태에 가장 맞는 의료품을 골라 써요(1분). 붕대·소독약·봉합 키트는 상처, 항생제·혼합 허브는 감염, 허브·진통제는 체력에 써요. 생존 탭 배낭에서 직접 골라 쓸 수도 있어요.</div>
         <div class="char-msg" id="bodyMsg" role="status"></div>
       </div>
       <div class="card">
@@ -840,7 +855,7 @@
   function defaultDoc(name) {
     return {
       name, day: 1, hp: 100, sat: 80, hyd: 80, fat: 15,
-      food: 3, water: 3, med: 1,
+      inv: { beans: 2, water: 3, crackers: 1, bandage: 1 },
       zombieKills: 0, weaponCounts: {}, party: '', epitaph: null,
       status: 'alive', actedToday: false, log: [], bio: '', weapons: [], loc: null, visited: [], searched: {}, items: { paper: 0, pages: 0, pencil: 0, pen: 0 }, injuries: [], infection: 0, infectionPart: null, turned: false, updatedAt: Date.now()
     };
@@ -1009,10 +1024,10 @@
     $('injuryList').innerHTML = list.length
       ? list.map(i => `<div class="inj">${num[i.part] ? num[i.part] + '.' : ''} ${escapeHtml((PART_BY_ID[i.part] || {n:'?'}).n)} — ${INJ[i.type].n}<small>Day ${i.day}</small></div>`).join('')
       : '<div class="inj none">특이사항 없음.</div>';
-    const healable = myDoc.infection > 0 || myDoc.injuries.some(i => i.type !== 'bite');
-    $('medBtn').textContent = '💊 의약품 사용 (보유 ' + Math.max(0, myDoc.med) + ')';
-    $('medBtn').disabled = myDoc.status === 'dead' || myDoc.med <= 0 || !healable || !!myDoc.busy;
-    if (myDoc.busy && myDoc.busy.type === 'med') $('medBtn').textContent = '💊 치료하는 중...';
+    const bm = bestMed();
+    $('medBtn').textContent = bm ? '🩺 응급 처치 · ' + ITEMS[bm].ic + ' ' + ITEMS[bm].n + ' 사용 (보유 ' + inv(bm) + ')' : '🩺 응급 처치 · 쓸 만한 의료품이 없다';
+    $('medBtn').disabled = myDoc.status === 'dead' || !bm || !!myDoc.busy;
+    if (myDoc.busy && myDoc.busy.type === 'med') $('medBtn').textContent = '🩺 치료하는 중...';
   }
 
   function setBar(barId, val, invert) {
@@ -1036,9 +1051,10 @@
     $('satVal').textContent = Math.max(0, myDoc.sat);
     $('hydVal').textContent = Math.max(0, myDoc.hyd);
     $('fatVal').textContent = Math.max(0, myDoc.fat);
-    $('foodVal').textContent = Math.max(0, myDoc.food);
-    $('waterVal').textContent = Math.max(0, myDoc.water);
-    $('medVal').textContent = Math.max(0, myDoc.med);
+    $('foodVal').textContent = invCount('food');
+    $('waterVal').textContent = invCount('drink');
+    $('medVal').textContent = invCount('med');
+    renderBag();
     $('killsVal').textContent = myDoc.zombieKills || 0;
     $('favWeapon').textContent = favoriteWeapon(myDoc);
     $('partyVal').textContent = myDoc.party ? (myDoc.party + ' (' + partyAliveCount(myDoc.party) + ')') : '-';
@@ -1216,14 +1232,8 @@
     myDoc.hyd = clamp(myDoc.hyd - rint(10,16));
     myDoc.fat = clamp(myDoc.fat + rint(6,12));
 
-    if (myDoc.sat < 35 && myDoc.food > 0) {
-      myDoc.food -= 1; myDoc.sat = clamp(myDoc.sat + 35);
-      addLog('비축해둔 통조림으로 끼니를 해결했다. 얼마 남지 않았다. (식량 -1)');
-    }
-    if (myDoc.hyd < 35 && myDoc.water > 0) {
-      myDoc.water -= 1; myDoc.hyd = clamp(myDoc.hyd + 35);
-      addLog('생수병 하나를 아껴가며 나눠마셨다. (물 -1)');
-    }
+    autoConsume('food'); autoConsume('food');
+    autoConsume('drink'); autoConsume('drink');
     if (myDoc.sat <= 0) { myDoc.hp = clamp(myDoc.hp - 8); addLog('며칠째 제대로 못 먹어 몸이 쇠약해졌다.'); }
     if (myDoc.hyd <= 0) { myDoc.hp = clamp(myDoc.hp - 10); addLog('갈증으로 입술이 갈라지고 정신이 아득해졌다.'); }
     if (myDoc.fat >= 95) { myDoc.hp = clamp(myDoc.hp - 4); addLog('며칠간 제대로 못 자 반응이 느려졌다. 위험한 신호다.'); }
@@ -1263,8 +1273,8 @@
     myDoc.sat = clamp(myDoc.sat - rint(8,14));
     myDoc.hyd = clamp(myDoc.hyd - rint(10,16));
     myDoc.fat = clamp(myDoc.fat + rint(6,12));
-    if (myDoc.sat < 35 && myDoc.food > 0) { myDoc.food -= 1; myDoc.sat = clamp(myDoc.sat + 35); }
-    if (myDoc.hyd < 35 && myDoc.water > 0) { myDoc.water -= 1; myDoc.hyd = clamp(myDoc.hyd + 35); }
+    autoConsume('food', true); autoConsume('food', true);
+    autoConsume('drink', true); autoConsume('drink', true);
     if (myDoc.sat <= 0) myDoc.hp = clamp(myDoc.hp - 8);
     if (myDoc.hyd <= 0) myDoc.hp = clamp(myDoc.hp - 10);
     if (myDoc.fat >= 95) myDoc.hp = clamp(myDoc.hp - 4);
@@ -1284,7 +1294,7 @@
         myDoc.day += 1;
       }
     } else {
-      const startFood = myDoc.food, startWater = myDoc.water, startHp = myDoc.hp;
+      const startFood = invCount('food'), startWater = invCount('drink'), startHp = myDoc.hp;
       let died = false;
       for (let i = 0; i < Math.min(missed, 200); i++) {
         applyPassiveDay();
@@ -1295,8 +1305,8 @@
         addLog(myDoc.turned ? (myName + '님은 아무도 모르는 사이 열에 들끓다 숨을 거뒀고, 다시 일어나 어딘가로 걸어갔다. 🧟') : myName + '님은 아무도 지켜보지 않는 사이 조용히 쓰러졌다. 세계는 그 사실을 모른 채 계속 흘러갔다.');
       } else {
         myDoc.day = wd;
-        const df = myDoc.food - startFood, dw = myDoc.water - startWater, dh = myDoc.hp - startHp;
-        addLog(missed + '일 동안 자리를 비운 사이, 세계는 계속 흘러갔다. (식량 ' + (df>=0?'+':'') + df + ', 물 ' + (dw>=0?'+':'') + dw + ', 체력 ' + (dh>=0?'+':'') + dh + ')');
+        const df = invCount('food') - startFood, dw = invCount('drink') - startWater, dh = myDoc.hp - startHp;
+        addLog(missed + '일 동안 자리를 비운 사이, 세계는 계속 흘러갔다. (음식 ' + (df>=0?'+':'') + df + ', 음료 ' + (dw>=0?'+':'') + dw + ', 체력 ' + (dh>=0?'+':'') + dh + ')');
       }
     }
     myDoc.actedToday = false;
@@ -1326,35 +1336,35 @@
 
   // ---------- 행동 텍스트 ----------
   const FARM_BONUS = [
-    '울타리 안쪽 텃밭에서 유난히 풍성한 수확을 거뒀다. 오늘 밤은 모두가 배부르게 잘 수 있겠다. (식량 +5)',
-    '누군가 남기고 간 씨앗 봉투 덕분에 텃밭이 예상보다 훨씬 잘 자랐다. (식량 +5)',
-    '농사일이 손에 익어간다. 이 정도면 정착지라고 부를 만하다. (식량 +5)'
+    '울타리 안쪽 텃밭에서 유난히 풍성한 수확을 거뒀다. 오늘 밤은 모두가 배부르게 잘 수 있겠다.',
+    '누군가 남기고 간 씨앗 봉투 덕분에 텃밭이 예상보다 훨씬 잘 자랐다.',
+    '농사일이 손에 익어간다. 이 정도면 정착지라고 부를 만하다.'
   ];
   const FARM_NORMAL = [
-    '울타리 너머로 신음소리가 들렸지만 무시하고 밭일을 계속했다. (식량 +3)',
-    '텃밭에서 작물을 수확했다. 평범하지만 소중한 하루였다. (식량 +3)',
-    '해가 지기 전에 서둘러 수확을 끝냈다. 밤엔 밖에 있으면 안 되니까. (식량 +3)',
-    '무리가 지나간 흔적이 밭 근처에 있었지만, 다행히 별일 없었다. (식량 +3)'
+    '울타리 너머로 신음소리가 들렸지만 무시하고 밭일을 계속했다.',
+    '텃밭에서 작물을 수확했다. 평범하지만 소중한 하루였다.',
+    '해가 지기 전에 서둘러 수확을 끝냈다. 밤엔 밖에 있으면 안 되니까.',
+    '무리가 지나간 흔적이 밭 근처에 있었지만, 다행히 별일 없었다.'
   ];
   const FARM_BAD = [
-    '울타리 한쪽이 무너져 손봐야 했다. 밭일에 쓸 시간이 줄었다. (식량 +1, 피로 증가)',
-    '폭우 속에서 힘겹게 농사를 지었다. 흙탕물에 발이 푹푹 빠졌다. (식량 +1, 피로 증가)',
-    '워커 한 마리가 울타리에 계속 부딪히는 소리 때문에 신경이 곤두선 채 일했다. (식량 +1, 피로 증가)'
+    '울타리 한쪽이 무너져 손봐야 했다. 밭일에 쓸 시간이 줄었다. (피로 증가)',
+    '폭우 속에서 힘겹게 농사를 지었다. 흙탕물에 발이 푹푹 빠졌다. (피로 증가)',
+    '워커 한 마리가 울타리에 계속 부딪히는 소리 때문에 신경이 곤두선 채 일했다. (피로 증가)'
   ];
   const FORAGE_FOOD = [
-    '무너진 슈퍼마켓 진열대 뒤에서 통조림 몇 개를 찾았다. (식량 +2)',
-    '누군가 이미 다 털어간 줄 알았던 편의점에서 마지막 남은 식량을 발견했다. (식량 +2)',
-    '숲에서 열매와 버섯을 조용히 채집했다. 소리를 내지 않으려 애썼다. (식량 +2)'
+    '무너진 슈퍼마켓 진열대 뒤에서 통조림 몇 개를 찾았다.',
+    '누군가 이미 다 털어간 줄 알았던 편의점에서 마지막 남은 식량을 발견했다.',
+    '숲에서 열매와 버섯을 조용히 채집했다. 소리를 내지 않으려 애썼다.'
   ];
   const FORAGE_WATER = [
-    '빗물받이 통에 고인 깨끗한 물을 모아왔다. (물 +2)',
-    '버려진 집 지하실에서 생수 몇 병을 발견했다. (물 +2)',
-    '개울가까지 내려가 조심스럽게 물을 길어왔다. (물 +2)'
+    '빗물받이 통에 고인 깨끗한 물을 모아왔다.',
+    '버려진 집 지하실에서 생수 몇 병을 발견했다.',
+    '개울가까지 내려가 조심스럽게 물을 길어왔다.'
   ];
   const FORAGE_MED = [
-    '약탈당한 약국 구석에서 놓친 구급상자를 발견했다. (의약품 +1)',
-    '버려진 구급차 안에서 의약품을 챙겼다. (의약품 +1)',
-    '누군가의 배낭이 버려져 있었다. 주인은 없었지만 의약품은 남아있었다. (의약품 +1)'
+    '약탈당한 약국 구석에서 놓친 구급상자를 발견했다.',
+    '버려진 구급차 안에서 의약품을 챙겼다.',
+    '누군가의 배낭이 버려져 있었다. 주인은 없었지만 의약품은 남아있었다.'
   ];
   const FORAGE_SCARE = [
     '모퉁이를 돌자마자 워커와 마주쳐 숨죽인 채 뒷걸음질쳤다. (체력 -10)',
@@ -1368,9 +1378,9 @@
     '위험을 무릅쓸 가치가 없어 보여 그냥 돌아왔다.'
   ];
   const HUNT_SUCCESS = [
-    '{w}(으)로 조용히 사냥감을 잡아 고기를 챙겼다. (식량 +{n})',
-    '숲 언저리에서 사냥에 성공했다. {w}이(가) 제 몫을 했다. (식량 +{n})',
-    '덫에 걸린 사냥감을 {w}(으)로 마무리했다. (식량 +{n})'
+    '{w}(으)로 조용히 사냥감을 잡아 고기를 챙겼다. (생고기 +{n})',
+    '숲 언저리에서 사냥에 성공했다. {w}이(가) 제 몫을 했다. (생고기 +{n})',
+    '덫에 걸린 사냥감을 {w}(으)로 마무리했다. (생고기 +{n})'
   ];
   const HUNT_KILL = [
     '{w}(으)로 워커의 머리를 정확히 노려 처치했다. 한 방이면 충분하다. 🧟',
@@ -1404,16 +1414,16 @@
     else if (r < 0.85) { gain = 3; text = pick(FARM_NORMAL); }
     else { gain = 1; myDoc.fat = clamp(myDoc.fat + 8); text = pick(FARM_BAD); }
     if (bonus) gain += 1;
-    myDoc.food += gain;
-    addLog(text + (bonus ? ' (쉘터 동료와 함께해 +1)' : ''));
+    addItem('veggies', gain);
+    addLog(text + ' (텃밭 채소 +' + gain + ')' + (bonus ? ' (쉘터 동료와 함께해 +1)' : ''));
   }
 
   function doForage() {
     const bonus = partyBonusActive();
     const r = Math.random();
-    if (r < 0.32) { const g = 2 + (bonus?1:0); myDoc.food += g; addLog(pick(FORAGE_FOOD) + (bonus ? ' (쉘터 동료와 함께해 +1)' : '')); }
-    else if (r < 0.55) { const g = 2 + (bonus?1:0); myDoc.water += g; addLog(pick(FORAGE_WATER) + (bonus ? ' (쉘터 동료와 함께해 +1)' : '')); }
-    else if (r < 0.70) { myDoc.med += 1; addLog(pick(FORAGE_MED)); }
+    if (r < 0.32) { const got = rollLoot(SPOT_LOOT.forage.food.concat(GENERAL_LOOT.food), 2 + (bonus?1:0)); addLog(pick(FORAGE_FOOD) + ' (' + lootText(got) + ')' + (bonus ? ' (쉘터 동료와 함께해 +1)' : '')); }
+    else if (r < 0.55) { const got = rollLoot(['rainwater','rainwater','water','soda'], 2 + (bonus?1:0)); addLog(pick(FORAGE_WATER) + ' (' + lootText(got) + ')' + (bonus ? ' (쉘터 동료와 함께해 +1)' : '')); }
+    else if (r < 0.70) { const got = rollLoot(['bandage','painkillers','green_herb','disinfectant','antibiotics'], 1); addLog(pick(FORAGE_MED) + ' (' + lootText(got) + ')'); }
     else if (r < 0.85) { const dmg = bonus ? 7 : 10; myDoc.hp = clamp(myDoc.hp - dmg); addLog(pick(FORAGE_SCARE) + injure('forage')); }
     else { addLog(pick(FORAGE_NOTHING)); }
   }
@@ -2196,19 +2206,26 @@
   $('shelterPolicyBox').addEventListener('keydown', (e) => { if (e.target.id === 'inviteInput' && e.key === 'Enter' && !e.isComposing) { e.preventDefault(); $('inviteBtn').click(); } });
 
   // ---------- 쉘터 창고 ----------
-  const STORE_ITEMS = [
-    { k:'food', n:'식량', ic:'🍖' }, { k:'water', n:'물', ic:'💧' }, { k:'med', n:'의약품', ic:'💊' },
-    { k:'paper', n:'종이', ic:'📄', inv:true }, { k:'pages', n:'노트(쪽)', ic:'📓', inv:true }, { k:'pencil', n:'연필', ic:'✏️', inv:true }, { k:'pen', n:'볼펜', ic:'🖊️', inv:true }
-  ];
-  function myQty(it) { return Math.max(0, +(it.inv ? myDoc.items[it.k] : myDoc[it.k]) || 0); }
-  function addMyQty(it, n) { if (it.inv) myDoc.items[it.k] = myQty(it) + n; else myDoc[it.k] = myQty(it) + n; }
+  const STATIONERY_ITEMS = [{ k:'paper', n:'종이', ic:'📄' }, { k:'pages', n:'노트(쪽)', ic:'📓' }, { k:'pencil', n:'연필', ic:'✏️' }, { k:'pen', n:'볼펜', ic:'🖊️' }];
+  function storeItems() { return Object.keys(ITEMS).map(k => ({ k, n: ITEMS[k].n, ic: ITEMS[k].ic, bag: true })).concat(STATIONERY_ITEMS); }
+  function myQty(it) { return it.bag ? inv(it.k) : Math.max(0, +myDoc.items[it.k] || 0); }
+  function addMyQty(it, n) { if (it.bag) addItem(it.k, n); else myDoc.items[it.k] = myQty(it) + n; }
+  // 예전 창고의 식량/의약품 칸을 아이템으로 바꾼다 (물은 생수와 같은 칸)
+  function normalizeStorage(st) {
+    st = Object.assign({}, st || {});
+    if (+st.food > 0) st.beans = (+st.beans || 0) + (+st.food);
+    if (+st.med > 0) st.bandage = (+st.bandage || 0) + (+st.med);
+    delete st.food; delete st.med;
+    return st;
+  }
   function renderStorage() {
     const has = !!myDoc.party;
     $('storageCard').hidden = !has;
     if (!has) return;
-    const st = (shelterDoc && shelterDoc.storage) || {}, sw = st.weapons || {};
+    const st = normalizeStorage(shelterDoc && shelterDoc.storage), sw = st.weapons || {};
     const dead = myDoc.status === 'dead';
-    let h = STORE_ITEMS.map(it => {
+    const rows = storeItems().filter(it => myQty(it) > 0 || (+st[it.k] || 0) > 0);
+    let h = (rows.length ? '' : '<div class="muted" style="margin:4px 0 8px">창고도 배낭도 비어 있다.</div>') + rows.map(it => {
       const mine = myQty(it), kept = Math.max(0, +st[it.k] || 0);
       return `<div class="st-row"><div class="nm">${it.ic} ${it.n}<small>내 소지 ${mine} · 창고 ${kept}</small></div>
         <button class="secondary" type="button" data-st="${it.k}" data-dir="in"${dead || !mine ? ' disabled' : ''}>넣기</button>
@@ -2235,10 +2252,10 @@
     let text = '';
     try {
       if (b.dataset.st) {
-        const it = STORE_ITEMS.find(x => x.k === b.dataset.st);
+        const it = storeItems().find(x => x.k === b.dataset.st);
         let moved = 0;
         const ok = await updateShelter(d => {
-          d.storage = d.storage || {};
+          d.storage = normalizeStorage(d.storage);
           const kept = Math.max(0, +d.storage[it.k] || 0);
           moved = dir === 'in' ? Math.min(qty, myQty(it)) : Math.min(qty, kept);
           if (!moved) return false;
@@ -2602,13 +2619,15 @@
       findStationery(T.st);
       return;
     }
-    let f = rint(T.food[0], T.food[1]) + (bonus && T.food[1] ? 1 : 0), wa = rint(T.water[0], T.water[1]), m = Math.random() < T.med * (depleted ? 0.3 : 1) ? 1 : 0;
+    let f = rint(T.food[0], T.food[1]) + (bonus && T.food[1] ? 1 : 0), wa = rint(T.water[0], T.water[1]);
+    let m = Math.random() < T.med * (depleted ? 0.3 : 1) ? (Math.random() < T.med / 2 ? 2 : 1) : 0;
     if (depleted) { f = Math.floor(f / 2); wa = Math.floor(wa / 2); }
-    myDoc.food += f; myDoc.water += wa; myDoc.med += m;
-    if (f) parts.push('식량 +' + f);
-    if (wa) parts.push('물 +' + wa);
-    if (m) parts.push('의약품 +1');
-    addLog(head + (parts.length ? '쓸 만한 물자를 챙겨 나왔다. (' + parts.join(', ') + ')' : '이미 누군가 싹 털어간 뒤였다. 빈손이다.'));
+    const got = {};
+    rollLoot(lootPool(S[0], 'food'), f, got);
+    rollLoot(lootPool(S[0], 'drink'), wa, got);
+    rollLoot(lootPool(S[0], 'med'), m, got);
+    const lt = lootText(got);
+    addLog(head + (lt ? '쓸 만한 물자를 챙겨 나왔다. (' + lt + ')' : '이미 누군가 싹 털어간 뒤였다. 빈손이다.'));
     if (!depleted) findStationery(T.st);
   }
 
@@ -2621,7 +2640,7 @@
     const r = Math.random();
     if (r < pSucc) {
       const gain = rint(2,4) + (bonus?1:0);
-      myDoc.food += gain;
+      addItem('raw_meat', gain);
       addLog(fmt(pick(HUNT_SUCCESS), weapon, gain) + (bonus ? ' (쉘터 동료와 함께해 +1)' : ''));
     } else if (r < pKill) {
       myDoc.zombieKills = (myDoc.zombieKills || 0) + 1;
@@ -2665,15 +2684,20 @@
     }
     const r = Math.random();
     if (r < 0.5) {
-      const stealFood = Math.min(targetDoc.food || 0, rint(1,3));
-      const stealWater = Math.min(targetDoc.water || 0, rint(0,2));
-      targetDoc.food = (targetDoc.food || 0) - stealFood;
-      targetDoc.water = (targetDoc.water || 0) - stealWater;
-      myDoc.food += stealFood; myDoc.water += stealWater;
+      normalizeInv(targetDoc);
+      const got = {}, tv = targetDoc.inv;
+      for (let i = 0, n = rint(1, 3); i < n; i++) {
+        const avail = Object.keys(tv).filter(k => ITEMS[k] && tv[k] > 0);
+        if (!avail.length) break;
+        const k = pick(avail);
+        tv[k] -= 1; if (tv[k] <= 0) delete tv[k];
+        addItem(k, 1); got[k] = (got[k] || 0) + 1;
+      }
+      const stolen = lootText(got) || '없음';
       delete targetDoc.log; delete targetDoc.avatar;
-      await appendLogTo(targetKey, { day: targetDoc.day, text: '누군가 은신처를 뒤지고 갔다. 밤사이 인기척을 느꼈어야 했는데. (식량 -' + stealFood + ', 물 -' + stealWater + ')', ts: Date.now() });
+      await appendLogTo(targetKey, { day: targetDoc.day, text: '누군가 은신처를 뒤지고 갔다. 밤사이 인기척을 느꼈어야 했는데. (잃어버린 것: ' + stolen.replace(/\+/g, '') + ')', ts: Date.now() });
       targetDoc.updatedAt = Date.now();
-      addLog(targetName + '의 은신처를 몰래 뒤져 물건을 훔쳤다. (식량 +' + stealFood + ', 물 +' + stealWater + ')');
+      addLog(targetName + '의 은신처를 몰래 뒤져 물건을 훔쳤다. (' + stolen + ')');
       try { await db.doc('survivors/' + targetKey).set(targetDoc); } catch(e) {}
     } else if (r < 0.8) {
       const dmg = rint(10,20);
@@ -2692,7 +2716,7 @@
   const ACTIONS = {
     forage: { n:'채집', ic:'🍄', min:3 }, hunt: { n:'사냥', ic:'🔪', min:10 }, farm: { n:'농사', ic:'🌾', min:30 },
     rest: { n:'휴식', ic:'🛌', min:10 }, sleep: { n:'잠', ic:'😴', min:60 }, raid: { n:'약탈', ic:'⚔️', min:5 },
-    med: { n:'치료', ic:'💊', min:1 }, explore: { n:'조사', ic:'🏚️' }, move: { n:'이동', ic:'🚶' }
+    med: { n:'치료', ic:'🩺', min:1 }, explore: { n:'조사', ic:'🏚️' }, move: { n:'이동', ic:'🚶' }
   };
   const SMALL_SPOTS = ['burger','pizza','taco','cafe','pharmacy','gas','house'];
   const BIG_SPOTS = ['school','hospital','police','library','office','studio','warehouse','terminal','shelter','park'];
@@ -2714,6 +2738,7 @@
       return { min: travelMinutes(myDoc.loc, arg), label: '🚶 ' + (myDoc.visited.includes(arg) ? DISTRICTS[arg].n : '미지의 지역') + '(으)로 이동' };
     }
     if (type === 'hunt') return { min: A.min, label: '🔪 ' + arg + '(으)로 사냥' };
+    if (type === 'med') return ITEMS[arg] ? { min: A.min, label: ITEMS[arg].ic + ' ' + ITEMS[arg].n + ' 사용' } : null;
     if (type === 'raid') return arg ? { min: A.min, label: '⚔️ ' + (nameOfKey(arg) || '누군가') + ' 약탈' } : null;
     return A ? { min: A.min, label: A.ic + ' ' + A.n } : null;
   }
@@ -2726,7 +2751,7 @@
     if (type === 'explore' && arg == null) arg = selSpot;
     if (type === 'raid' && arg == null) arg = $('raidTarget').value;
     if (type === 'raid' && !arg) { $('actionHint').textContent = '· 약탈할 대상을 먼저 고르세요'; return; }
-    if (type === 'med' && !canMed()) return;
+    if (type === 'med' && !canUseMed(arg)) return;
     const plan = actionPlan(type, arg);
     if (!plan) return;
     const now = Date.now();
@@ -2742,8 +2767,8 @@
     myDoc.sat = clamp(myDoc.sat - Math.round(3 * k));
     myDoc.hyd = clamp(myDoc.hyd - Math.round(4 * k));
     if (!restful) myDoc.fat = clamp(myDoc.fat + Math.round(4 * k));
-    if (myDoc.sat < 35 && myDoc.food > 0) { myDoc.food -= 1; myDoc.sat = clamp(myDoc.sat + 35); addLog('허기가 져서 챙겨둔 식량을 먹었다. (식량 -1)'); }
-    if (myDoc.hyd < 35 && myDoc.water > 0) { myDoc.water -= 1; myDoc.hyd = clamp(myDoc.hyd + 35); addLog('목이 말라 물을 마셨다. (물 -1)'); }
+    autoConsume('food');
+    autoConsume('drink');
   }
 
   let completing = false;
@@ -2763,7 +2788,7 @@
         else if (t === 'explore') { if (myDoc.loc && SPOTS[myDoc.loc] && SPOTS[myDoc.loc][b.arg]) doExplore(b.arg); }
         else if (t === 'move') doMove(b.arg);
         else if (t === 'raid') await doRaid(b.arg);
-        else if (t === 'med') doMed();
+        else if (t === 'med') { if (canUseMed(b.arg)) useMed(b.arg); }
         activityCost(b.min || 0, t === 'rest' || t === 'sleep');
         checkDeath();
       }
@@ -2840,7 +2865,7 @@
       if (myDoc.sat === undefined) myDoc.sat = 80;
       if (myDoc.hyd === undefined) myDoc.hyd = 80;
       if (myDoc.fat === undefined) myDoc.fat = 15;
-      if (myDoc.water === undefined) myDoc.water = 3;
+      normalizeInv(myDoc);
       if (myDoc.party === undefined) myDoc.party = '';
       if (myDoc.epitaph === undefined) myDoc.epitaph = null;
       if (typeof myDoc.bio !== 'string') myDoc.bio = '';
@@ -3117,25 +3142,196 @@
     catch(err) { charMsg('사진을 지우지 못했어요. 잠시 후 다시 시도해보세요.', 'err'); }
   });
 
-  function canMed() { return myDoc && myDoc.status !== 'dead' && myDoc.med > 0 && (myDoc.infection > 0 || myDoc.injuries.some(i => i.type !== 'bite')); }
-  function doMed() {
-    if (!canMed()) return;
-    let text;
-    if (myDoc.infection > 0) {
-      myDoc.infection = Math.max(0, myDoc.infection - rint(15, 25));
-      if (myDoc.infection === 0) { myDoc.infectionPart = null; text = '항생제를 털어넣고 한참을 앓았다. 거짓말처럼 열이 내렸다. (감염 치료, 의약품 -1)'; }
-      else text = '항생제로 열을 겨우 눌렀다. 진행이 조금 늦춰졌을 뿐이다. (감염 진행도 ' + myDoc.infection + '%, 의약품 -1)';
-    } else {
-      const i = myDoc.injuries.filter(x => x.type !== 'bite').sort((a, b) => INJ[b.type].rank - INJ[a.type].rank)[0];
-      myDoc.injuries.splice(myDoc.injuries.indexOf(i), 1);
-      myDoc.hp = clamp(myDoc.hp + 5);
-      text = (PART_BY_ID[i.part] || {n:'상처'}).n + '의 ' + INJ[i.type].n + '을 소독하고 붕대를 감았다. (체력 +5, 의약품 -1)';
+  // ---------- 아이템: 음식 · 음료 · 의료품 ----------
+  // sat: 포만감, hyd: 수분, fat: 피로(음수면 회복), sick: 배탈 확률, hp: 체력, inf: 감염 진행도, heal: 치료하는 상처 종류
+  const ITEMS = {
+    beans:       { n:'통조림 콩', ic:'🥫', cat:'food', sat:30 },
+    tuna:        { n:'참치 통조림', ic:'🐟', cat:'food', sat:25 },
+    soup:        { n:'수프 통조림', ic:'🥣', cat:'food', sat:22, hyd:8 },
+    crackers:    { n:'크래커', ic:'🍘', cat:'food', sat:14 },
+    chips:       { n:'감자칩', ic:'🥔', cat:'food', sat:12, hyd:-4 },
+    chocolate:   { n:'초콜릿바', ic:'🍫', cat:'food', sat:10, fat:-6 },
+    bread:       { n:'식빵', ic:'🍞', cat:'food', sat:20, fresh:true },
+    apple:       { n:'사과', ic:'🍎', cat:'food', sat:12, hyd:6, fresh:true },
+    berries:     { n:'산딸기', ic:'🫐', cat:'food', sat:8, hyd:4, fresh:true },
+    veggies:     { n:'텃밭 채소', ic:'🥬', cat:'food', sat:16, hyd:6, fresh:true },
+    raw_meat:    { n:'생고기', ic:'🥩', cat:'food', sat:30, sick:0.25, fresh:true },
+    jerky:       { n:'육포', ic:'🥓', cat:'food', sat:20, hyd:-5 },
+    ramen:       { n:'컵라면', ic:'🍜', cat:'food', sat:25, hyd:-3 },
+    mre:         { n:'전투식량(MRE)', ic:'🎖️', cat:'food', sat:50 },
+    dogfood:     { n:'개 사료', ic:'🦴', cat:'food', sat:18, sick:0.1 },
+    burger:      { n:'식은 햄버거', ic:'🍔', cat:'food', sat:28, sick:0.15, fresh:true },
+    pizza:       { n:'딱딱해진 피자', ic:'🍕', cat:'food', sat:24, sick:0.1, fresh:true },
+    water:       { n:'생수', ic:'💧', cat:'drink', hyd:35 },
+    soda:        { n:'탄산음료', ic:'🥤', cat:'drink', hyd:22, sat:4 },
+    juice:       { n:'주스', ic:'🧃', cat:'drink', hyd:28, sat:5 },
+    energy:      { n:'에너지 드링크', ic:'⚡', cat:'drink', hyd:15, fat:-15 },
+    coffee:      { n:'캔커피', ic:'☕', cat:'drink', hyd:12, fat:-10 },
+    rainwater:   { n:'받아둔 빗물', ic:'🪣', cat:'drink', hyd:30, sick:0.2 },
+    whiskey:     { n:'위스키', ic:'🥃', cat:'drink', hyd:-5, fat:-12 },
+    bandage:     { n:'붕대', ic:'🩹', cat:'med', heal:['scratch','bruise'], hp:3, desc:'할큄·타박상 치료' },
+    disinfectant:{ n:'소독약', ic:'🧴', cat:'med', heal:['scratch','wound'], hp:4, desc:'할큄·열상 치료' },
+    suture:      { n:'봉합 키트', ic:'🪡', cat:'med', heal:['wound'], hp:8, desc:'열상 치료' },
+    painkillers: { n:'진통제', ic:'💊', cat:'med', hp:6, fat:-10, desc:'체력 +6, 피로 감소' },
+    antibiotics: { n:'항생제', ic:'💉', cat:'med', inf:-20, desc:'감염 진행 늦춤' },
+    green_herb:  { n:'녹색 허브', ic:'🌿', cat:'med', hp:10, desc:'체력 +10' },
+    mixed_herb:  { n:'혼합 허브', ic:'☘️', cat:'med', hp:25, inf:-5, desc:'체력 +25, 감염 조금 늦춤' },
+    first_aid:   { n:'구급 스프레이', ic:'🧯', cat:'med', hp:30, healAll:true, desc:'체력 +30, 물림 외 상처 모두 치료' },
+    vitamins:    { n:'비타민', ic:'💛', cat:'med', hp:3, fat:-3, desc:'체력 +3' }
+  };
+  const CAT_NAME = { food:'음식', drink:'음료', med:'의료품' };
+  const GENERAL_LOOT = { food:['beans','tuna','soup','crackers','chips','chocolate','ramen'], drink:['water','soda','juice'], med:['bandage','painkillers','vitamins'] };
+  const SPOT_LOOT = {
+    school:    { food:['crackers','apple','chocolate'], drink:['juice','water'], med:['bandage','painkillers'] },
+    fire:      { food:['mre','beans'], drink:['water','energy'], med:['first_aid','bandage','disinfectant','suture'] },
+    burger:    { food:['burger','chips','bread'], drink:['soda','juice'], med:[] },
+    pizza:     { food:['pizza','bread','chips'], drink:['soda'], med:[] },
+    taco:      { food:['beans','bread','chips'], drink:['soda','juice'], med:[] },
+    diner:     { food:['raw_meat','jerky','bread','soup','ramen'], drink:['soda','water'], med:[] },
+    cafe:      { food:['bread','chocolate','crackers'], drink:['coffee','juice','water'], med:[] },
+    hospital:  { food:['crackers'], drink:['water','juice'], med:['suture','disinfectant','antibiotics','first_aid','bandage','painkillers'] },
+    pharmacy:  { food:['chocolate','crackers'], drink:['water','energy'], med:['bandage','painkillers','antibiotics','vitamins','disinfectant'] },
+    police:    { food:['mre','jerky'], drink:['coffee','water'], med:['first_aid','bandage'] },
+    gunshop:   { food:['jerky','mre'], drink:['energy','water'], med:['bandage'] },
+    gas:       { food:['chips','chocolate','jerky','crackers'], drink:['soda','energy','coffee','water'], med:['painkillers'] },
+    market:    { food:['beans','tuna','soup','crackers','ramen','bread','apple','dogfood','chocolate'], drink:['water','soda','juice','energy','whiskey'], med:['bandage','painkillers','vitamins','disinfectant'] },
+    hardware:  { food:['chips'], drink:['water','energy'], med:['bandage'] },
+    house:     { food:['beans','soup','ramen','crackers','dogfood','apple'], drink:['water','juice','whiskey','rainwater'], med:['bandage','painkillers','vitamins','disinfectant'] },
+    church:    { food:['beans','soup','bread','crackers'], drink:['water','juice'], med:['bandage','green_herb'] },
+    park:      { food:['berries','apple'], drink:['rainwater'], med:['green_herb'] },
+    office:    { food:['crackers','chocolate','ramen'], drink:['coffee','water','soda'], med:['painkillers','bandage'] },
+    library:   { food:['crackers'], drink:['water','coffee'], med:['vitamins'] },
+    motel:     { food:['chips','ramen','chocolate'], drink:['soda','whiskey','water'], med:['painkillers','bandage'] },
+    lifeguard: { food:['crackers','jerky'], drink:['water','energy'], med:['first_aid','bandage','disinfectant'] },
+    studio:    { food:['crackers','chips','chocolate'], drink:['water','soda','coffee'], med:['bandage'] },
+    warehouse: { food:['beans','tuna','mre','dogfood'], drink:['water','soda'], med:['bandage','first_aid'] },
+    cabin:     { food:['jerky','beans','berries'], drink:['rainwater','water','whiskey'], med:['green_herb','mixed_herb','bandage'] },
+    terminal:  { food:['crackers','chips','chocolate','bread'], drink:['water','soda','juice','coffee'], med:['painkillers','first_aid','vitamins'] },
+    shelter:   { food:['mre','beans','tuna','soup'], drink:['water'], med:['first_aid','antibiotics','bandage','suture'] },
+    forage:    { food:['berries','apple'], drink:['rainwater'], med:['green_herb','green_herb','mixed_herb'] }
+  };
+
+  // 받침에 맞춰 을/를, (으)로를 붙인다
+  function josa(w, a, b) { const c = w.charCodeAt(w.length - 1); if (c < 0xAC00 || c > 0xD7A3) return w + a + '(' + b + ')'; const jong = (c - 0xAC00) % 28; return w + (b === '로' ? (jong && jong !== 8 ? a : b) : (jong ? a : b)); }
+  function invOf(d) { return d.inv && typeof d.inv === 'object' && !Array.isArray(d.inv) ? d.inv : {}; }
+  function inv(id) { return Math.max(0, +invOf(myDoc)[id] || 0); }
+  function addItem(id, n) { if (!ITEMS[id] || !n) return; myDoc.inv = invOf(myDoc); myDoc.inv[id] = inv(id) + n; if (myDoc.inv[id] <= 0) delete myDoc.inv[id]; }
+  function invCount(cat, d) { const v = invOf(d || myDoc); return Object.keys(v).filter(k => ITEMS[k] && ITEMS[k].cat === cat).reduce((t, k) => t + Math.max(0, +v[k] || 0), 0); }
+  // 예전 형식(식량/물/의약품 숫자)을 아이템으로 바꾼다
+  function normalizeInv(d) {
+    const v = Object.assign({}, invOf(d));
+    if (+d.food > 0) v.beans = (+v.beans || 0) + (+d.food);
+    if (+d.water > 0) v.water = (+v.water || 0) + (+d.water);
+    if (+d.med > 0) v.bandage = (+v.bandage || 0) + (+d.med);
+    Object.keys(v).forEach(k => { if (!ITEMS[k] || !(+v[k] > 0)) delete v[k]; else v[k] = Math.floor(+v[k]); });
+    d.inv = v; delete d.food; delete d.water; delete d.med;
+    return d;
+  }
+  // 아이템 묶음을 받아 "통조림 콩 +2, 생수 +1" 같은 글로 바꾼다
+  function lootText(got) { return Object.keys(got).map(k => ITEMS[k].n + ' +' + got[k]).join(', '); }
+  function rollLoot(pool, n, got) {
+    got = got || {};
+    for (let i = 0; i < n && pool && pool.length; i++) { const id = pick(pool); addItem(id, 1); got[id] = (got[id] || 0) + 1; }
+    return got;
+  }
+  function lootPool(kind, cat) { const L = SPOT_LOOT[kind]; return L && L[cat] && L[cat].length ? L[cat] : (L && L[cat] ? [] : GENERAL_LOOT[cat]); }
+
+  // 배고프거나 목마르면 알아서 꺼내 먹는다: 상하기 쉬운 것부터, 배탈 날 만한 건 마지막에
+  function autoConsume(cat, quiet) {
+    const keyStat = cat === 'food' ? 'sat' : 'hyd';
+    if (myDoc[keyStat] >= 35) return null;
+    const owned = Object.keys(invOf(myDoc)).filter(k => ITEMS[k] && ITEMS[k].cat === cat && inv(k) > 0 && (ITEMS[k][keyStat] || 0) > 0);
+    if (!owned.length) return null;
+    owned.sort((a, b) => (ITEMS[a].sick ? 1 : 0) - (ITEMS[b].sick ? 1 : 0) || (ITEMS[b].fresh ? 1 : 0) - (ITEMS[a].fresh ? 1 : 0) || (ITEMS[a][keyStat] || 0) - (ITEMS[b][keyStat] || 0));
+    return consumeItem(owned[0], quiet, true);
+  }
+  function consumeItem(id, quiet, auto) {
+    const it = ITEMS[id];
+    if (!it || inv(id) <= 0 || it.cat === 'med') return null;
+    addItem(id, -1);
+    if (it.sat) myDoc.sat = clamp(myDoc.sat + it.sat);
+    if (it.hyd) myDoc.hyd = clamp(myDoc.hyd + it.hyd);
+    if (it.fat) myDoc.fat = clamp(myDoc.fat + it.fat);
+    let text = (auto ? (it.cat === 'food' ? '허기가 져서 ' : '목이 말라 ') : '') + josa(it.n, '을', '를') + ' ' + (it.cat === 'food' ? '먹었다.' : '마셨다.');
+    if (it.sick && Math.random() < it.sick) { myDoc.hp = clamp(myDoc.hp - 6); myDoc.hyd = clamp(myDoc.hyd - 10); text += ' 배가 뒤틀린다. 탈이 났다. (체력 -6)'; }
+    if (!quiet) addLog(text);
+    return text;
+  }
+  // 의료품 사용 (1분 걸리는 행동의 결과)
+  function canUseMed(id) {
+    const it = ITEMS[id];
+    if (!it || it.cat !== 'med' || inv(id) <= 0 || myDoc.status === 'dead') return false;
+    const hurt = myDoc.injuries.filter(i => i.type !== 'bite');
+    return !!((it.inf && myDoc.infection > 0) || (it.healAll && hurt.length) || (it.heal && hurt.some(i => it.heal.includes(i.type))) || (it.hp && myDoc.hp < 100) || (it.fat && myDoc.fat > 0));
+  }
+  function useMed(id) {
+    const it = ITEMS[id];
+    if (!it || inv(id) <= 0) return;
+    addItem(id, -1);
+    const parts = [];
+    let what = josa(it.n, '을', '를') + ' 썼다.';
+    if (it.healAll) {
+      const n = myDoc.injuries.filter(i => i.type !== 'bite').length;
+      myDoc.injuries = myDoc.injuries.filter(i => i.type === 'bite');
+      if (n) { what = josa(it.n, '을', '를') + ' 상처마다 뿌렸다. 따끔하더니 금세 아물기 시작했다.'; parts.push('상처 ' + n + '곳 치료'); }
+    } else if (it.heal) {
+      const i = myDoc.injuries.filter(x => it.heal.includes(x.type)).sort((a, b) => INJ[b.type].rank - INJ[a.type].rank)[0];
+      if (i) {
+        myDoc.injuries.splice(myDoc.injuries.indexOf(i), 1);
+        what = (PART_BY_ID[i.part] || { n:'상처' }).n + '의 ' + INJ[i.type].n + '을 ' + (id === 'suture' ? '꿰맸다.' : id === 'disinfectant' ? '소독하고 싸맸다.' : '붕대로 감았다.');
+        parts.push(INJ[i.type].n + ' 치료');
+      }
     }
-    myDoc.med -= 1;
+    if (it.inf && myDoc.infection > 0) {
+      myDoc.infection = Math.max(0, myDoc.infection + it.inf - (id === 'antibiotics' ? rint(0, 5) : 0));
+      if (myDoc.infection === 0) { myDoc.infectionPart = null; what = josa(it.n, '을', '를') + ' 쓰고 한참을 앓았다. 거짓말처럼 열이 내렸다.'; parts.push('감염 치료'); }
+      else { what = josa(it.n, '으로', '로') + ' 열을 겨우 눌렀다. 진행이 조금 늦춰졌을 뿐이다.'; parts.push('감염 ' + myDoc.infection + '%'); }
+    }
+    if (it.hp) { myDoc.hp = clamp(myDoc.hp + it.hp); parts.push('체력 +' + it.hp); }
+    if (it.fat) { myDoc.fat = clamp(myDoc.fat + it.fat); parts.push('피로 감소'); }
+    const text = what + ' (' + it.n + ' -1' + (parts.length ? ', ' + parts.join(', ') : '') + ')';
     addLog(text);
     $('bodyMsg').textContent = text; $('bodyMsg').className = 'char-msg ok';
   }
-  $('medBtn').addEventListener('click', () => startAction('med'));
+  // 신체 상태 카드의 "응급 처치" 버튼: 지금 상태에 가장 맞는 의료품을 고른다
+  function bestMed() {
+    const order = myDoc.infection > 0 ? ['antibiotics','mixed_herb'] : [];
+    const hurt = myDoc.injuries.filter(i => i.type !== 'bite').map(i => i.type);
+    if (hurt.includes('wound')) order.push('suture','disinfectant');
+    if (hurt.length) order.push('bandage','disinfectant','first_aid');
+    order.push('green_herb','painkillers','mixed_herb','first_aid','vitamins');
+    return order.find(id => canUseMed(id)) || null;
+  }
+
+  function renderBag() {
+    const el = $('bagList');
+    if (!el) return;
+    const v = invOf(myDoc), busy = !!myDoc.busy, dead = myDoc.status === 'dead';
+    const ids = Object.keys(v).filter(k => ITEMS[k] && v[k] > 0);
+    if (!ids.length) { el.innerHTML = '<div class="empty" style="padding:8px 0">배낭이 텅 비었다.</div>'; return; }
+    el.innerHTML = ['food','drink','med'].map(cat => {
+      const list = ids.filter(k => ITEMS[k].cat === cat);
+      if (!list.length) return '';
+      return `<div class="bag-cat">${CAT_NAME[cat]}</div>` + list.map(k => {
+        const it = ITEMS[k];
+        const eff = it.cat === 'med' ? it.desc : [it.sat ? '포만감 ' + (it.sat > 0 ? '+' : '') + it.sat : '', it.hyd ? '수분 ' + (it.hyd > 0 ? '+' : '') + it.hyd : '', it.fat ? '피로 ' + it.fat : '', it.sick ? '배탈 주의' : ''].filter(Boolean).join(' · ');
+        const label = it.cat === 'food' ? '먹기' : it.cat === 'drink' ? '마시기' : '사용 · 1분';
+        const off = dead || (it.cat === 'med' ? (busy || !canUseMed(k)) : false);
+        return `<div class="bag-row"><span class="bic">${it.ic}</span><div class="bnm">${it.n} <b>×${v[k]}</b><small>${eff}</small></div><button class="secondary" type="button" data-use="${k}"${off ? ' disabled' : ''}>${label}</button></div>`;
+      }).join('');
+    }).join('');
+  }
+  $('bagList').addEventListener('click', async (e) => {
+    const b = e.target.closest('button[data-use]');
+    if (!b || b.disabled || !myDoc) return;
+    const id = b.dataset.use, it = ITEMS[id];
+    if (!it) return;
+    if (it.cat === 'med') { startAction('med', id); return; }
+    const t = consumeItem(id, false, false);
+    if (t) { $('bagMsg').textContent = t; renderStatus(); await saveDoc(); }
+  });
+
+  $('medBtn').addEventListener('click', () => { const id = bestMed(); if (id) startAction('med', id); });
   buildBody();
 
   let bioDirty = false;
