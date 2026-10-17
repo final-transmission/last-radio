@@ -3302,7 +3302,7 @@ const FIREBASE_CONFIG = {
 
   // ---------- 관리자 ----------
   // 여기 적힌 로그인 아이디로 들어오면 🛠 관리 탭이 보인다
-  const ADMIN_IDS = ['__ADMIN__'];
+  const ADMIN_IDS = ['akdma0528'];
   let myLoginId = null;
   function isAdmin() { return !!myLoginId && ADMIN_IDS.includes(String(myLoginId).toLowerCase()); }
   function adminMsg(t, ok) { const m = $('adminMsg'); m.textContent = t; m.className = 'char-msg ' + (ok ? 'ok' : 'err'); }
@@ -3997,7 +3997,7 @@ const FIREBASE_CONFIG = {
 </div>
 <script>
 (function(){
-  var BUILD_ID = '20261017171308';
+  var BUILD_ID = '20261017171358';
   function check(){
     fetch('version.txt?t=' + Date.now(), { cache: 'no-store' }).then(function(r){ return r.ok ? r.text() : ''; }).then(function(v){
       v = (v || '').trim();

@@ -3273,7 +3273,7 @@
 
   // ---------- 관리자 ----------
   // 여기 적힌 로그인 아이디로 들어오면 🛠 관리 탭이 보인다
-  const ADMIN_IDS = ['__ADMIN__'];
+  const ADMIN_IDS = ['akdma0528'];
   let myLoginId = null;
   function isAdmin() { return !!myLoginId && ADMIN_IDS.includes(String(myLoginId).toLowerCase()); }
   function adminMsg(t, ok) { const m = $('adminMsg'); m.textContent = t; m.className = 'char-msg ' + (ok ? 'ok' : 'err'); }
