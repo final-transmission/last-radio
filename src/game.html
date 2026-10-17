@@ -421,6 +421,7 @@
   .spot:disabled { cursor: not-allowed; }
   .action-grid button.action small { font: 700 10px var(--font-mono); letter-spacing: 1px; opacity: .8; }
   .action-grid button.action.raid { grid-column: auto; }
+  .action-grid #sleepBtn { grid-column: 1 / -1; }
   .busy { background: var(--bg-elevated); border: 1px solid var(--accent-dim); border-radius: 3px; padding: 12px; margin-bottom: 12px; }
   .busy-top { display: flex; justify-content: space-between; gap: 8px; font-size: 14px; font-weight: 700; }
   .busy-left { font-family: var(--font-mono); color: var(--accent); font-variant-numeric: tabular-nums; }
@@ -585,7 +586,7 @@
         <button class="action" id="farmBtn"><span class="ic">🌾</span><span>농사</span><small>30분</small></button>
         <button class="action rest" id="restBtn"><span class="ic">🛌</span><span>휴식</span><small>10분</small></button>
         <button class="action rest" id="sleepBtn"><span class="ic">😴</span><span>잠자기</span><small>1시간</small></button>
-        <button class="action raid" id="raidBtn"><span class="ic">⚔️</span><span>약탈</span><small>5분</small></button>
+        <button class="action raid" id="raidBtn" hidden><span class="ic">⚔️</span><span>약탈</span><small>5분</small></button>
         <button class="action explore" id="exploreBtn"><span class="ic">🏚️</span><span id="exploreLbl">선택한 구역 조사 · 파밍</span></button>
       </div>
       <div class="weapon-row">
@@ -599,7 +600,7 @@
       <div class="owned" id="exploreInfo"></div>
       <div class="spots-head"><b>조사할 구역 고르기</b><span id="spotCount"></span></div>
       <div class="spots" id="spotList"></div>
-      <div class="raid-row">
+      <div class="raid-row" id="raidRow" hidden>
         <label for="raidTarget">약탈 대상</label>
         <select id="raidTarget"><option value="">대상 없음</option></select>
       </div>
@@ -2669,6 +2670,8 @@
     addLog(pick(REST_TEXTS) + ' (푹 잤다. 피로 크게 감소, 체력 회복)');
   }
 
+  // 약탈은 잠시 꺼 둔다. 다시 켜려면 true로 바꾸고 raidBtn·raidRow의 hidden을 지운다.
+  const RAID_ENABLED = false;
   async function doRaid(targetKey) {
     let targetName = nameOfKey(targetKey) || '누군가';
     if (!targetKey || !db) { addLog('주변을 둘러봤지만 습격할 만한 생존자가 없었다.'); return; }
@@ -2749,6 +2752,7 @@
     if (myDoc.status === 'dead' || myDoc.busy) return;
     if (type === 'hunt' && arg == null) arg = $('weaponSelect').value;
     if (type === 'explore' && arg == null) arg = selSpot;
+    if (type === 'raid' && !RAID_ENABLED) return;
     if (type === 'raid' && arg == null) arg = $('raidTarget').value;
     if (type === 'raid' && !arg) { $('actionHint').textContent = '· 약탈할 대상을 먼저 고르세요'; return; }
     if (type === 'med' && !canUseMed(arg)) return;
@@ -2787,7 +2791,7 @@
         else if (t === 'sleep') doSleep();
         else if (t === 'explore') { if (myDoc.loc && SPOTS[myDoc.loc] && SPOTS[myDoc.loc][b.arg]) doExplore(b.arg); }
         else if (t === 'move') doMove(b.arg);
-        else if (t === 'raid') await doRaid(b.arg);
+        else if (t === 'raid') { if (RAID_ENABLED) await doRaid(b.arg); else addLog('누군가를 덮치려다 마음을 접었다.'); }
         else if (t === 'med') { if (canUseMed(b.arg)) useMed(b.arg); }
         activityCost(b.min || 0, t === 'rest' || t === 'sleep');
         checkDeath();

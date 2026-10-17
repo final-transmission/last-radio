@@ -34,7 +34,29 @@ const FIREBASE_CONFIG = {
 </script>
 <script>
 (function(){''')
-s = s.rstrip() + '\n</body>\n</html>\n'
+import time, os
+BUILD_ID = time.strftime('%Y%m%d%H%M%S')
+# 새 버전이 올라오면 열려 있는 화면에 새로고침 안내를 띄운다 (version.txt를 3분마다 확인)
+UPDATE_NOTICE = """<div id="updateBar" hidden style="position:fixed;left:50%;bottom:calc(16px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:50;background:#d1a32b;color:#17140d;padding:10px 14px;border-radius:4px;box-shadow:0 6px 18px rgba(0,0,0,.35);font:700 14px 'Noto Sans KR',sans-serif;display:flex;gap:10px;align-items:center;max-width:calc(100vw - 32px)">
+  <span>📻 새 버전이 나왔어요. 새로고침해 주세요.</span>
+  <button type="button" onclick="location.reload()" style="background:#17140d;color:#f3e6b8;border:none;border-radius:3px;padding:6px 10px;font:inherit;cursor:pointer">새로고침</button>
+</div>
+<script>
+(function(){
+  var BUILD_ID = '__BUILD_ID__';
+  function check(){
+    fetch('version.txt?t=' + Date.now(), { cache: 'no-store' }).then(function(r){ return r.ok ? r.text() : ''; }).then(function(v){
+      v = (v || '').trim();
+      if (v && v !== BUILD_ID) document.getElementById('updateBar').hidden = false;
+    }).catch(function(){});
+  }
+  setInterval(check, 180000);
+  document.addEventListener('visibilitychange', function(){ if (!document.hidden) check(); });
+})();
+</script>
+""".replace("__BUILD_ID__", BUILD_ID)
+s = s.rstrip() + '\n' + UPDATE_NOTICE + '</body>\n</html>\n'
+open(os.path.join(os.path.dirname(os.path.abspath(out)), 'version.txt'), 'w').write(BUILD_ID + '\n')
 
 # 2) 저장소: claude 공유 DB → Firestore
 R("    try { db = await claude.use('db'); } catch(e) { db = null; }", """    try {
