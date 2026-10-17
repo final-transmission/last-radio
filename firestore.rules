@@ -1,0 +1,18 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() { return request.auth != null; }
+
+    // 게임 데이터: 로그인한 생존자는 모두 읽고 쓸 수 있다 (약탈, 쉘터 내보내기 때문에 남의 문서도 고친다)
+    match /{coll}/{docId} {
+      allow read: if signedIn();
+      allow write: if signedIn() && coll != 'users';
+    }
+
+    // 계정 ↔ 캐릭터 연결 정보: 본인만 쓸 수 있다
+    match /users/{uid} {
+      allow read: if signedIn();
+      allow write: if signedIn() && request.auth.uid == uid;
+    }
+  }
+}
