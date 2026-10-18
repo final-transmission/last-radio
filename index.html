@@ -450,6 +450,11 @@
   .busy-top { display: flex; justify-content: space-between; gap: 8px; font-size: 14px; font-weight: 700; }
   .busy-left { font-family: var(--font-mono); color: var(--accent); font-variant-numeric: tabular-nums; }
   .busy .bar-fill { background: var(--accent); transition: width 1s linear; }
+  .event-box { background: var(--bg-elevated); border: 1px solid var(--danger, #b33); border-left-width: 4px; border-radius: 3px; padding: 12px; margin-bottom: 12px; }
+  .ev-title { font-weight: 700; font-size: 15px; margin-bottom: 6px; }
+  .ev-text { font-size: 14px; line-height: 1.55; margin-bottom: 10px; }
+  .ev-opts { display: flex; gap: 8px; flex-wrap: wrap; }
+  .ev-opts button { flex: 1 1 140px; padding: 9px 12px; }
   .busy-cancel { margin-top: 10px; padding: 8px 12px; font-size: 13px; }
   button.secondary:disabled { opacity: .4; cursor: not-allowed; }
   .trade-form { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-top: 8px; }
@@ -626,6 +631,7 @@
 
     <div class="card" id="actionsCard">
       <h2>행동 <span style="font-weight:400; color:var(--text-dim);" id="actionHint"></span></h2>
+      <div class="event-box" id="eventBox" hidden></div>
       <div class="busy" id="busyBox" hidden>
         <div class="busy-top"><span id="busyLbl"></span><span class="busy-left" id="busyLeft"></span></div>
         <div class="bar-bg"><div class="bar-fill" id="busyBar" style="width:0%"></div></div>
@@ -2996,7 +3002,7 @@ const FIREBASE_CONFIG = {
   function renderPoints() {
     const S = (SPOTS[myDoc.loc] || [])[selSpot];
     if (!S) { $('pointPanel').innerHTML = ''; return; }
-    const inside = mySpot() === selSpot, off = myDoc.status === 'dead' || !!myDoc.busy;
+    const inside = mySpot() === selSpot, off = myDoc.status === 'dead' || !!myDoc.busy || !!myDoc.event;
     const pts = pointsOf(S[0]);
     $('pointPanel').innerHTML = `<div class="pp-head">${SPOT_TYPES[S[0]].ic} <b>${S[1]}</b> ${inside ? '<span class="pp-in">📍 지금 안에 있음</span>' : '<span class="muted" style="margin:0">지점을 고르면 걸어 들어가서 뒤져요</span>'}</div>` +
       pts.map((P, j) => {
@@ -3016,6 +3022,109 @@ const FIREBASE_CONFIG = {
     renderSpots();
   });
 
+  // ---------- 조사 중 돌발 이벤트 (좀비물 클리셰) ----------
+  // where: 이 지점에서만, run: 즉시 결과, opts+resolve: 선택지가 있는 이벤트 (myDoc.event에 저장)
+  function evHurt(a, b, kind) { const d = rint(a, b); myDoc.hp = clamp(myDoc.hp - d); return ' (체력 -' + d + ')' + (kind ? injure(kind) : ''); }
+  function evKill() { myDoc.zombieKills = (myDoc.zombieKills || 0) + 1; }
+  function evLoot(pool, n) { const g = rollLoot(pool, n); const t = lootText(g); return t ? ' (' + t + ')' : ' (가방이 꽉 차 아무것도 챙기지 못했다)'; }
+  function evReveal() {
+    const vis = new Set(myDoc.visited), cand = [];
+    myDoc.visited.forEach(id => (ADJ[id] || []).forEach(n => { if (!vis.has(n) && !cand.includes(n)) cand.push(n); }));
+    if (!cand.length) return '';
+    const id = pick(cand); myDoc.visited.push(id);
+    return ' 지도에 ' + DISTRICTS[id].n + ' 위치를 표시했다. (새 지역 발견)';
+  }
+  function evPages(n) { myDoc.items.pages += n; return ' (노트 낱장 +' + n + ')'; }
+  const EVENTS = [
+    { id:'alarm', w:3, where:['parking','garage'], run: () => '🚨 실수로 건드린 차에서 경보가 울려 퍼졌다. 사방에서 신음이 몰려와 허겁지겁 빠져나왔다.' + evHurt(4, 12, 'forage') },
+    { id:'hanged', w:2, run: () => '🪢 천장에 매달린 시신 아래 쪽지가 떨어져 있었다. "미안해, 더는 못 버티겠어." 주머니를 뒤졌다.' + evLoot(['painkillers','whiskey','lighter','chocolate'], 2) },
+    { id:'soldier', w:2, run: () => {
+        let t = '🪖 벽에 기댄 군인 시신. 군번줄 옆에 배낭이 그대로다.' + evLoot(['mre','mre','ammo','first_aid','bandage'], 2);
+        if (Math.random() < 0.3) t += ' 배낭을 끌어내는 순간 시신이 눈을 떴다!' + evHurt(6, 14, 'fight');
+        return t; } },
+    { id:'mascot', w:3, where:['counter','kitchen','stage','gate','lobby'], run: () => { evKill(); return '🐻 인형탈을 쓴 워커가 뒤뚱거리며 다가왔다. 탈이 걸려 넘어진 틈에 처리했다. 웃기면서도 소름이 돋았다.' + evHurt(0, 4); } },
+    { id:'trapped', w:3, run: () => { evKill(); return '🧟 무너진 선반에 하반신이 깔린 워커가 팔만 허우적댄다. 조용히 끝내줬다. (처치 +1)'; } },
+    { id:'stash', w:2, where:['basement','bedroom','storeroom','office','living'], run: () => '🗝️ 바닥 판자 하나가 들떠 있다. 들춰보니 누군가 숨겨둔 비상 물자가 그대로 있었다!' + evLoot(['beans','tuna','mre','water','water','bandage','ammo','antibiotics'], 4) },
+    { id:'diary', w:2, run: () => '📓 피 묻은 일기장을 발견했다. 마지막 장: "군이 안전지대를 만든다고 했다. 다들 거기로 갔다. 아무도 돌아오지 않았다." 빈 장을 뜯어 챙겼다.' + evPages(rint(2, 4)) },
+    { id:'broadcast', w:2, run: () => '📻 부서진 라디오에서 녹음된 방송이 반복된다. "...여기는 비상 대피소... 생존자는..." 좌표를 받아 적었다.' + evReveal() },
+    { id:'wall', w:2, run: () => '🖍️ 벽에 스프레이로 크게 적혀 있다. "물린 자 입장 금지" 그 아래엔 다른 손글씨로 길 안내가 남아 있었다.' + evReveal() },
+    { id:'mirror', w:2, where:['restroom','bedroom','lobby'], run: () => { myDoc.fat = clamp(myDoc.fat + 5); return '🪞 거울에 비친 그림자에 비명을 지를 뻔했다. 내 모습이었다. 며칠 사이에 많이 변했다. (피로 +5)'; } },
+    { id:'bell', w:3, where:['altar'], run: () => '🔔 등 뒤에서 종이 울렸다. 바람인지 누군가의 덫인지 모른다. 종소리를 따라 워커들이 몰려들었다.' + evHurt(5, 12, 'forage') },
+    { id:'crate', w:3, where:['roof','parking','gate','dock','tower'], run: () => '🪂 낙하산에 매달린 군 보급 상자가 걸려 있다. 반쯤 털렸지만 남은 게 있었다.' + evLoot(['mre','water','first_aid','antibiotics','ammo'], 3) },
+    { id:'door', w:3, title:'🚪 잠긴 문', text:'"절대 열지 마시오" 라고 휘갈긴 문 너머에서 긁는 소리가 들린다.', opts:[['open','문을 연다'],['leave','그냥 둔다']],
+      resolve: k => k === 'open'
+        ? (Math.random() < 0.55 ? (evKill(), '문을 열자 워커가 쏟아져 나왔다. 간신히 하나를 쓰러뜨렸다.' + evHurt(6, 16, 'fight')) : '안에는 굶어 죽은 개 한 마리와 누군가 쌓아둔 물자뿐이었다.' + evLoot(['beans','water','bandage','cloth'], 3))
+        : '경고를 믿기로 했다. 등 뒤로 긁는 소리가 계속 따라왔다.' },
+    { id:'baby', w:2, title:'👶 아기 울음소리', text:'어디선가 아기 울음소리가 들린다. 이런 세상에서... 정말 아기일까?', opts:[['go','소리를 따라간다'],['ignore','못 들은 척한다']],
+      resolve: k => k === 'go'
+        ? (Math.random() < 0.6 ? '울음소리는 고장 난 인형 장난감이었다. 그리고 그 소리에 모인 워커들이 있었다.' + evHurt(8, 18, 'fight') : '빈 유모차 옆에 분유와 기저귀 가방이 있었다. 아기는... 없었다.' + evLoot(['water','juice','bandage','crackers'], 3))
+        : '귀를 막고 돌아섰다. 오늘 밤 꿈에 나올 것 같다.' },
+    { id:'bitten', w:3, title:'🩸 숨어 있던 생존자', text:'구석에 숨어 있던 생존자가 소매를 움켜쥐고 떨고 있다. "그냥 긁힌 거야. 물린 거 아니야." 약을 달라고 애원한다.', opts:[['help','약을 나눠준다'],['leave','거리를 두고 떠난다']],
+      resolve: k => {
+        if (k !== 'help') return '미안하다는 말만 남기고 떠났다. 뒤에서 흐느끼는 소리가 들렸다.';
+        const m = ['bandage','painkillers','disinfectant','antibiotics','first_aid'].find(x => inv(x) > 0);
+        if (!m) return '줄 약이 없었다. 손을 잡아주는 것 말고는 할 수 있는 게 없었다.';
+        addItem(m, -1);
+        return Math.random() < 0.5 ? josa(ITEMS[m].n, '을', '를') + ' 건넸다. 잠시 뒤, 그 사람의 눈이 하얗게 뒤집혔다. 결국 내 손으로 끝냈다.' + (evKill(), evHurt(0, 8, 'scratch'))
+          : josa(ITEMS[m].n, '을', '를') + ' 건넸다. 고맙다며 자기가 모아둔 걸 내밀었다.' + evLoot(['beans','tuna','water','ammo','jerky'], 3);
+      } },
+    { id:'gas', w:2, where:['kitchen','basement','garage','storeroom'], title:'💨 가스 냄새', text:'코를 찌르는 가스 냄새가 난다. 어디선가 새고 있다.', opts:[['out','당장 나간다'],['stay','빨리 마저 뒤진다']],
+      resolve: k => k === 'out' ? '숨을 참고 빠져나왔다. 조금 뒤, 안에서 쿵 하는 소리가 났다.'
+        : Math.random() < 0.4 ? '머리가 핑 돌더니 그대로 쓰러졌다. 한참 뒤에 깨어났다.' + evHurt(8, 15) + (myDoc.fat = clamp(myDoc.fat + 15), ' (피로 +15)')
+        : '어지러움을 참고 서랍을 털었다.' + evLoot(['matches','lighter','cloth','beans','soup'], 2) },
+    { id:'horde', w:3, title:'🧟‍♂️ 창밖의 무리', text:'창밖으로 수십 마리의 워커 무리가 느릿느릿 지나간다. 한 놈이 고개를 돌렸다.', opts:[['hide','숨죽이고 기다린다'],['run','뒷문으로 달린다']],
+      resolve: k => k === 'hide' ? (myDoc.fat = clamp(myDoc.fat + 15), '한 시간 넘게 숨도 못 쉬고 웅크려 있었다. 무리가 지나갔다. (피로 +15)')
+        : Math.random() < 0.4 ? '뒷문에도 워커가 있었다. 몸싸움 끝에 빠져나왔다.' + evHurt(10, 20, 'fight') : '숨이 턱까지 차도록 달렸다. 따돌렸다.' + (myDoc.fat = clamp(myDoc.fat + 8), ' (피로 +8)') },
+    { id:'dog', w:2, title:'🐕 떠돌이 개', text:'마른 개 한 마리가 꼬리를 낮게 흔들며 따라온다.', opts:[['feed','먹을 걸 나눠준다'],['shoo','쫓아낸다']],
+      resolve: k => {
+        if (k !== 'feed') return '돌을 던지자 개는 낑낑대며 물러났다.';
+        const f = ['dogfood','jerky','raw_meat','beans','crackers'].find(x => inv(x) > 0);
+        if (!f) return '줄 게 없었다. 개는 한동안 날 보더니 사라졌다.';
+        addItem(f, -1);
+        return josa(ITEMS[f].n, '을', '를') + ' 나눠주자 개가 앞장섰다. 따라가 보니 무너진 차 밑에 누군가의 가방이 있었다.' + evLoot(['water','beans','bandage','ammo','tuna'], 3);
+      } },
+    { id:'vending', w:2, where:['lobby','gate','counter','gym','parking','office'], title:'🥤 자판기', text:'멀쩡한 자판기에 음료와 과자가 가득하다. 유리를 깨면 소리가 날 텐데.', opts:[['smash','유리를 깬다'],['leave','그냥 지나간다']],
+      resolve: k => k !== 'smash' ? '아쉬움을 삼키고 지나쳤다.'
+        : (Math.random() < 0.35 ? '와장창! 소리에 워커가 몰려왔다. 챙길 만큼만 챙겨 달아났다.' + evHurt(4, 10, 'forage') : '와장창! 다행히 아무도 오지 않았다.') + evLoot(['soda','soda','energy','chips','chocolate','crackers'], 3) }
+  ];
+  function maybeEvent(loc, i, j, P, head) {
+    const pool = EVENTS.filter(e => !e.where || e.where.includes(P.id));
+    let r = Math.random() * pool.reduce((t, e) => t + e.w, 0), ev = pool[0];
+    for (const e of pool) { r -= e.w; if (r < 0) { ev = e; break; } }
+    if (ev.run) { addLog(head + ev.run()); return; }
+    myDoc.event = { id: ev.id, loc, i, j, head };
+    addLog(head + ev.title + '. ' + ev.text);
+  }
+  async function resolveEvent(k) {
+    const E = myDoc && myDoc.event, ev = E && EVENTS.find(e => e.id === E.id);
+    if (!E) return;
+    myDoc.event = null;
+    if (ev && myDoc.status !== 'dead') {
+      const hp0 = myDoc.hp;
+      leftBehind = {};
+      addLog('→ ' + ev.resolve(k));
+      const lb = Object.keys(leftBehind);
+      if (lb.length) addLog('🎒 가방이 꽉 차서 두고 왔다: ' + lb.map(x => x + ' ' + leftBehind[x]).join(', '));
+      checkDeath();
+      if (myDoc.hp < hp0) { sfx('zombie'); sfx('hurt'); } else sfx('done');
+    }
+    renderStatus();
+    await saveDoc();
+  }
+  function renderEvent() {
+    const E = myDoc && myDoc.event, ev = E && EVENTS.find(e => e.id === E.id);
+    const box = $('eventBox');
+    if (!ev || myDoc.status === 'dead') { box.hidden = true; box.innerHTML = ''; return; }
+    if (box.dataset.id === E.id && !box.hidden) return;
+    box.dataset.id = E.id;
+    box.hidden = false;
+    box.innerHTML = `<div class="ev-title">${ev.title}</div><div class="ev-text">${ev.text}</div><div class="ev-opts">${ev.opts.map(o => `<button type="button" class="secondary" data-ev="${o[0]}">${o[1]}</button>`).join('')}</div>`;
+  }
+  $('eventBox').addEventListener('click', (e) => {
+    const b = e.target.closest('button[data-ev]');
+    if (b) { $('eventBox').hidden = true; resolveEvent(b.dataset.ev); }
+  });
+
   function doExplore(arg) {
     const [i, j] = String(arg).split(':').map(Number);
     const loc = myDoc.loc, D = DISTRICTS[loc], S = (SPOTS[loc] || [])[i];
@@ -3027,6 +3136,7 @@ const FIREBASE_CONFIG = {
     const danger = Math.min(0.85, pointDanger(loc, i, j) * (bonus ? 0.75 : 1) * dangerMult(loc, 'explore'));
     let head = S[1] + ' ' + P.n + ' 뒤지기. ';
     myDoc.searched[key] = myDoc.day;
+    if (Math.random() < (window.__forceEvent || (depleted ? 0.08 : 0.18))) { maybeEvent(loc, i, j, P, head); return; }
     if (Math.random() < danger) {
       const dmg = rint(8, 18);
       myDoc.hp = clamp(myDoc.hp - dmg);
@@ -3196,6 +3306,7 @@ const FIREBASE_CONFIG = {
     if (!myDoc) return;
     if (syncWorld()) { renderStatus(); await saveDoc(); }
     if (myDoc.status === 'dead' || myDoc.busy) return;
+    if (myDoc.event) { $('actionHint').textContent = '· 먼저 눈앞의 상황부터 결정하세요'; return; }
     if (type === 'hunt' && arg == null) arg = $('weaponSelect').value;
     if (type === 'explore' && arg == null) return;
     if (type === 'raid' && !RAID_ENABLED) return;
@@ -3266,6 +3377,7 @@ const FIREBASE_CONFIG = {
   $('busyCancel').addEventListener('click', cancelAction);
 
   function renderBusy() {
+    renderEvent();
     const b = myDoc && myDoc.busy;
     $('busyBox').hidden = !b;
     if (!b) return;
@@ -4090,7 +4202,7 @@ const FIREBASE_CONFIG = {
 </div>
 <script>
 (function(){
-  var BUILD_ID = '20261018023803';
+  var BUILD_ID = '20261018024659';
   function check(){
     fetch('version.txt?t=' + Date.now(), { cache: 'no-store' }).then(function(r){ return r.ok ? r.text() : ''; }).then(function(v){
       v = (v || '').trim();
