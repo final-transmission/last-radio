@@ -529,6 +529,10 @@
   .feed .fd { font: 600 10px var(--font-mono); color: var(--text-dim); margin-right: 8px; }
   .feed .fl.bad { color: var(--danger); }
   .feed .fl.good { color: var(--ok); }
+  @media (min-width: 900px) {
+    #tabChar { max-width: 1200px; }
+    .char-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 0 20px; align-items: start; }
+  }
 </style>
 <header class="top">
   <h1><span class="hazard" aria-hidden="true">☣</span>최후의 무전</h1>
@@ -842,6 +846,8 @@
     </div>
 
     <div id="tabChar" hidden>
+      <div class="char-grid">
+      <div class="char-col">
       <div class="card" id="linkCard" hidden>
         <h2>🔐 계정 연결</h2>
         <div class="muted" style="margin:0 0 10px">이 캐릭터는 아직 계정이 없어요. 아이디와 비밀번호를 만들면 다른 컴퓨터에서도 이 캐릭터로 로그인할 수 있고, 다른 사람이 닉네임만으로 들어올 수 없게 돼요.</div>
@@ -871,6 +877,15 @@
         </div>
         <div class="muted">다음에 입장할 때는 새 닉네임을 입력해야 해요. 다른 생존자가 쓰는 이름은 쓸 수 없어요.</div>
         <div class="char-msg" id="charMsg" role="status"></div>
+      </div>
+      <div class="card">
+        <h2>캐릭터 설정</h2>
+        <textarea id="bioInput" maxlength="500" style="min-height:140px" placeholder="나이, 직업, 감염 전의 삶, 성격, 지키고 싶은 사람… 자유롭게 적어보세요."></textarea>
+        <div class="bio-count" id="bioCount">0 / 500</div>
+        <div style="height:8px"></div>
+        <button class="primary" id="bioBtn" type="button">설정 저장</button>
+        <div class="muted">저장한 설정은 생존자 현황판에서 다른 생존자들도 볼 수 있어요.</div>
+        <div class="char-msg" id="bioMsg" role="status"></div>
       </div>
       <div class="card">
         <h2>신체 상태</h2>
@@ -908,18 +923,11 @@
           <div class="mc-foot">정면 기준 · 그림의 R이 캐릭터의 오른쪽, L이 왼쪽 · 빨간 동그라미 번호는 부상 기록 번호 · 점선 원은 감염이 시작된 부위</div>
         </div>
         <button class="secondary" id="medBtn" type="button" style="margin-top:14px">💊 의약품 사용</button>
-        <div class="muted">응급 처치는 지금 상태에 가장 맞는 의료품을 골라 써요(1분). 붕대·소독약·봉합 키트는 상처, 항생제·혼합 허브는 감염, 허브·진통제는 체력에 써요. 생존 탭 배낭에서 직접 골라 쓸 수도 있어요.</div>
+        <div class="muted">응급 처치는 지금 상태에 가장 맞는 의료품을 골라 써요(1분). 붕대·소독약·봉합 키트는 상처, 항생제·혼합 허브는 감염, 허브·진통제는 체력에 써요. 배낭에서 직접 골라 쓸 수도 있어요.</div>
         <div class="char-msg" id="bodyMsg" role="status"></div>
       </div>
-      <div class="card">
-        <h2>캐릭터 설정</h2>
-        <textarea id="bioInput" maxlength="500" style="min-height:140px" placeholder="나이, 직업, 감염 전의 삶, 성격, 지키고 싶은 사람… 자유롭게 적어보세요."></textarea>
-        <div class="bio-count" id="bioCount">0 / 500</div>
-        <div style="height:8px"></div>
-        <button class="primary" id="bioBtn" type="button">설정 저장</button>
-        <div class="muted">저장한 설정은 생존자 현황판에서 다른 생존자들도 볼 수 있어요.</div>
-        <div class="char-msg" id="bioMsg" role="status"></div>
       </div>
+      <div class="char-col">
     <div class="card" id="bagCard">
       <h2>🎒 배낭</h2>
       <div class="bag-weight" id="bagWeight"></div>
@@ -928,6 +936,8 @@
       <div class="bag-cat" style="margin-top:14px">🔥 제작</div>
       <div id="craftList"></div>
       <div class="muted">배고프거나 목마르면 배낭에서 알아서 꺼내 먹어요. 신선식품은 하루마다 조금씩 상해요. 가방이 꽉 차면 더 챙길 수 없으니 쉘터 창고를 쓰세요.</div>
+      </div>
+      </div>
     </div>
     </div>
 
