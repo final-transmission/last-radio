@@ -1429,10 +1429,13 @@ const FIREBASE_CONFIG = {
     $('linkCard').hidden = !!myDoc.account;
     renderMemos();
     if (chat.length) renderChat();
-    if (db && roomKey() !== talkLoc) subscribeTalk();
+    // 같은 곳 대화·쉘터 채팅은 그 탭을 보고 있을 때만 구독한다
+    if (db && !listenersPaused && commMode === 'talk' && roomKey() !== talkLoc) subscribeTalk();
+    if (commMode !== 'talk' && talkUnsub) { try { talkUnsub(); } catch(e) {} talkUnsub = null; talkLoc = null; }
     renderTalk();
     renderTrades();
-    if (db && (myDoc.party || '') !== (shelterKey || '')) subscribeShelter();
+    if (db && !listenersPaused && commMode === 'shelter' && (myDoc.party || '') !== (shelterKey || '')) subscribeShelter();
+    if (commMode !== 'shelter' && shelterUnsub) { try { shelterUnsub(); } catch(e) {} shelterUnsub = null; shelterKey = null; }
     renderShelter();
     renderShelterCard();
     renderMyLog();
@@ -2545,6 +2548,7 @@ const FIREBASE_CONFIG = {
     try { localStorage.setItem('survival_log_comm', m); } catch(e) {}
     if (m === 'talk') { talkFirst = true; renderTalk(); renderTrades(); }
     if (m === 'shelter') { shelterFirst = true; renderShelter(); }
+    if (myDoc) renderStatus();
   }
   $('commRadio').addEventListener('click', () => setComm('radio'));
   $('commTalk').addEventListener('click', () => setComm('talk'));
@@ -4229,7 +4233,7 @@ const FIREBASE_CONFIG = {
         if (!st || st.tick < worldDay()) regTick();
       }, () => {});
       if (regEvUnsub) regEvUnsub();
-      regEvUnsub = db.collection('regionEvents').orderBy('ts', 'desc').limit(400).onSnapshot((snap) => {
+      regEvUnsub = db.collection('regionEvents').orderBy('ts', 'desc').limit(200).onSnapshot((snap) => {
         const list = (snap && snap.docs) ? snap.docs.map(d => { const v = d.data(); return v ? Object.assign({}, v, { id: d.id }) : null; }).filter(e => e && DISTRICTS[e.loc] && typeof e.kind === 'string') : [];
         const sig = list.map(e => e.id).join(',');
         if (sig !== regSnapEvents.map(e => e.id).join(',')) { regSnapEvents = list; regTouch(); if (myDoc) renderStatus(); }
@@ -4753,48 +4757,7 @@ const FIREBASE_CONFIG = {
       if (myDoc.busy && Date.now() >= myDoc.busy.until) await completeAction();
 
       await saveDoc();
-      try {
-        if (unsub) unsub();
-        if (avatarUnsub) avatarUnsub();
-        avatarUnsub = db.collection('avatars').onSnapshot((snap) => {
-          const next = {};
-          (snap && snap.docs ? snap.docs : []).forEach(d => { const v = d.data(); if (v && typeof v.data === 'string') next[d.id] = v.data; });
-          avatars = next;
-          renderBoard(latestDocs);
-          renderStatus();
-        }, () => {});
-        unsub = db.collection('survivors').onSnapshot((snap) => {
-          latestDocs = (snap && snap.docs) ? snap.docs.map(d => d.data()).filter(Boolean) : [];
-          renderBoard(latestDocs);
-          renderStatus();
-        });
-      } catch(e) { renderBoard([]); }
-      try {
-        subscribeChat();
-      } catch(e) {}
-      try {
-        if (memoUnsub) memoUnsub();
-        if (tradeUnsub) tradeUnsub();
-        tradeUnsub = db.collection('trades').orderBy('ts', 'desc').limit(100).onSnapshot((snap) => {
-          trades = (snap && snap.docs) ? snap.docs.map(d => { const v = d.data(); return v ? Object.assign({ id: d.id }, v) : null; }).filter(t => t && t.give && t.want) : [];
-          claimTrades();
-          renderTrades();
-        }, () => {});
-        if (noticeUnsub) noticeUnsub();
-        regSubscribe();
-        noticeUnsub = db.collection('notices').orderBy('ts', 'desc').limit(30).onSnapshot((snap) => {
-          onNotices((snap && snap.docs) ? snap.docs.map(d => { const v = d.data(); return v ? Object.assign({ id: d.id }, v) : null; }).filter(Boolean) : []);
-        }, () => {});
-        if (graveUnsub) graveUnsub();
-        graveUnsub = db.collection('graves').orderBy('ts', 'desc').limit(200).onSnapshot((snap) => {
-          graves = (snap && snap.docs) ? snap.docs.map(d => { const v = d.data(); return v ? Object.assign({ id: d.id }, v) : null; }).filter(g => g && DISTRICTS[g.loc] && typeof g.name === 'string') : [];
-          renderBoard(latestDocs); renderStatus();
-        }, () => {});
-        memoUnsub = db.collection('memos').onSnapshot((snap) => {
-          memos = (snap && snap.docs) ? snap.docs.map(d => { const v = d.data(); return v ? Object.assign({ id: d.id }, v) : null; }).filter(m => m && DISTRICTS[m.loc] && typeof m.text === 'string') : [];
-          renderStatus();
-        });
-      } catch(e) {}
+      startListeners();
     } else {
       myDoc = defaultDoc(name);
       migrateWorld();
@@ -4806,6 +4769,70 @@ const FIREBASE_CONFIG = {
     }
     renderStatus();
   }
+
+  // ---------- 실시간 감시(구독): 켜고 끄기 ----------
+  // 탭을 10분 넘게 안 보고 있으면 모든 구독을 잠시 끊어 Firestore 읽기를 아낀다. 다시 보면 이어 붙인다
+  function startListeners() {
+    if (!db) return;
+    try {
+      if (unsub) unsub();
+      if (avatarUnsub) avatarUnsub();
+      avatarUnsub = db.collection('avatars').onSnapshot((snap) => {
+        const next = {};
+        (snap && snap.docs ? snap.docs : []).forEach(d => { const v = d.data(); if (v && typeof v.data === 'string') next[d.id] = v.data; });
+        avatars = next;
+        renderBoard(latestDocs);
+        renderStatus();
+      }, () => {});
+      unsub = db.collection('survivors').onSnapshot((snap) => {
+        latestDocs = (snap && snap.docs) ? snap.docs.map(d => d.data()).filter(Boolean) : [];
+        renderBoard(latestDocs);
+        renderStatus();
+      });
+    } catch(e) { renderBoard([]); }
+    try {
+      subscribeChat();
+    } catch(e) {}
+    try {
+      if (memoUnsub) memoUnsub();
+      if (tradeUnsub) tradeUnsub();
+      tradeUnsub = db.collection('trades').orderBy('ts', 'desc').limit(50).onSnapshot((snap) => {
+        trades = (snap && snap.docs) ? snap.docs.map(d => { const v = d.data(); return v ? Object.assign({ id: d.id }, v) : null; }).filter(t => t && t.give && t.want) : [];
+        claimTrades();
+        renderTrades();
+      }, () => {});
+      if (noticeUnsub) noticeUnsub();
+      regSubscribe();
+      noticeUnsub = db.collection('notices').orderBy('ts', 'desc').limit(30).onSnapshot((snap) => {
+        onNotices((snap && snap.docs) ? snap.docs.map(d => { const v = d.data(); return v ? Object.assign({ id: d.id }, v) : null; }).filter(Boolean) : []);
+      }, () => {});
+      if (graveUnsub) graveUnsub();
+      graveUnsub = db.collection('graves').orderBy('ts', 'desc').limit(60).onSnapshot((snap) => {
+        graves = (snap && snap.docs) ? snap.docs.map(d => { const v = d.data(); return v ? Object.assign({ id: d.id }, v) : null; }).filter(g => g && DISTRICTS[g.loc] && typeof g.name === 'string') : [];
+        renderBoard(latestDocs); renderStatus();
+      }, () => {});
+      memoUnsub = db.collection('memos').orderBy('ts', 'desc').limit(150).onSnapshot((snap) => {
+        memos = (snap && snap.docs) ? snap.docs.map(d => { const v = d.data(); return v ? Object.assign({ id: d.id }, v) : null; }).filter(m => m && DISTRICTS[m.loc] && typeof m.text === 'string') : [];
+        renderStatus();
+      });
+    } catch(e) {}
+    talkLoc = null; shelterKey = null;
+  }
+  function stopListeners() {
+    [unsub, avatarUnsub, chatUnsub, memoUnsub, tradeUnsub, noticeUnsub, graveUnsub, regUnsub, regEvUnsub, talkUnsub, shelterUnsub].forEach(u => { if (u) { try { u(); } catch(e) {} } });
+    unsub = avatarUnsub = chatUnsub = memoUnsub = tradeUnsub = noticeUnsub = graveUnsub = regUnsub = regEvUnsub = talkUnsub = shelterUnsub = null;
+    talkLoc = null; shelterKey = null;
+  }
+  let listenersPaused = false, hideTimer = null;
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) {
+      clearTimeout(hideTimer);
+      hideTimer = setTimeout(() => { if (document.hidden && myDoc && db && !listenersPaused) { stopListeners(); listenersPaused = true; } }, 10 * 60 * 1000);
+    } else {
+      clearTimeout(hideTimer);
+      if (listenersPaused && myDoc && db) { listenersPaused = false; startListeners(); renderStatus(); }
+    }
+  });
 
   $('enterBtn').addEventListener('click', () => {
     const v = $('nameInput').value.trim();
@@ -5070,6 +5097,7 @@ const FIREBASE_CONFIG = {
   // 업데이트할 때마다 맨 위에 추가한다
   const PATCH_NOTES = [
     { d:'10.18', items:[
+      '⚙️ 데이터 절약: 탭을 10분 넘게 안 보면 실시간 연결을 잠시 끊었다가 돌아오면 다시 이어요. 같은 곳 대화·쉘터 채팅은 그 탭을 볼 때만 연결해요',
       '🌆 지역 상태 변화: 지역마다 좀비 밀도·물자 고갈·환경(산불·정전·침수·도로 봉쇄·군사 검역·대규모 약탈·생존자 점령)이 생기고 변해요. 총성은 좀비를 부르고, 군집은 이웃 지역으로 옮겨 가요. 지도에서 지역을 누르면 지금 상태와 최근 사건을 볼 수 있어요',
       '📦 추가 콘텐츠 v2: 조사 이벤트 20종, 무전 대사 16줄(임무 9개), 임무 이벤트 6종(같은 종류도 여러 장면), 좀비 6종(크롤러·브루트·스피터·장갑 좀비·잠복자·익사체), 동료 특성 5종·이름 8명·동료 대사, 대사 풀 확장',
       '🔔 알림: 상단 종 버튼을 켜면 탭을 안 보고 있을 때 행동 완료·선택 이벤트·무전 임무를 알려줘요',
@@ -5618,7 +5646,7 @@ const FIREBASE_CONFIG = {
 </div>
 <script>
 (function(){
-  var BUILD_ID = '20261018053625';
+  var BUILD_ID = '20261018054705';
   function check(){
     fetch('version.txt?t=' + Date.now(), { cache: 'no-store' }).then(function(r){ return r.ok ? r.text() : ''; }).then(function(v){
       v = (v || '').trim();
