@@ -40,152 +40,435 @@
 ------------------------------------------------------------------
 ※ 지도 좌표는 360×320 칸 기준(x 오른쪽, y 아래쪽). 새 지역을 제안할 때 빈 곳을 참고.
 
-■ 모하비 사막 (mojave) · 기후 더위(갈증 1.3배) · 지역 6곳
+■ 모하비 사막 (mojave) · 기후 더위(갈증 1.3배) · 지역 21곳
 - cajon · 카혼 패스 (Cajon Pass) · 위험도 25% · 사막 · 좌표 (45,250)
     설명: LA를 빠져나가는 마지막 고갯길. 15번 고속도로 위에 피난 차량이 끝없이 멈춰 서 있다.
-    이웃: 빅터빌(victorville), → [로스앤젤레스] 패서디나(pasadena) · 15번 고속도로
+    이웃: 빅터빌(victorville), 헤스페리아(hesperia), 루선 밸리(lucerne), → [로스앤젤레스] 패서디나(pasadena) · 15번 고속도로
     건물: ⛽ 카혼 정상 트럭 휴게소(gas) / 🛖 산불 감시 초소(cabin) / 🛏️ 15번 고속도로 모텔(motel) / 📦 철도 화물 기지(warehouse)
 - victorville · 빅터빌 (Victorville) · 위험도 30% · 주택가 · 좌표 (100,190)
     설명: 사막 한가운데의 위성 도시. 마트와 병원이 남아 있지만 물은 귀하다.
-    이웃: 카혼 패스(cajon), 바스토(barstow)
+    이웃: 카혼 패스(cajon), 바스토(barstow), 헤스페리아(hesperia), 애플밸리(applevalley), 헬렌데일(helendale)
     건물: 🛒 빅터빌 대형 마트(market) / 🏥 데저트 밸리 병원(hospital) / 🏫 빅터빌 고등학교(school) / 🏠 사막 주택 단지(house) / 🚓 빅터빌 보안관 지소(police)
 - barstow · 바스토 (Barstow) · 위험도 30% · 공항·항구 · 좌표 (175,140)
     설명: 루트 66과 철길이 만나는 사막 교차로. 화물 열차가 선로 위에서 녹슬고 있다.
-    이웃: 빅터빌(victorville), 포트 어윈 기지(fortirwin), 베이커(baker)
+    이웃: 빅터빌(victorville), 포트 어윈 기지(fortirwin), 베이커(baker), 헬렌데일(helendale), 캘리코 유령 마을(calico), 뉴베리 스프링스(newberry)
     건물: 🚉 바스토 기차역(terminal) / 🍖 루트 66 다이너(diner) / ⛽ 바스토 트럭 정류장(gas) / 🛏️ 루트 66 모텔(motel) / 🔧 철도 정비 공구 창고(hardware)
 - fortirwin · 포트 어윈 기지 (Fort Irwin) · 위험도 45% · 군 기지 · 좌표 (190,50)
     설명: 사막 훈련 기지. 철수 명령이 내려진 뒤 남겨진 무기와 군인 좀비가 있다.
-    이웃: 바스토(barstow), 베이커(baker)
+    이웃: 바스토(barstow), 베이커(baker), 힝클리(hinkley), 캘리코 유령 마을(calico)
     건물: 🚓 기지 헌병대(police) / 🔫 기지 무기고(gunshop) / 🏥 기지 의무대(hospital) / 📦 군 보급 창고(warehouse) / ⛺ 사막 훈련장 야영지(shelter)
 - baker · 베이커 (Baker) · 위험도 20% · 사막 · 좌표 (270,120)
     설명: 세계에서 가장 큰 온도계가 아직도 섭씨 49도를 가리킨다. 가게 몇 곳뿐인 휴게 마을.
-    이웃: 바스토(barstow), 포트 어윈 기지(fortirwin), 프림(primm)
+    이웃: 바스토(barstow), 포트 어윈 기지(fortirwin), 프림(primm), 대깃 태양광 단지(daggett), 켈소 사구(kelso), 지직스(zzyzx)
     건물: ⛽ 거대 온도계 주유소(gas) / 🍖 외계인 육포 가게(diner) / 🛏️ 베이커 모텔(motel) / 🛖 사막 순찰 초소(cabin)
 - primm · 프림 (Primm) · 위험도 35% · 카지노 · 좌표 (320,205)
     설명: 네바다 주 경계의 카지노 마을. 롤러코스터가 멈춘 채 바람에 삐걱거린다.
-    이웃: 베이커(baker), → [라스베이거스] 스트립 남쪽(southstrip) · 15번 고속도로
+    이웃: 베이커(baker), 러들로(ludlow), 켈소 사구(kelso), 앰보이(amboy), → [라스베이거스] 스트립 남쪽(southstrip) · 15번 고속도로
     건물: 🛏️ 국경 카지노 호텔(motel) / 🛒 아웃렛 몰(market) / ⛽ 주 경계 주유소(gas) / 🍖 카지노 뷔페(diner)
+- hesperia · 헤스페리아 (Hesperia) · 위험도 25% · 주택가 · 좌표 (55,185)
+    설명: 고갯길 아래 펼쳐진 사막 주택가. 피난 행렬이 남긴 차들이 골목마다 버려져 있다.
+    이웃: 카혼 패스(cajon), 빅터빌(victorville), 아델란토(adelanto)
+    건물: 🏠 사막 주택 단지(house) / 🛒 메인 스트리트 마트(market) / 🏫 헤스페리아 고등학교(school) / ⛽ 고속도로 진입로 주유소(gas) / ⛪ 헤스페리아 교회(church)
+- applevalley · 애플밸리 (Apple Valley) · 위험도 25% · 주택가 · 좌표 (140,225)
+    설명: 골프장과 목장이 섞인 조용한 교외. 마른 잔디 위로 워커들이 느릿느릿 걷는다.
+    이웃: 빅터빌(victorville), 루선 밸리(lucerne), 뉴베리 스프링스(newberry)
+    건물: 🏠 목장 주택(house) / 🌳 마른 골프장(park) / 💊 애플밸리 약국(pharmacy) / 🍖 카우보이 스테이크하우스(diner) / 🚒 애플밸리 소방서(fire)
+- adelanto · 아델란토 (Adelanto) · 위험도 40% · 경찰서 · 좌표 (40,130)
+    설명: 사막 한가운데 구치소가 있는 마을. 철창이 열린 뒤로 수감자였던 것들이 거리를 떠돈다.
+    이웃: 헤스페리아(hesperia), 헬렌데일(helendale), 차이나레이크(chinalake)
+    건물: 🚓 사막 구치소(police) / 🔫 교도관 무기고(gunshop) / 🏠 구치소 앞 주택가(house) / ⛽ 아델란토 주유소(gas)
+- helendale · 헬렌데일 (Helendale) · 위험도 20% · 주택가 · 좌표 (100,120)
+    설명: 모하비 강가의 작은 호숫가 마을. 말라가는 인공 호수 주변에 물을 노린 사람들이 모여든다.
+    이웃: 아델란토(adelanto), 빅터빌(victorville), 힝클리(hinkley), 바스토(barstow)
+    건물: 🏠 호숫가 주택(house) / 🌳 인공 호수 공원(park) / ☕ 호숫가 카페(cafe) / 🛒 동네 잡화점(market)
+- lucerne · 루선 밸리 (Lucerne Valley) · 위험도 15% · 사막 · 좌표 (130,282)
+    설명: 건조한 호수 바닥 옆 외딴 농가들. 바람에 날린 모래가 문틈마다 쌓여 있다.
+    이웃: 애플밸리(applevalley), 카혼 패스(cajon)
+    건물: 🏠 외딴 농가(house) / 🛖 건조호 관측 초소(cabin) / ⛽ 시골 주유소(gas) / ⛪ 사막 예배당(church)
+- hinkley · 힝클리 (Hinkley) · 위험도 20% · 사막 · 좌표 (130,80)
+    설명: 오염된 지하수 때문에 이미 반쯤 버려졌던 마을. 지금은 완전히 유령 마을이다.
+    이웃: 헬렌데일(helendale), 차이나레이크(chinalake), 포트 어윈 기지(fortirwin)
+    건물: 🏠 버려진 농가(house) / 🏫 폐교된 초등학교(school) / 📦 양수장 창고(warehouse) / ⛽ 힝클리 잡화 주유소(gas)
+- chinalake · 차이나레이크 (China Lake) · 위험도 50% · 군 기지 · 좌표 (60,75)
+    설명: 해군 무기 시험장. 경고 표지판 너머로 불발탄과 군인 좀비가 함께 굴러다닌다.
+    이웃: 아델란토(adelanto), 힝클리(hinkley)
+    건물: 🚓 기지 경비대(police) / 🔫 무기 시험 창고(gunshop) / 🏥 기지 의무실(hospital) / 📦 탄약 보관고(warehouse) / 🏢 시험장 통제소(office)
+- calico · 캘리코 유령 마을 (Calico) · 위험도 25% · 번화가 · 좌표 (225,95)
+    설명: 은광 시절을 재현한 관광지. 진짜 유령 마을이 되어 버린 지금은 아무도 웃지 않는다.
+    이웃: 바스토(barstow), 포트 어윈 기지(fortirwin)
+    건물: 🎬 은광 체험 공연장(studio) / 🍖 광부 식당(diner) / 🛏️ 캠핑장 숙소(motel) / 🛖 폐광 입구 초소(cabin)
+- newberry · 뉴베리 스프링스 (Newberry Springs) · 위험도 20% · 사막 · 좌표 (205,200)
+    설명: 사막 한복판 오아시스 같은 카페와 연못. 물이 있는 곳엔 늘 무언가가 모인다.
+    이웃: 애플밸리(applevalley), 바스토(barstow), 대깃 태양광 단지(daggett), 앰보이(amboy)
+    건물: ☕ 오아시스 카페(cafe) / 🛏️ 사막 모텔(motel) / ⛽ 뉴베리 주유소(gas) / 🏠 연못가 주택(house)
+- daggett · 대깃 태양광 단지 (Daggett) · 위험도 30% · 공업 지대 · 좌표 (255,170)
+    설명: 끝없이 늘어선 태양광 거울 사이로 정비 창고가 서 있다. 아직 전기가 흐르는 패널도 있다.
+    이웃: 뉴베리 스프링스(newberry), 베이커(baker), 러들로(ludlow)
+    건물: 📦 태양광 정비 창고(warehouse) / 🏢 발전소 관리동(office) / 🔧 전기 자재 창고(hardware) / ⛽ 대깃 주유소(gas)
+- ludlow · 러들로 (Ludlow) · 위험도 20% · 사막 · 좌표 (275,215)
+    설명: 루트 66의 버려진 휴게 마을. 녹슨 간판이 바람에 끼익거린다.
+    이웃: 대깃 태양광 단지(daggett), 앰보이(amboy), 프림(primm)
+    건물: 🍖 루트 66 휴게 식당(diner) / 🛏️ 러들로 모텔(motel) / ⛽ 버려진 주유소(gas) / ☕ 간이 커피숍(cafe)
+- amboy · 앰보이 (Amboy) · 위험도 15% · 사막 · 좌표 (250,275)
+    설명: 분화구 옆 텅 빈 마을. 모텔 간판의 네온은 꺼졌지만 주유소 펌프에는 기름이 남아 있다.
+    이웃: 러들로(ludlow), 뉴베리 스프링스(newberry), 프림(primm)
+    건물: 🛏️ 네온 간판 모텔(motel) / ⛽ 분화구 주유소(gas) / ⛪ 앰보이 교회(church) / 🛖 분화구 탐방 초소(cabin)
+- kelso · 켈소 사구 (Kelso Dunes) · 위험도 20% · 공원·숲 · 좌표 (330,110)
+    설명: 노래하는 모래 언덕과 옛 기차역. 모래 속에 반쯤 묻힌 워커들이 발목을 노린다.
+    이웃: 프림(primm), 베이커(baker), 마운틴 패스(mountainpass)
+    건물: 🚉 켈소 옛 기차역(terminal) / 🛖 국립 보호구역 초소(cabin) / 🌳 노래하는 모래 언덕(park) / 🏠 관리인 숙소(house)
+- zzyzx · 지직스 (Zzyzx) · 위험도 20% · 공원·숲 · 좌표 (285,65)
+    설명: 마른 소다 호수 옆 사막 연구소. 연구원들이 남긴 물탱크가 아직 차 있다는 소문이 있다.
+    이웃: 베이커(baker), 마운틴 패스(mountainpass)
+    건물: 🏢 사막 연구소(office) / 🛖 연구원 숙소(cabin) / 🌳 소다 호숫가(park) / 📦 물탱크 창고(warehouse)
+- mountainpass · 마운틴 패스 (Mountain Pass) · 위험도 35% · 공업 지대 · 좌표 (330,28)
+    설명: 네바다로 넘어가는 고갯마루의 광산. 폭약 창고 문이 열린 채 방치돼 있다.
+    이웃: 켈소 사구(kelso), 지직스(zzyzx)
+    건물: 📦 광산 폭약 창고(warehouse) / 🏢 광산 관리동(office) / 🔧 채굴 장비 창고(hardware) / ⛽ 고갯마루 주유소(gas) / 🛏️ 광부 숙소(motel)
 
-■ 라스베이거스 (vegas) · 기후 더위(갈증 1.3배) · 지역 8곳
+■ 라스베이거스 (vegas) · 기후 더위(갈증 1.3배) · 지역 21곳
 - southstrip · 스트립 남쪽 (South Strip) · 위험도 45% · 카지노 · 좌표 (160,215)
     설명: 피라미드와 성 모양 카지노 호텔들. 마지막 날 밤의 손님들이 아직 로비를 헤맨다.
-    이웃: 해리 리드 공항(airport), 스트립 북쪽(northstrip), 헨더슨(henderson), 레드록 캐니언(redrock), → [모하비 사막] 프림(primm) · 15번 고속도로
+    이웃: 해리 리드 공항(airport), 스트립 북쪽(northstrip), 헨더슨(henderson), 레드록 캐니언(redrock), 차이나타운(lvchinatown), 엔터프라이즈(enterprise), → [모하비 사막] 프림(primm) · 15번 고속도로
     건물: 🛏️ 피라미드 카지노 호텔(motel) / 🍖 카지노 뷔페 홀(diner) / 🎬 쇼 공연장(studio) / 📦 카지노 지하 물류창고(warehouse) / 💊 스트립 약국(pharmacy)
 - airport · 해리 리드 공항 (Harry Reid Airport) · 위험도 40% · 공항·항구 · 좌표 (230,255)
     설명: 활주로 끝에 전세기들이 멈춰 있다. 떠나지 못한 사람들의 짐이 수하물 벨트에 쌓여 있다.
-    이웃: 스트립 남쪽(southstrip), 헨더슨(henderson)
+    이웃: 스트립 남쪽(southstrip), 헨더슨(henderson), 볼더 시티(bouldercity)
     건물: 🚉 해리 리드 공항 터미널(terminal) / 📦 항공 화물 창고(warehouse) / ⛽ 렌터카 센터 주유소(gas) / 🚓 공항 경찰대(police)
 - northstrip · 스트립 북쪽 (North Strip) · 위험도 50% · 카지노 · 좌표 (165,150)
     설명: 분수쇼가 멈춘 호수 앞 대형 카지노들. 먹을 건 넘치지만 사람이던 것들도 넘친다.
-    이웃: 스트립 남쪽(southstrip), 프리몬트 스트리트(fremont), 레드록 캐니언(redrock)
+    이웃: 스트립 남쪽(southstrip), 프리몬트 스트리트(fremont), 레드록 캐니언(redrock), 메디컬 디스트릭트(meddistrict), 아츠 디스트릭트(artsdistrict), UNLV 캠퍼스(unlv)
     건물: 🛏️ 분수쇼 카지노 호텔(motel) / 🛒 쇼핑몰 푸드코트(market) / 🏥 선라이즈 병원(hospital) / 🍖 카지노 스테이크하우스(diner) / 🏢 컨벤션 센터(office)
 - fremont · 프리몬트 스트리트 (Fremont Street) · 위험도 40% · 번화가 · 좌표 (185,75)
     설명: 올드 다운타운. 천장 전광판이 가끔 혼자 켜져 거리를 붉게 물들인다.
-    이웃: 스트립 북쪽(northstrip), 넬리스 공군기지(nellis)
+    이웃: 스트립 북쪽(northstrip), 넬리스 공군기지(nellis), 메디컬 디스트릭트(meddistrict), 노스 라스베이거스(northlv), 아츠 디스트릭트(artsdistrict)
     건물: 🛏️ 올드 다운타운 카지노(motel) / 🚓 라스베이거스 경찰청(police) / 🔫 사격장 겸 총포상(gunshop) / 💊 프리몬트 약국(pharmacy) / 🚉 버스 터미널(terminal)
 - nellis · 넬리스 공군기지 (Nellis AFB) · 위험도 50% · 군 기지 · 좌표 (285,55)
     설명: 격납고 문이 열린 채 전투기가 서 있다. 북쪽 15번 고속도로가 로키산맥으로 이어진다.
-    이웃: 프리몬트 스트리트(fremont), 헨더슨(henderson), → [덴버] 아이젠하워 터널(eisenhower) · 15·70번 고속도로
+    이웃: 프리몬트 스트리트(fremont), 헨더슨(henderson), 노스 라스베이거스(northlv), 모터 스피드웨이(speedway), → [덴버] 아이젠하워 터널(eisenhower) · 15·70번 고속도로
     건물: 🚓 기지 헌병대(police) / 🔫 탄약고(gunshop) / 🏥 기지 병원(hospital) / 📦 격납고(warehouse) / ⛺ 긴급 대피 캠프(shelter)
 - henderson · 헨더슨 (Henderson) · 위험도 25% · 주택가 · 좌표 (270,190)
     설명: 조용한 교외 주택가. 수영장마다 초록색 물이 고여 있다.
-    이웃: 스트립 남쪽(southstrip), 해리 리드 공항(airport), 넬리스 공군기지(nellis), 후버 댐(hooverdam)
+    이웃: 스트립 남쪽(southstrip), 해리 리드 공항(airport), 넬리스 공군기지(nellis), 후버 댐(hooverdam), 모터 스피드웨이(speedway), 선라이즈 매너(sunrise), UNLV 캠퍼스(unlv), 그린 밸리(greenvalley)
     건물: 🏠 교외 주택(house) / 🏫 헨더슨 고등학교(school) / 🛒 동네 마트(market) / ⛪ 헨더슨 교회(church) / 🚒 헨더슨 소방서(fire)
 - hooverdam · 후버 댐 (Hoover Dam) · 위험도 30% · 공업 지대 · 좌표 (315,280)
     설명: 미드 호수를 막은 거대한 댐. 발전기 일부가 아직 돌아가고 있다.
-    이웃: 헨더슨(henderson)
+    이웃: 헨더슨(henderson), 그린 밸리(greenvalley), 볼더 시티(bouldercity)
     건물: 🏢 발전소 통제실(office) / 📦 터빈 정비 창고(warehouse) / 🛖 댐 경비 초소(cabin) / 🌳 미드 호수 호숫가(park)
 - redrock · 레드록 캐니언 (Red Rock Canyon) · 위험도 15% · 공원·숲 · 좌표 (55,140)
     설명: 붉은 바위 협곡과 서머린 주택가. 도시에서 떨어져 비교적 조용하다.
-    이웃: 스트립 남쪽(southstrip), 스트립 북쪽(northstrip)
+    이웃: 스트립 남쪽(southstrip), 스트립 북쪽(northstrip), 마운트 찰스턴(mtcharleston), 서머린(summerlin), 차이나타운(lvchinatown)
     건물: 🛖 협곡 레인저 초소(cabin) / 🌳 붉은 바위 탐방로(park) / 🏠 서머린 주택가(house) / ⛽ 협곡 입구 주유소(gas)
+- mtcharleston · 마운트 찰스턴 (Mount Charleston) · 위험도 12% · 공원·숲 · 좌표 (22,90)
+    설명: 사막 위로 솟은 눈 덮인 산. 산장과 캠프장이 도시를 피해 온 사람들로 붐볐다.
+    이웃: 서머린(summerlin), 레드록 캐니언(redrock)
+    건물: 🛖 산장 레인저 초소(cabin) / 🌳 눈 덮인 캠프장(park) / 🛏️ 산악 로지(motel) / ⛽ 산길 주유소(gas)
+- summerlin · 서머린 (Summerlin) · 위험도 20% · 주택가 · 좌표 (75,80)
+    설명: 계획도시로 지어진 서쪽 교외. 골프장 잔디는 누렇게 말랐고 집들은 문이 잠겨 있다.
+    이웃: 마운트 찰스턴(mtcharleston), 레드록 캐니언(redrock), 메디컬 디스트릭트(meddistrict)
+    건물: 🏠 골프장 옆 저택(house) / 🛒 서머린 쇼핑센터(market) / 🏫 서머린 고등학교(school) / ⛪ 서머린 교회(church) / 🌳 말라버린 골프장(park)
+- meddistrict · 메디컬 디스트릭트 (Medical District) · 위험도 42% · 병원 · 좌표 (120,100)
+    설명: 대형 병원들이 모인 구역. 의약품이 많지만 마지막까지 환자가 실려 온 곳이다.
+    이웃: 서머린(summerlin), 프리몬트 스트리트(fremont), 스트립 북쪽(northstrip)
+    건물: 🏥 대학 메디컬 센터(hospital) / 🏥 어린이 병원(hospital) / 💊 병원 앞 약국(pharmacy) / 🏢 의료 연구동(office) / ☕ 병원 카페(cafe)
+- northlv · 노스 라스베이거스 (North Las Vegas) · 위험도 38% · 경찰서 · 좌표 (220,30)
+    설명: 창고와 공장 사이로 낮은 주택가가 이어진다. 경찰서 앞에 버려진 순찰차가 줄지어 있다.
+    이웃: 프리몬트 스트리트(fremont), 넬리스 공군기지(nellis)
+    건물: 🚓 노스 라스베이거스 경찰서(police) / 📦 물류 창고 단지(warehouse) / 🏠 낮은 주택가(house) / 🏫 노스 라스베이거스 고등학교(school) / 🔧 공구 도매점(hardware)
+- artsdistrict · 아츠 디스트릭트 (Arts District) · 위험도 30% · 번화가 · 좌표 (195,115)
+    설명: 벽화와 골동품 가게가 늘어선 거리. 전망 타워가 거리 위로 그림자를 드리운다.
+    이웃: 프리몬트 스트리트(fremont), 스트립 북쪽(northstrip), 선라이즈 매너(sunrise)
+    건물: 🎬 벽화 작업실(studio) / ☕ 골동품 거리 카페(cafe) / 🛏️ 전망 타워 호텔(motel) / 🍖 네온 간판 다이너(diner) / 📚 옛 우체국 박물관(library)
+- sunrise · 선라이즈 매너 (Sunrise Manor) · 위험도 32% · 주택가 · 좌표 (240,120)
+    설명: 동쪽 산자락 아래 끝없는 주택가. 집집마다 창문에 판자가 덧대어져 있다.
+    이웃: 아츠 디스트릭트(artsdistrict), 헨더슨(henderson), UNLV 캠퍼스(unlv)
+    건물: 🏠 판자로 막은 주택(house) / 🛒 동네 마트(market) / 🏫 선라이즈 고등학교(school) / ⛪ 선라이즈 교회(church) / 🚒 선라이즈 소방서(fire)
+- speedway · 모터 스피드웨이 (Motor Speedway) · 위험도 30% · 경기장 · 좌표 (320,110)
+    설명: 사막 한가운데 자동차 경주장. 관중석 아래 정비고에 연료와 공구가 남아 있다.
+    이웃: 넬리스 공군기지(nellis), 헨더슨(henderson)
+    건물: 🎬 경주장 관중석 무대(studio) / 📦 피트 정비고(warehouse) / ⛽ 경주장 주유소(gas) / 🛏️ 레이서 숙소(motel)
+- unlv · UNLV 캠퍼스 (UNLV) · 위험도 35% · 경기장 · 좌표 (220,170)
+    설명: 대학 캠퍼스와 농구 경기장. 기숙사 창문마다 구조 요청이 적힌 이불이 걸려 있다.
+    이웃: 선라이즈 매너(sunrise), 스트립 북쪽(northstrip), 헨더슨(henderson)
+    건물: 🏫 UNLV 강의동(school) / 📚 대학 도서관(library) / ⛺ 농구 경기장 대피소(shelter) / 🍕 대학가 피자집(pizza) / 💊 캠퍼스 보건소(pharmacy)
+- springvalley · 스프링 밸리 (Spring Valley) · 위험도 25% · 주택가 · 좌표 (70,230)
+    설명: 스트립 서쪽의 조용한 주택가. 수영장마다 빗물이 고여 있다.
+    이웃: 차이나타운(lvchinatown), 엔터프라이즈(enterprise)
+    건물: 🏠 수영장 딸린 주택(house) / 🏫 스프링 밸리 고등학교(school) / ⛽ 레인보우 대로 주유소(gas) / 🍔 햄버거 가게(burger)
+- enterprise · 엔터프라이즈 (Enterprise) · 위험도 22% · 사막 · 좌표 (120,275)
+    설명: 남쪽으로 뻗은 신도시. 반쯤 지어진 집들 사이로 모래바람이 분다.
+    이웃: 스프링 밸리(springvalley), 스트립 남쪽(southstrip)
+    건물: 🏠 반쯤 지어진 주택 단지(house) / 🔧 건축 자재 야적장(hardware) / ⛽ 남부 고속도로 주유소(gas) / 🌮 타코 트럭(taco)
+- greenvalley · 그린 밸리 (Green Valley) · 위험도 20% · 마트 · 좌표 (335,215)
+    설명: 공원과 쇼핑센터가 있는 헨더슨 동쪽 동네. 주민들이 순찰을 돌던 흔적이 있다.
+    이웃: 헨더슨(henderson), 후버 댐(hooverdam)
+    건물: 🛒 그린 밸리 쇼핑센터(market) / 🌳 주민 공원(park) / 🏠 순찰대 본부 주택(house) / 💊 그린 밸리 약국(pharmacy) / 🚒 그린 밸리 소방서(fire)
+- bouldercity · 볼더 시티 (Boulder City) · 위험도 15% · 주택가 · 좌표 (260,300)
+    설명: 댐을 짓던 노동자들의 작은 마을. 도박이 금지된 마을이라 그런지 비교적 조용하다.
+    이웃: 후버 댐(hooverdam), 해리 리드 공항(airport)
+    건물: 🏠 댐 노동자 주택(house) / 🍖 올드타운 식당(diner) / 📚 댐 건설 박물관(library) / ⛪ 볼더 시티 교회(church) / ⛽ 93번 국도 주유소(gas)
+- lvchinatown · 차이나타운 (Chinatown) · 위험도 30% · 마트 · 좌표 (105,195)
+    설명: 스프링 마운틴 로드를 따라 늘어선 식당과 마트. 식재료 창고가 아직 다 털리지 않았다.
+    이웃: 스트립 남쪽(southstrip), 레드록 캐니언(redrock), 스프링 밸리(springvalley)
+    건물: 🛒 아시아 식료품 마트(market) / 🍖 스프링 마운틴 국숫집(diner) / 💊 한약방(pharmacy) / 📦 식재료 창고(warehouse) / ☕ 버블티 카페(cafe)
 
-■ 덴버 (denver) · 기후 추위(배고픔 1.2배) · 지역 6곳
+■ 덴버 (denver) · 기후 추위(배고픔 1.2배) · 지역 21곳
 - eisenhower · 아이젠하워 터널 (Eisenhower Tunnel) · 위험도 30% · 공원·숲 · 좌표 (40,150)
     설명: 해발 3,400m 로키산맥을 뚫은 터널. 안쪽은 어둡고, 눈 덮인 차들이 입구를 막고 있다.
-    이웃: 볼더(boulder), 레드록스 원형극장(redrocks), → [라스베이거스] 넬리스 공군기지(nellis) · 15·70번 고속도로
+    이웃: 볼더(boulder), 레드록스 원형극장(redrocks), 아이다호 스프링스(idahosprings), 조지타운(georgetown), 골든(golden), → [라스베이거스] 넬리스 공군기지(nellis) · 15·70번 고속도로
     건물: 🏢 터널 관제소(office) / ⛽ 고갯길 주유소(gas) / 🛖 스키 리조트 산장(cabin) / 📦 제설 장비 창고(warehouse)
 - boulder · 볼더 (Boulder) · 위험도 20% · 주택가 · 좌표 (130,55)
     설명: 산자락의 대학 도시. 학생들이 세운 바리케이드가 캠퍼스를 둘러싸고 있다.
-    이웃: 아이젠하워 터널(eisenhower), 덴버 다운타운(dendt), 덴버 국제공항(dia)
+    이웃: 아이젠하워 터널(eisenhower), 덴버 다운타운(dendt), 덴버 국제공항(dia), 아이다호 스프링스(idahosprings), 아바다(arvada), 웨스트민스터(westminster)
     건물: 🏫 콜로라도 대학교(school) / 🛒 펄 스트리트 마트(market) / 🛖 플랫아이언 등산로 초소(cabin) / 📚 대학 도서관(library) / 💊 볼더 약국(pharmacy)
 - redrocks · 레드록스 원형극장 (Red Rocks) · 위험도 20% · 공원·숲 · 좌표 (110,225)
     설명: 붉은 바위 사이의 야외 공연장. 마지막 공연의 무대 장비가 그대로 남아 있다.
-    이웃: 아이젠하워 터널(eisenhower), 덴버 다운타운(dendt)
+    이웃: 아이젠하워 터널(eisenhower), 덴버 다운타운(dendt), 에버그린(evergreen), 골든(golden), 레이크우드(lakewood), 리틀턴(littleton)
     건물: 🌳 원형극장 계단석(park) / 🎬 야외 공연장 무대(studio) / 🛖 공원 관리소(cabin) / ⛽ 산길 주유소(gas)
 - dendt · 덴버 다운타운 (Downtown Denver) · 위험도 45% · 경찰서 · 좌표 (195,145)
     설명: 유니언 역과 16번가 몰. 고층 빌딩 창문마다 구조 요청 글씨가 붙어 있다.
-    이웃: 볼더(boulder), 레드록스 원형극장(redrocks), 오로라(aurora), 덴버 국제공항(dia)
+    이웃: 볼더(boulder), 레드록스 원형극장(redrocks), 오로라(aurora), 덴버 국제공항(dia), 아바다(arvada), 웨스트민스터(westminster), 야구장 거리(lodo), 시티 파크(citypark), 캐피톨 힐(capitolhill), 레이크우드(lakewood)
     건물: 🚓 덴버 경찰청(police) / 🏢 16번가 오피스 타워(office) / 🚉 유니언 역(terminal) / 📚 덴버 중앙도서관(library) / 🍖 다운타운 다이너(diner) / 🏥 덴버 헬스 메디컬 센터(hospital)
 - aurora · 오로라 (Aurora) · 위험도 40% · 병원 · 좌표 (275,185)
     설명: 대형 의료 캠퍼스가 있는 동쪽 도시. 의약품이 많지만 병원 주변은 지옥이다.
-    이웃: 덴버 다운타운(dendt), 덴버 국제공항(dia)
+    이웃: 덴버 다운타운(dendt), 덴버 국제공항(dia), 커머스 시티(commerce), 버클리 기지(buckley), 시티 파크(citypark), 캐피톨 힐(capitolhill)
     건물: 🏥 오로라 의료 캠퍼스(hospital) / 🏠 오로라 주택가(house) / 🛒 콜팩스 마트(market) / 🏫 오로라 고등학교(school) / ⛪ 오로라 교회(church)
 - dia · 덴버 국제공항 (Denver Airport) · 위험도 45% · 공항·항구 · 좌표 (305,70)
     설명: 하얀 천막 지붕의 공항. 동쪽으로 끝없는 대평원과 고속도로가 이어진다.
-    이웃: 볼더(boulder), 덴버 다운타운(dendt), 오로라(aurora), → [시카고] 오헤어 공항(ohare) · 76·80번 고속도로
+    이웃: 볼더(boulder), 덴버 다운타운(dendt), 오로라(aurora), 야구장 거리(lodo), 로키산 병기창(rmarsenal), → [시카고] 오헤어 공항(ohare) · 76·80번 고속도로
     건물: 🚉 덴버 공항 터미널(terminal) / 📦 항공 화물 창고(warehouse) / 🛏️ 공항 호텔(motel) / ⛽ 공항 주유소(gas)
+- idahosprings · 아이다호 스프링스 (Idaho Springs) · 위험도 20% · 공원·숲 · 좌표 (55,95)
+    설명: 골드러시 시절의 광산 마을. 온천 증기가 아직도 협곡 위로 피어오른다.
+    이웃: 아이젠하워 터널(eisenhower), 볼더(boulder)
+    건물: 🛖 폐광 관리소(cabin) / 🛏️ 온천 여관(motel) / 🍖 광부 식당(diner) / ⛽ 협곡 주유소(gas)
+- georgetown · 조지타운 (Georgetown) · 위험도 15% · 주택가 · 좌표 (30,200)
+    설명: 빅토리아풍 목조 주택이 늘어선 산골 마을. 협곡 철도가 멈춘 채 눈에 덮였다.
+    이웃: 아이젠하워 터널(eisenhower), 에버그린(evergreen)
+    건물: 🏠 빅토리아풍 목조 주택(house) / 🚉 협곡 관광 열차역(terminal) / ⛪ 산골 교회(church) / ☕ 마을 찻집(cafe)
+- evergreen · 에버그린 (Evergreen) · 위험도 15% · 공원·숲 · 좌표 (60,240)
+    설명: 소나무 숲속 호숫가 별장 마을. 사슴과 엘크가 빈 길을 어슬렁거린다.
+    이웃: 조지타운(georgetown), 레드록스 원형극장(redrocks)
+    건물: 🛖 호숫가 별장(cabin) / 🌳 에버그린 호수 공원(park) / 🚒 산림 소방서(fire) / 🛒 산골 잡화점(market)
+- golden · 골든 (Golden) · 위험도 25% · 공업 지대 · 좌표 (95,140)
+    설명: 산자락의 양조장 도시. 거대한 맥주 공장 탱크에 아직 무언가 남아 있다는 소문이 돈다.
+    이웃: 아이젠하워 터널(eisenhower), 아바다(arvada), 레드록스 원형극장(redrocks)
+    건물: 📦 양조장 저장고(warehouse) / 🏫 광업 대학교(school) / 🔧 골든 철물점(hardware) / 🍖 워싱턴 애비뉴 식당(diner) / 🌳 클리어 크릭 강변(park)
+- arvada · 아바다 (Arvada) · 위험도 25% · 주택가 · 좌표 (140,105)
+    설명: 오래된 시가지와 끝없는 교외 주택가. 집집마다 창문에 판자가 덧대어져 있다.
+    이웃: 골든(golden), 볼더(boulder), 덴버 다운타운(dendt)
+    건물: 🏠 교외 주택가(house) / 🏫 아바다 고등학교(school) / 🛒 올드타운 마트(market) / ⛪ 아바다 교회(church) / 💊 동네 약국(pharmacy)
+- westminster · 웨스트민스터 (Westminster) · 위험도 30% · 마트 · 좌표 (175,70)
+    설명: 고속도로 옆 대형 쇼핑 단지. 주차장에 버려진 카트가 바람에 굴러다닌다.
+    이웃: 볼더(boulder), 야구장 거리(lodo), 덴버 다운타운(dendt)
+    건물: 🛒 쇼핑 단지 대형 마트(market) / 🍔 고속도로 햄버거 가게(burger) / ⛽ 36번 도로 주유소(gas) / 🏢 교외 오피스 단지(office) / 🍕 쇼핑몰 피자집(pizza)
+- lodo · 야구장 거리 (LoDo) · 위험도 45% · 경기장 · 좌표 (225,100)
+    설명: 벽돌 창고를 개조한 술집 거리와 야구장. 마지막 경기 날의 관중이 아직 거리를 메우고 있다.
+    이웃: 웨스트민스터(westminster), 덴버 다운타운(dendt), 덴버 국제공항(dia)
+    건물: ⛺ 야구장 대피소(shelter) / 🍖 벽돌 창고 술집(diner) / 📦 철로변 창고(warehouse) / 🍕 야구장 앞 피자집(pizza) / 🛏️ 유니언 역 옆 호텔(motel)
+- rmarsenal · 로키산 병기창 (Rocky Mtn Arsenal) · 위험도 45% · 군 기지 · 좌표 (300,115)
+    설명: 옛 화학무기 공장 터에 세운 야생동물 보호구역. 철조망 안쪽 벙커는 군이 다시 쓰고 있었다.
+    이웃: 덴버 국제공항(dia), 커머스 시티(commerce)
+    건물: 🔫 병기창 무기고(gunshop) / 🚓 보호구역 경비대(police) / 📦 화학 처리 벙커(warehouse) / 🛖 야생동물 관찰소(cabin)
+- commerce · 커머스 시티 (Commerce City) · 위험도 40% · 공업 지대 · 좌표 (320,175)
+    설명: 정유 공장 굴뚝이 늘어선 공업 도시. 새어 나온 기름 냄새가 거리를 덮었다.
+    이웃: 로키산 병기창(rmarsenal), 오로라(aurora), 버클리 기지(buckley)
+    건물: 📦 정유 공장 저장고(warehouse) / ⛽ 정유소 주유소(gas) / 🔧 공업용 자재 창고(hardware) / 🏢 정유 공장 관리동(office) / 🌮 공장 앞 타코 트럭(taco)
+- citypark · 시티 파크 (City Park) · 위험도 30% · 공원·숲 · 좌표 (245,150)
+    설명: 동물원과 자연사 박물관이 있는 큰 공원. 우리에서 빠져나온 동물 울음소리가 밤마다 들린다.
+    이웃: 덴버 다운타운(dendt), 오로라(aurora)
+    건물: 🌳 동물원 산책로(park) / 📚 자연사 박물관(library) / ☕ 호숫가 보트하우스 카페(cafe) / ⛺ 공원 임시 대피소(shelter)
+- capitolhill · 캐피톨 힐 (Capitol Hill) · 위험도 40% · 경찰서 · 좌표 (225,190)
+    설명: 금빛 돔의 주 의사당과 오래된 아파트 거리. 의사당 계단에 주 방위군의 모래주머니가 쌓여 있다.
+    이웃: 덴버 다운타운(dendt), 오로라(aurora), 잉글우드(englewood)
+    건물: 🏢 주 의사당(office) / 🚓 주 방위군 지휘소(police) / 🏠 오래된 아파트 거리(house) / ⛪ 대성당(church) / 💊 콜팩스 약국(pharmacy)
+- lakewood · 레이크우드 (Lakewood) · 위험도 25% · 주택가 · 좌표 (155,205)
+    설명: 서쪽 교외의 주택가와 호수. 연방 정부 청사 단지가 철문을 굳게 닫았다.
+    이웃: 레드록스 원형극장(redrocks), 덴버 다운타운(dendt), 잉글우드(englewood)
+    건물: 🏢 연방 정부 청사(office) / 🏠 레이크우드 주택가(house) / 🛒 교외 마트(market) / 🏫 레이크우드 고등학교(school) / 🌳 호숫가 공원(park)
+- englewood · 잉글우드 (Englewood) · 위험도 35% · 병원 · 좌표 (200,240)
+    설명: 남쪽의 병원 거리. 구급차들이 응급실 입구를 막은 채 서 있다.
+    이웃: 캐피톨 힐(capitolhill), 레이크우드(lakewood), 리틀턴(littleton)
+    건물: 🏥 잉글우드 종합병원(hospital) / 💊 병원 앞 약국(pharmacy) / 🍔 브로드웨이 햄버거 가게(burger) / 🛏️ 병원 거리 모텔(motel)
+- littleton · 리틀턴 (Littleton) · 위험도 20% · 주택가 · 좌표 (160,280)
+    설명: 강가의 조용한 옛 시가지. 주민들이 교회를 중심으로 모여 버티고 있다.
+    이웃: 잉글우드(englewood), 레드록스 원형극장(redrocks)
+    건물: ⛪ 리틀턴 교회(church) / 🏠 강가 옛 주택(house) / 📚 리틀턴 도서관(library) / 🍖 메인 스트리트 식당(diner)
+- buckley · 버클리 기지 (Buckley Base) · 위험도 50% · 군 기지 · 좌표 (320,235)
+    설명: 동쪽 들판의 공군 기지. 레이더 돔 아래 격납고 문이 반쯤 열려 있다.
+    이웃: 커머스 시티(commerce), 오로라(aurora)
+    건물: 🚓 기지 헌병대(police) / 📦 격납고(warehouse) / 🏥 기지 의무대(hospital) / 🔫 기지 탄약고(gunshop) / ⛺ 기지 피난 캠프(shelter)
 
-■ 시카고 (chicago) · 기후 추위(배고픔 1.2배) · 지역 6곳
+■ 시카고 (chicago) · 기후 추위(배고픔 1.2배) · 지역 21곳
 - ohare · 오헤어 공항 (O'Hare) · 위험도 45% · 공항·항구 · 좌표 (50,80)
     설명: 미국에서 가장 붐비던 공항. 지금은 활주로 위로 갈까마귀만 오간다.
-    이웃: 레이크뷰(lakeview), 루프(loop), → [덴버] 덴버 국제공항(dia) · 76·80번 고속도로
+    이웃: 레이크뷰(lakeview), 루프(loop), 스코키(skokie), 로건 스퀘어(logansquare), 데스플레인스(desplaines), → [덴버] 덴버 국제공항(dia) · 76·80번 고속도로
     건물: 🚉 오헤어 공항 터미널(terminal) / 📦 항공 화물 창고(warehouse) / 🛏️ 공항 호텔(motel) / ⛽ 공항 주유소(gas) / 🚓 공항 경찰대(police)
 - lakeview · 레이크뷰 (Lakeview) · 위험도 30% · 경기장 · 좌표 (185,60)
     설명: 담쟁이로 덮인 오래된 야구장 주변 동네. 경기장이 대피소로 쓰였다.
-    이웃: 오헤어 공항(ohare), 루프(loop), 네이비 피어(navypier)
+    이웃: 오헤어 공항(ohare), 루프(loop), 네이비 피어(navypier), 에번스턴(evanston), 스코키(skokie), 링컨 파크(lincolnpark)
     건물: ⛺ 야구장 대피소(shelter) / 🍖 스포츠 바(diner) / 🏠 레이크뷰 주택가(house) / 🍕 딥디시 피자집(pizza) / ⛪ 레이크뷰 교회(church)
 - loop · 루프 (The Loop) · 위험도 50% · 경찰서 · 좌표 (205,160)
     설명: 고가 철도가 빌딩 숲을 감싸 도는 도심. 꼭대기 전망대에서 신호를 보내는 사람이 있다.
-    이웃: 오헤어 공항(ohare), 레이크뷰(lakeview), 네이비 피어(navypier), 사우스사이드(southside)
+    이웃: 오헤어 공항(ohare), 레이크뷰(lakeview), 네이비 피어(navypier), 사우스사이드(southside), 위커 파크(wickerpark), 웨스트 루프(westloop), 차이나타운(chichinatown), 뮤지엄 캠퍼스(museumcampus)
     건물: 🏢 스카이데크 고층 빌딩(office) / 🚓 시카고 경찰 본부(police) / 🚉 유니언 역(terminal) / 📚 해럴드 워싱턴 도서관(library) / 🛒 도심 마트(market)
 - navypier · 네이비 피어 (Navy Pier) · 위험도 30% · 해변 · 좌표 (270,130)
     설명: 미시간 호로 뻗은 부두. 멈춘 대관람차 아래 보트들이 묶여 있다.
-    이웃: 레이크뷰(lakeview), 루프(loop)
+    이웃: 레이크뷰(lakeview), 루프(loop), 링컨 파크(lincolnpark), 뮤지엄 캠퍼스(museumcampus)
     건물: 🛟 호숫가 해안경비 초소(lifeguard) / 🍖 부두 식당가(diner) / 🎬 대관람차 공연장(studio) / 📦 부두 창고(warehouse)
 - southside · 사우스사이드 (South Side) · 위험도 35% · 병원 · 좌표 (200,245)
     설명: 대학 병원과 주택가. 이웃끼리 지키는 구역이 몇 군데 있다.
-    이웃: 루프(loop), 게리 제철소(gary)
+    이웃: 루프(loop), 게리 제철소(gary), 차이나타운(chichinatown), 하이드 파크(hydepark), 미드웨이 공항(midway)
     건물: 🏥 대학 병원(hospital) / 🏫 사우스사이드 고등학교(school) / ⛪ 침례 교회(church) / 🏠 사우스사이드 주택가(house) / 🍔 햄버거 가게(burger)
 - gary · 게리 제철소 (Gary) · 위험도 35% · 공업 지대 · 좌표 (300,290)
     설명: 호숫가의 거대한 제철소. 꺼진 용광로 사이로 동쪽 고속도로가 뻗어 있다.
-    이웃: 사우스사이드(southside), → [뉴욕] 뉴어크(newark) · 80·90번 고속도로
+    이웃: 사우스사이드(southside), 하이드 파크(hydepark), 캘류멧(calumet), → [뉴욕] 뉴어크(newark) · 80·90번 고속도로
     건물: 📦 제철소 원료 창고(warehouse) / 🔧 제철소 공구실(hardware) / ⛽ 트럭 휴게소(gas) / 🏢 제철소 관리동(office)
+- evanston · 에번스턴 (Evanston) · 위험도 20% · 주택가 · 좌표 (250,28)
+    설명: 호숫가 대학 도시. 캠퍼스 시계탑 위에서 누군가 손전등으로 신호를 보낸다.
+    이웃: 링컨 파크(lincolnpark), 스코키(skokie), 레이크뷰(lakeview)
+    건물: 🏫 노스쇼어 대학 캠퍼스(school) / 📚 대학 도서관(library) / 🏠 호숫가 주택(house) / 🛟 에번스턴 비치 초소(lifeguard) / ☕ 대학가 카페(cafe)
+- skokie · 스코키 (Skokie) · 위험도 25% · 마트 · 좌표 (140,30)
+    설명: 대형 쇼핑몰이 있는 북쪽 교외. 주차장에 버려진 카트가 바람에 굴러다닌다.
+    이웃: 에번스턴(evanston), 오헤어 공항(ohare), 레이크뷰(lakeview)
+    건물: 🛒 올드 오처드 쇼핑몰(market) / ⛽ 에든스 고속도로 주유소(gas) / 🏠 스코키 주택가(house) / 💊 스코키 약국(pharmacy) / 🏫 스코키 고등학교(school)
+- desplaines · 데스플레인스 (Des Plaines) · 위험도 25% · 번화가 · 좌표 (30,140)
+    설명: 강가의 교외 도시. 불 꺼진 카지노 간판 아래로 강물이 불어나 있다.
+    이웃: 오헤어 공항(ohare), 오크 파크(oakpark)
+    건물: 🛏️ 강변 카지노 호텔(motel) / ⛽ 공항 가는 길 주유소(gas) / 🌳 데스플레인스 강변 숲(park) / 📦 물류 단지 창고(warehouse)
+- lincolnpark · 링컨 파크 (Lincoln Park) · 위험도 25% · 공원·숲 · 좌표 (255,85)
+    설명: 호숫가 공원과 동물원. 우리를 빠져나온 동물들의 울음소리가 밤마다 들린다.
+    이웃: 에번스턴(evanston), 레이크뷰(lakeview), 네이비 피어(navypier)
+    건물: 🌳 링컨 파크 동물원(park) / 🛖 동물원 사육사 관리동(cabin) / 🏠 링컨 파크 주택(house) / 🛟 노스 애비뉴 비치 초소(lifeguard) / ☕ 공원 앞 카페(cafe)
+- logansquare · 로건 스퀘어 (Logan Square) · 위험도 30% · 주택가 · 좌표 (110,120)
+    설명: 넓은 대로와 오래된 벽돌집이 이어진 주택가. 기념탑 광장에 바리케이드가 남아 있다.
+    이웃: 오헤어 공항(ohare), 위커 파크(wickerpark), 오크 파크(oakpark)
+    건물: 🏠 로건 스퀘어 벽돌집(house) / ⛪ 광장 루터교회(church) / 🌮 밀워키 애비뉴 타코 트럭(taco) / ☕ 기념탑 앞 카페(cafe) / 🚒 로건 스퀘어 소방서(fire)
+- wickerpark · 위커 파크 (Wicker Park) · 위험도 35% · 번화가 · 좌표 (150,135)
+    설명: 술집과 공연장이 몰린 번화가. 고가 철도 아래로 사람이던 것들이 몰려다닌다.
+    이웃: 로건 스퀘어(logansquare), 루프(loop), 웨스트 루프(westloop)
+    건물: 🍕 노스 애비뉴 피자집(pizza) / 🎬 고가 철도 밑 공연장(studio) / 🍔 밀워키 애비뉴 햄버거 가게(burger) / 🛏️ 위커 파크 부티크 호텔(motel) / 💊 다멘 애비뉴 약국(pharmacy)
+- oakpark · 오크 파크 (Oak Park) · 위험도 20% · 주택가 · 좌표 (70,175)
+    설명: 나무가 우거진 서쪽 교외. 오래된 저택들의 높은 담이 아직 버티고 있다.
+    이웃: 로건 스퀘어(logansquare), 데스플레인스(desplaines), 웨스트 루프(westloop), 시서로(cicero)
+    건물: 🏠 프레리 양식 저택(house) / 📚 오크 파크 공공도서관(library) / ⛪ 오크 파크 교회(church) / 🏥 웨스트 서버브 병원(hospital) / 🏫 오크 파크 고등학교(school)
+- westloop · 웨스트 루프 (West Loop) · 위험도 40% · 마트 · 좌표 (155,185)
+    설명: 식당가와 옛 정육 창고 거리. 냉동창고 문 너머에서 쿵쿵거리는 소리가 난다.
+    이웃: 위커 파크(wickerpark), 오크 파크(oakpark), 루프(loop), 필슨(pilsen)
+    건물: 📦 옛 정육 냉동창고(warehouse) / 🍖 랜돌프 스트리트 식당가(diner) / 🛒 웨스트 루프 식료품점(market) / 🏢 풀턴 마켓 사무동(office) / 🏥 러시 대학 병원(hospital)
+- pilsen · 필슨 (Pilsen) · 위험도 30% · 주택가 · 좌표 (160,225)
+    설명: 벽화가 가득한 골목 동네. 주민들이 교회를 중심으로 구역을 지키고 있다.
+    이웃: 웨스트 루프(westloop), 시서로(cicero), 미드웨이 공항(midway)
+    건물: ⛪ 성 프로코피우스 성당(church) / 🌮 18번가 타코 트럭(taco) / 🏠 벽화 골목 주택(house) / 🏫 필슨 고등학교(school) / 🛒 18번가 시장(market)
+- cicero · 시서로 (Cicero) · 위험도 30% · 공업 지대 · 좌표 (95,225)
+    설명: 공장과 철도 차량기지가 늘어선 서쪽 공업 도시. 화물칸마다 물자가 실려 있다.
+    이웃: 오크 파크(oakpark), 필슨(pilsen)
+    건물: 📦 철도 차량기지 창고(warehouse) / 🔧 시서로 공업용 자재상(hardware) / ⛽ 서마크 로드 주유소(gas) / 🚓 시서로 경찰서(police) / 🏠 노동자 주택가(house)
+- museumcampus · 뮤지엄 캠퍼스 (Museum Campus) · 위험도 35% · 경기장 · 좌표 (270,185)
+    설명: 박물관과 미식축구 경기장이 모인 호숫가. 경기장은 군 임시 진료소였다.
+    이웃: 차이나타운(chichinatown), 네이비 피어(navypier), 루프(loop)
+    건물: ⛺ 경기장 임시 진료소(shelter) / 📚 자연사 박물관(library) / 🌳 호숫가 산책로(park) / 🛟 호숫가 해안경비 초소(lifeguard) / 🏢 수족관 관리동(office)
+- hydepark · 하이드 파크 (Hyde Park) · 위험도 30% · 병원 · 좌표 (262,250)
+    설명: 대학 캠퍼스와 병원이 있는 남쪽 호숫가 동네. 연구동 창문에 경고 표시가 붙어 있다.
+    이웃: 차이나타운(chichinatown), 사우스사이드(southside), 게리 제철소(gary)
+    건물: 🏥 대학 의료 센터(hospital) / 🏫 하이드 파크 대학 캠퍼스(school) / 📚 대학 연구 도서관(library) / 🏠 호숫가 고급 주택(house) / ⛪ 록펠러 채플(church)
+- calumet · 캘류멧 (Calumet) · 위험도 35% · 공업 지대 · 좌표 (240,290)
+    설명: 제철소와 운하가 얽힌 남동쪽 공업 지대. 녹슨 크레인이 하늘을 가린다.
+    이웃: 게리 제철소(gary), 미드웨이 공항(midway)
+    건물: 📦 제철소 원자재 야적장(warehouse) / 🔧 운하 옆 공구 창고(hardware) / ⛽ 캘류멧 트럭 휴게소(gas) / 🚒 캘류멧 소방서(fire)
+- midway · 미드웨이 공항 (Midway) · 위험도 40% · 공항·항구 · 좌표 (175,282)
+    설명: 주택가 한가운데 박힌 작은 공항. 활주로 끝 담장을 넘어 워커들이 흘러든다.
+    이웃: 필슨(pilsen), 캘류멧(calumet), 사우스사이드(southside)
+    건물: 🚉 미드웨이 공항 터미널(terminal) / 📦 공항 화물 창고(warehouse) / 🛏️ 공항 모텔(motel) / ⛽ 시서로 애비뉴 주유소(gas) / 🚓 공항 경찰대(police)
+- chichinatown · 차이나타운 (Chinatown) · 위험도 35% · 마트 · 좌표 (230,215)
+    설명: 붉은 문이 선 상점가. 식료품점 지하 창고에 마른 식량이 많다는 소문이 돈다.
+    이웃: 루프(loop), 사우스사이드(southside), 뮤지엄 캠퍼스(museumcampus), 하이드 파크(hydepark)
+    건물: 🛒 차이나타운 식료품점(market) / 🍖 웬트워스 애비뉴 식당(diner) / 💊 한약방 겸 약국(pharmacy) / ⛪ 차이나타운 교회(church) / 🏢 상인 협회 건물(office)
 
-■ 뉴욕 (ny) · 기후 보통 · 지역 8곳
+■ 뉴욕 (ny) · 기후 보통 · 지역 21곳
 - newark · 뉴어크 (Newark) · 위험도 40% · 공항·항구 · 좌표 (40,210)
     설명: 공항과 항만 컨테이너 터미널. 허드슨 강 건너 맨해튼의 실루엣이 보인다.
-    이웃: 저지시티(jerseycity), → [시카고] 게리 제철소(gary) · 80·90번 고속도로
+    이웃: 저지시티(jerseycity), 호보컨(hoboken), → [시카고] 게리 제철소(gary) · 80·90번 고속도로
     건물: 🚉 뉴어크 공항(terminal) / 📦 항만 컨테이너 터미널(warehouse) / ⛽ 턴파이크 주유소(gas) / 🛏️ 공항 모텔(motel)
 - jerseycity · 저지시티 (Jersey City) · 위험도 30% · 주택가 · 좌표 (95,255)
     설명: 강변 주택가. 강 건너로 가는 지하 터널 입구가 있다.
-    이웃: 뉴어크(newark), 로어 맨해튼(lowermanhattan), 미드타운(midtown)
+    이웃: 뉴어크(newark), 로어 맨해튼(lowermanhattan), 미드타운(midtown), 첼시(chelsea)
     건물: 🏠 강변 주택(house) / 🛒 저지시티 마트(market) / 🏫 저지시티 고등학교(school) / 💊 그로브 스트리트 약국(pharmacy)
 - lowermanhattan · 로어 맨해튼 (Lower Manhattan) · 위험도 50% · 경찰서 · 좌표 (170,262)
     설명: 월스트리트와 NYPD 본부. 좁은 거리마다 바리케이드와 시체가 쌓여 있다.
-    이웃: 저지시티(jerseycity), 미드타운(midtown), 브루클린(brooklyn)
+    이웃: 저지시티(jerseycity), 미드타운(midtown), 브루클린(brooklyn), 차이나타운(chinatown)
     건물: 🏢 월스트리트 빌딩(office) / 🚓 NYPD 본부(police) / 🚉 지하철 환승역(terminal) / 🚒 래더 10 소방서(fire) / 💊 브로드웨이 약국(pharmacy)
 - midtown · 미드타운 (Midtown) · 위험도 55% · 번화가 · 좌표 (185,165)
     설명: 타임스스퀘어의 전광판은 꺼졌다. 가장 많은 사람이 있던 곳이고, 지금도 그렇다.
-    이웃: 저지시티(jerseycity), 로어 맨해튼(lowermanhattan), 센트럴 파크(centralpark), 루스벨트섬 쉘터(rooseveltisland)
+    이웃: 저지시티(jerseycity), 로어 맨해튼(lowermanhattan), 센트럴 파크(centralpark), 루스벨트섬 쉘터(rooseveltisland), 헬스키친(hellskitchen), 첼시(chelsea), 그리니치 빌리지(village)
     건물: 🏢 엠파이어 스테이트 빌딩(office) / 🚉 그랜드 센트럴 터미널(terminal) / 🛒 타임스스퀘어 마트(market) / 🏥 벨뷰 병원(hospital) / 🍖 델리 식당(diner)
 - centralpark · 센트럴 파크 (Central Park) · 위험도 30% · 공원·숲 · 좌표 (200,100)
     설명: 도시 한가운데 숲. 누군가 잔디밭에 텃밭을 일궈 두었다.
-    이웃: 미드타운(midtown), 할렘(harlem)
+    이웃: 미드타운(midtown), 할렘(harlem), 어퍼웨스트사이드(upperwest)
     건물: 🌳 셰익스피어 정원(park) / 🛖 공원 관리 사무소(cabin) / 📚 자연사 박물관(library) / ☕ 보트하우스 카페(cafe)
 - harlem · 할렘 (Harlem) · 위험도 40% · 주택가 · 좌표 (215,35)
     설명: 교회 종탑마다 망을 보는 사람이 있다. 거리는 주민들이 지킨다.
-    이웃: 센트럴 파크(centralpark)
+    이웃: 센트럴 파크(centralpark), 브롱크스(bronx)
     건물: ⛪ 할렘 침례 교회(church) / 🏫 할렘 고등학교(school) / 🍖 소울푸드 식당(diner) / 🏠 브라운스톤 주택가(house)
 - brooklyn · 브루클린 (Brooklyn) · 위험도 40% · 주택가 · 좌표 (290,250)
     설명: 다리 너머 넓은 주택가. 옥상마다 물탱크와 빨랫줄이 보인다.
-    이웃: 로어 맨해튼(lowermanhattan), 루스벨트섬 쉘터(rooseveltisland)
+    이웃: 로어 맨해튼(lowermanhattan), 루스벨트섬 쉘터(rooseveltisland), 차이나타운(chinatown), 윌리엄스버그(williamsburg), JFK 공항(jfk), 코니아일랜드(coneyisland)
     건물: 🏠 브라운스톤 주택(house) / 🍕 브루클린 피자집(pizza) / 🛒 애틀랜틱 마트(market) / 🏥 브루클린 병원(hospital) / ⛪ 브루클린 성당(church)
 - rooseveltisland · 루스벨트섬 쉘터 (Roosevelt Island) · 위험도 5% · 생존자 쉘터 · 좌표 (250,150)
     설명: 이스트 강 한가운데 섬. 다리를 끊고 세운 뉴욕 생존자 쉘터. 무전이 부르던 바로 그곳이다.
-    이웃: 미드타운(midtown), 브루클린(brooklyn)
+    이웃: 미드타운(midtown), 브루클린(brooklyn), 롱아일랜드시티(lic)
     건물: ⛺ 뉴욕 생존자 쉘터(shelter) / 🛒 쉘터 배급소(market) / 🏥 섬 병원 의무동(hospital) / 🏢 쉘터 무전실(office)
-
+- fortlee · 포트리 (Fort Lee) · 위험도 25% · 주택가 · 좌표 (60,80)
+    설명: 허드슨 강 절벽 위 마을. 맨해튼으로 건너가는 거대한 현수교가 차량 잔해로 막혀 있다.
+    이웃: 어퍼웨스트사이드(upperwest), 호보컨(hoboken)
+    건물: 🏠 절벽 위 주택가(house) / ⛽ 다리 입구 주유소(gas) / 🛒 한인 마트(market) / 🌳 강변 절벽 공원(park)
+- hoboken · 호보컨 (Hoboken) · 위험도 30% · 주택가 · 좌표 (80,150)
+    설명: 강변 벽돌 주택가와 오래된 기차역. 건너편 미드타운의 불 꺼진 빌딩 숲이 손에 잡힐 듯 보인다.
+    이웃: 포트리(fortlee), 뉴어크(newark), 헬스키친(hellskitchen)
+    건물: 🚉 호보컨 기차역(terminal) / 🏠 강변 벽돌 주택(house) / 🍕 워싱턴 스트리트 피자집(pizza) / 💊 호보컨 약국(pharmacy) / 🚒 호보컨 소방서(fire)
+- upperwest · 어퍼웨스트사이드 (Upper West Side) · 위험도 35% · 주택가 · 좌표 (160,95)
+    설명: 공원 서쪽의 오래된 아파트 거리. 박물관 계단 위로 버려진 유모차들이 줄지어 있다.
+    이웃: 포트리(fortlee), 센트럴 파크(centralpark), 헬스키친(hellskitchen)
+    건물: 📚 자연사 박물관(library) / 🏠 공원 서쪽 아파트(house) / 🛒 브로드웨이 식료품점(market) / ⛪ 대성당(church) / 🏫 컬럼비아 대학 캠퍼스(school)
+- hellskitchen · 헬스키친 (Hell's Kitchen) · 위험도 45% · 번화가 · 좌표 (155,140)
+    설명: 극장가 뒤편 식당 골목. 강 밑 터널로 피난하던 행렬이 그대로 멈춰 있다.
+    이웃: 호보컨(hoboken), 어퍼웨스트사이드(upperwest), 미드타운(midtown)
+    건물: 🍖 극장가 식당(diner) / 🎬 브로드웨이 극장(studio) / 🚉 강 밑 터널 입구(terminal) / 🛏️ 타임스스퀘어 뒷골목 호텔(motel) / 🚓 미드타운 노스 경찰서(police)
+- chelsea · 첼시 (Chelsea) · 위험도 40% · 마트 · 좌표 (165,205)
+    설명: 고가 철길을 공원으로 바꾼 산책로와 실내 시장이 있다. 높은 산책로 위는 비교적 안전하다.
+    이웃: 미드타운(midtown), 저지시티(jerseycity)
+    건물: 🛒 실내 식품 시장(market) / 🌳 고가 철길 산책로(park) / 🏢 첼시 갤러리 빌딩(office) / 🏥 첼시 병원(hospital) / ☕ 첼시 카페(cafe)
+- village · 그리니치 빌리지 (Greenwich Village) · 위험도 35% · 번화가 · 좌표 (205,205)
+    설명: 좁은 골목과 개선문이 선 광장. 대학 건물 창문마다 생존자 명단이 붙어 있다.
+    이웃: 미드타운(midtown), 차이나타운(chinatown)
+    건물: 🏫 대학 캠퍼스(school) / ☕ 골목 카페(cafe) / 🍕 블리커 스트리트 피자집(pizza) / 🌳 개선문 광장(park) / ⛪ 빌리지 교회(church)
+- chinatown · 차이나타운 (Chinatown) · 위험도 40% · 마트 · 좌표 (210,245)
+    설명: 건어물 가게와 약재상이 빽빽한 거리. 셔터를 내린 가게 안에 아직 물건이 남아 있다.
+    이웃: 그리니치 빌리지(village), 로어 맨해튼(lowermanhattan), 브루클린(brooklyn)
+    건물: 🛒 차이나타운 건어물 시장(market) / 💊 약재상(pharmacy) / 🍖 딤섬 식당(diner) / 📦 커낼 스트리트 창고(warehouse) / 🏠 리틀 이탈리아 아파트(house)
+- bronx · 브롱크스 (The Bronx) · 위험도 45% · 경기장 · 좌표 (300,40)
+    설명: 거대한 야구장이 마지막 집결지였다. 관중석에서 아직도 신음이 메아리친다.
+    이웃: 할렘(harlem), 아스토리아(astoria)
+    건물: ⛺ 야구장 집결지(shelter) / 🏥 브롱크스 병원(hospital) / 🏫 브롱크스 고등학교(school) / 🌳 브롱크스 동물원 숲(park) / 🍔 야구장 앞 햄버거 가게(burger)
+- astoria · 아스토리아 (Astoria) · 위험도 30% · 주택가 · 좌표 (300,105)
+    설명: 그리스 식당과 오래된 주택이 이어진 동네. 강변 공원에서 맨해튼이 한눈에 보인다.
+    이웃: 브롱크스(bronx), 롱아일랜드시티(lic)
+    건물: 🍖 그리스 식당(diner) / 🏠 아스토리아 주택가(house) / 🌳 강변 공원(park) / ⛪ 정교회 성당(church) / 🎬 영화 촬영소(studio)
+- lic · 롱아일랜드시티 (Long Island City) · 위험도 35% · 공업 지대 · 좌표 (295,160)
+    설명: 창고와 새 고층 아파트가 뒤섞인 강변. 섬으로 이어지는 작은 다리가 남아 있다.
+    이웃: 아스토리아(astoria), 루스벨트섬 쉘터(rooseveltisland), 윌리엄스버그(williamsburg)
+    건물: 📦 강변 물류 창고(warehouse) / 🏢 유리 오피스 타워(office) / 🚉 지하철 환승역(terminal) / 🔧 공업용 자재상(hardware) / ⛽ 퀸스 대로 주유소(gas)
+- williamsburg · 윌리엄스버그 (Williamsburg) · 위험도 30% · 번화가 · 좌표 (320,205)
+    설명: 공장을 고친 카페와 공방 거리. 옥상마다 텃밭과 빗물 탱크가 놓여 있다.
+    이웃: 롱아일랜드시티(lic), 브루클린(brooklyn), JFK 공항(jfk)
+    건물: ☕ 공장 개조 카페(cafe) / 🔧 공방 공구점(hardware) / 🏠 옥상 텃밭 아파트(house) / 🛒 유기농 마트(market) / 🍔 강변 햄버거 가게(burger)
+- jfk · JFK 공항 (JFK Airport) · 위험도 45% · 공항·항구 · 좌표 (335,285)
+    설명: 대서양을 건너려던 사람들이 몰렸던 공항. 격리 텐트가 활주로를 따라 늘어서 있다.
+    이웃: 윌리엄스버그(williamsburg), 브루클린(brooklyn), 코니아일랜드(coneyisland)
+    건물: 🚉 JFK 국제선 터미널(terminal) / 📦 항공 화물 창고(warehouse) / ⛺ 활주로 격리 캠프(shelter) / 🛏️ 공항 호텔(motel) / 🚓 공항 경찰대(police)
+- coneyisland · 코니아일랜드 (Coney Island) · 위험도 25% · 해변 · 좌표 (270,288)
+    설명: 멈춘 목조 롤러코스터와 텅 빈 해변 산책로. 바닷바람에 녹슨 놀이기구가 삐걱거린다.
+    이웃: JFK 공항(jfk), 브루클린(brooklyn)
+    건물: 🛟 해변 구조대 초소(lifeguard) / 🍔 핫도그 가게(burger) / 🌳 놀이공원(park) / 🏠 해변 아파트(house)
 ■ 지방을 잇는 길 (출구)
 - 패서디나(pasadena, 로스앤젤레스) ↔ 카혼 패스(cajon, 모하비 사막) · 15번 고속도로
 - 프림(primm, 모하비 사막) ↔ 스트립 남쪽(southstrip, 라스베이거스) · 15번 고속도로
@@ -265,6 +548,13 @@
 - 도로변 광고판에 누군가 페인트로 적어 두었다. "동쪽으로. 뉴욕은 아직 살아 있다."
 - 주 경계 검문소는 비어 있었다. 차단기만 바람에 덜컹거렸다.
 
+[HIGHWAY_SEG] 구간별 이동 문장 (앞으로 나아갈 때 70%)
+- la>mojave: 패서디나를 지나자마자 사막의 열기가 숨통을 조여왔다. 길가에 버려진 차량들이 묘비처럼 늘어서 있었다. / 15번 고속도로가 끝이 보이지 않는 모래평원으로 이어졌다. 뜨거운 바람만이 유일한 동행이었다.
+- mojave>vegas: 황량한 사막 끝, 아지랑이 너머로 빛을 잃은 거대한 네온 도시가 환영처럼 피어올랐다. / 프림의 녹슨 롤러코스터 아래를 지나자 멀리 카지노 타워들이 거대한 유령처럼 모습을 드러냈다.
+- vegas>denver: 로키산맥 입구로 접어들자마자 매서운 산바람이 불어닥쳤다. 고도가 높아질수록 숨쉬기가 버거워졌다. / 넬리스 기지를 뒤로하고 뻗은 고속도로는 눈 덮인 거대한 산맥 속으로 빨려 들어가듯 이어졌다.
+- denver>chicago: 산악 지대를 벗어나자 사방이 평원인 76번 도로가 지평선 끝까지 곧게 뻗어 있었다. / 덴버 공항을 뒤로하고 달리는 대평원에는 구름 대신 떠돌이 워커들의 그림자만 낮게 깔렸다.
+- chicago>ny: 거대한 호수와 공업 단지를 지나 동쪽으로 향하는 90번 고속도로 위로 긴장감이 맴돌았다. / 게리 제철소의 꺼진 용광로를 뒤로하고 마침내 대서양 연안을 향해 발걸음을 재촉했다.
+
 [FRONTIER_NEWS] 길이 열릴 때 전체 무전 ({n} = 길을 연 사람 이름)
 - 1단계: 📡 전체 무전: "…여기는 뉴욕 생존자 쉘터. 루스벨트섬에 쉘터가 있다. 살아 있다면 동쪽으로, 이곳으로 와라." — {n}님이 LA 전역을 탐사해 15번 고속도로 너머 모하비 사막으로 가는 길을 찾았다.
 - 2단계: 📡 전체 무전: {n}님이 모하비 사막을 모두 둘러봤다. 프림 너머 라스베이거스로 가는 길이 열렸다. 뉴욕 쉘터의 신호가 조금 더 또렷해졌다.
@@ -273,9 +563,9 @@
 - 5단계: 📡 전체 무전: {n}님이 시카고를 모두 둘러봤다. 마지막 길, 뉴욕으로 가는 길이 열렸다. "기다리고 있다. 서둘러라."
 
 ------------------------------------------------------------------
-10. 지금 들어 있는 조사 이벤트 id (109종) — 겹치지 않게 참고
+10. 지금 들어 있는 조사 이벤트 id (108종) — 겹치지 않게 참고
 ------------------------------------------------------------------
-alarm, hanged, soldier, mascot, trapped, stash, diary, broadcast, wall, mirror, bell, crate, door, baby, bitten, gas, horde, dog, vending, freeway, lastfuel, pharm, parcel, er, precinct, shutter, upstairs, hero, rollcall, carwash, canal, mtruck, plea, suspect, suv, bus, smarket, flare, checkpoint, fireapt, motelroom, heli, station, kid, gunfight, badwater, radio, generator, megahorde, wildfire, heatwave, fakeems, max, subway, boats, scammer, keycorpse, mimic, quake, blackout, hsign, missingfood, hidebite, safezone, veh_bicycle, veh_motorbike, veh_sports, veh_sedan, veh_truck, veh_bus, evac_bus_dead, pharmacy_barricade, rooftop_water_tank, fire_station_lockers, crashed_drone, apartment_generator, abandoned_news_van, storm_drain_cache, wildfire_escape, wildfire_shelter, false_quarantine, barricaded_school, car_alarm_horde, survivor_betrayal, bitten_dog, underground_tunnel, rooftop_signal, contaminated_well, fake_rescue, dead_radio_operator, reg_influx, reg_smoke, reg_ash, reg_flood, reg_dark, reg_looted, reg_trade, reg_checkpoint
+alarm, hanged, soldier, mascot, trapped, stash, diary, broadcast, wall, mirror, bell, crate, door, baby, bitten, gas, horde, dog, vending, freeway, lastfuel, pharm, parcel, er, precinct, shutter, upstairs, hero, rollcall, carwash, canal, mtruck, plea, suspect, suv, bus, smarket, flare, checkpoint, fireapt, motelroom, heli, station, kid, gunfight, badwater, radio, generator, megahorde, wildfire, heatwave, fakeems, max, subway, boats, scammer, keycorpse, mimic, quake, blackout, hsign, missingfood, hidebite, safezone, veh_bicycle, veh_motorbike, veh_sports, veh_sedan, veh_truck, veh_bus, mojave_desert_well, vegas_showgirl_dressing, denver_university_barricade, chicago_subway_flood, ny_wall_graffiti, mojave_highway_car, vegas_casino_vault, denver_snow_storm, chicago_stadium_tent, ny_subway_tunnel_camp, evac_bus_dead, pharmacy_barricade, rooftop_water_tank, fire_station_lockers, crashed_drone, apartment_generator, abandoned_news_van, storm_drain_cache, wildfire_escape, wildfire_shelter, false_quarantine, barricaded_school, car_alarm_horde, survivor_betrayal, bitten_dog, underground_tunnel, rooftop_signal, contaminated_well, fake_rescue, dead_radio_operator, reg_influx, reg_smoke, reg_ash, reg_flood, reg_dark, reg_looted, reg_trade, reg_checkpoint
 ※ 장소(where)는 지점 id·건물 종류 id·지역 id 중 하나와 맞으면 열린다. 지금 이벤트는 대부분 LA 기준이라 새 지방 전용 이벤트가 필요하다.
 
 ==================================================================
@@ -287,7 +577,7 @@ alarm, hanged, soldier, mascot, trapped, stash, diary, broadcast, wall, mirror, 
    - 덴버: 산악·눈·고산병·터널·대학 바리케이드
    - 시카고: 호수·강풍·고가 철도·제철소
    - 뉴욕: 다리·지하철·고층 빌딩·뉴욕 쉘터 사람들
-2) 새 지역(동네) 제안: 지방마다 0~3곳. 「F. 새 지역」 형식으로.
+2) 새 지역(동네) 제안: 지방마다 이미 21곳이 있으니 0~2곳만. 「F. 새 지역」 형식으로.
 3) HIGHWAY_TEXT 추가 문장: 지방 구간별로 3~5개 (예: LA→모하비, 모하비→라스베이거스 …).
 4) 지방별 무전 NPC 대사 (선택): 그 지방에 있을 때 들릴 만한 대사.
 5) 뉴욕 쉘터 도착 이후 이야기 (선택): 쉘터 사람들 대사, 쉘터에서만 열리는 이벤트.

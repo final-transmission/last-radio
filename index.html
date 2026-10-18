@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://apis.google.com 'sha256-NzWzSr/JJIt0kS48PXCsqUjn9/ALxUaH31f7sTmbH+s=' 'sha256-XBhYyYOXmyHU+rUeBJm1vZW172xgTyzDLX1SllyaCU8=' 'sha256-vIWkO4huzEKTKBwZtpXQNRpCYYFg4D+TJ7SqVf5pKPk=' 'sha256-lghdCg/cqgSYPV/Vd/Kxe/V16p7HX+xr+5uZ3xjUIBI='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://www.google.com; connect-src 'self' https://*.googleapis.com https://*.firebaseapp.com https://*.firebaseio.com wss://*.firebaseio.com; frame-src https://*.firebaseapp.com; object-src 'none'; base-uri 'self'; form-action 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://apis.google.com 'sha256-NzWzSr/JJIt0kS48PXCsqUjn9/ALxUaH31f7sTmbH+s=' 'sha256-XBhYyYOXmyHU+rUeBJm1vZW172xgTyzDLX1SllyaCU8=' 'sha256-oRpm+DLRZBhxeXvPWuheo6XMP327zxso6kZvhQ94VRc=' 'sha256-2N7GSENPGDIIql8PvN2bovcW7I+ZsykJPzggRrX4HJI='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://www.google.com; connect-src 'self' https://*.googleapis.com https://*.firebaseapp.com https://*.firebaseio.com wss://*.firebaseio.com; frame-src https://*.firebaseapp.com; object-src 'none'; base-uri 'self'; form-action 'self'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <style id="antiClickjack">html{display:none !important}</style>
 <script>if (window.self === window.top) { var ack = document.getElementById('antiClickjack'); ack.parentNode.removeChild(ack); } else { try { window.top.location = window.self.location.href; } catch (e) {} }</script>
@@ -2088,11 +2088,11 @@ const FIREBASE_CONFIG = {
   // 누군가 한 지방의 모든 지역을 탐사하면 다음 지방으로 가는 길이 모두에게 열린다 (world/state의 f.open)
   const REGIONS = {
     la:      { n:'로스앤젤레스', en:'LOS ANGELES', sub:'City of Angels', tx:9, ty:288, note:[205,268,-7,'다운타운은 피해라 -M'] },
-    mojave:  { n:'모하비 사막', en:'MOJAVE', sub:'Interstate 15', tx:9, ty:34, hot:true, note:[205,262,-6,'물 없이 건너지 마라 -M'] },
-    vegas:   { n:'라스베이거스', en:'LAS VEGAS', sub:'Sin City', tx:9, ty:34, hot:true, note:[22,222,-5,'카지노는 함정이다 -M'] },
-    denver:  { n:'덴버', en:'DENVER', sub:'Mile High City', tx:9, ty:288, cold:true, note:[215,282,-6,'고개는 밤에 넘지 마라 -M'] },
-    chicago: { n:'시카고', en:'CHICAGO', sub:'The Windy City', tx:9, ty:288, cold:true, note:[40,200,-6,'호숫가는 바람이 세다 -M'] },
-    ny:      { n:'뉴욕', en:'NEW YORK', sub:'The Big Apple', tx:9, ty:34, note:[255,70,-6,'거의 다 왔다 -M'] }
+    mojave:  { n:'모하비 사막', en:'MOJAVE', sub:'Interstate 15', tx:9, ty:34, hot:true },
+    vegas:   { n:'라스베이거스', en:'LAS VEGAS', sub:'Sin City', tx:9, ty:34, hot:true },
+    denver:  { n:'덴버', en:'DENVER', sub:'Mile High City', tx:9, ty:288, cold:true },
+    chicago: { n:'시카고', en:'CHICAGO', sub:'The Windy City', tx:9, ty:288, cold:true },
+    ny:      { n:'뉴욕', en:'NEW YORK', sub:'The Big Apple', tx:9, ty:34 }
   };
   const REGION_ORDER = ['la', 'mojave', 'vegas', 'denver', 'chicago', 'ny'];
   const NY_HAVEN = 'rooseveltisland';
@@ -2139,9 +2139,94 @@ const FIREBASE_CONFIG = {
       centralpark:{ n:'센트럴 파크', en:'Central Park', x:200, y:100, danger:0.30, weapons:['낫','삽','활'], food:[1,2], water:[1,3], med:0.15, desc:'도시 한가운데 숲. 누군가 잔디밭에 텃밭을 일궈 두었다.' },
       harlem:     { n:'할렘', en:'Harlem', x:215, y:35, danger:0.40, weapons:['야구방망이','쇠파이프'], food:[1,3], water:[1,2], med:0.20, desc:'교회 종탑마다 망을 보는 사람이 있다. 거리는 주민들이 지킨다.' },
       brooklyn:   { n:'브루클린', en:'Brooklyn', x:290, y:250, danger:0.40, weapons:['야구방망이','식칼'], food:[1,3], water:[1,2], med:0.25, desc:'다리 너머 넓은 주택가. 옥상마다 물탱크와 빨랫줄이 보인다.' },
-      rooseveltisland: { n:'루스벨트섬 쉘터', en:'Roosevelt Island', x:250, y:150, danger:0.05, weapons:['경찰봉'], food:[2,4], water:[2,4], med:0.40, desc:'이스트 강 한가운데 섬. 다리를 끊고 세운 뉴욕 생존자 쉘터. 무전이 부르던 바로 그곳이다.' }
+      rooseveltisland: { n:'루스벨트섬 쉘터', en:'Roosevelt Island', x:250, y:150, ly:-12, danger:0.05, weapons:['경찰봉'], food:[2,4], water:[2,4], med:0.40, desc:'이스트 강 한가운데 섬. 다리를 끊고 세운 뉴욕 생존자 쉘터. 무전이 부르던 바로 그곳이다.' }
     }
   }).forEach(([rg, list]) => Object.keys(list).forEach(k => { DISTRICTS[k] = Object.assign(list[k], { rg }); }));
+  // 지방 확장: LA처럼 지방마다 21곳 (지역·건물·거리·길)
+  const REGION_MORE = {
+    mojave: {
+      hesperia: {"n": "헤스페리아", "en": "Hesperia", "x": 55, "y": 185, "danger": 0.25, "desc": "고갯길 아래 펼쳐진 사막 주택가. 피난 행렬이 남긴 차들이 골목마다 버려져 있다."},
+      applevalley: {"n": "애플밸리", "en": "Apple Valley", "x": 140, "y": 225, "danger": 0.25, "desc": "골프장과 목장이 섞인 조용한 교외. 마른 잔디 위로 워커들이 느릿느릿 걷는다."},
+      adelanto: {"n": "아델란토", "en": "Adelanto", "x": 40, "y": 130, "danger": 0.4, "desc": "사막 한가운데 구치소가 있는 마을. 철창이 열린 뒤로 수감자였던 것들이 거리를 떠돈다."},
+      helendale: {"n": "헬렌데일", "en": "Helendale", "x": 100, "y": 120, "danger": 0.2, "desc": "모하비 강가의 작은 호숫가 마을. 말라가는 인공 호수 주변에 물을 노린 사람들이 모여든다."},
+      lucerne: {"n": "루선 밸리", "en": "Lucerne Valley", "x": 130, "y": 282, "danger": 0.15, "desc": "건조한 호수 바닥 옆 외딴 농가들. 바람에 날린 모래가 문틈마다 쌓여 있다."},
+      hinkley: {"n": "힝클리", "en": "Hinkley", "x": 130, "y": 80, "danger": 0.2, "desc": "오염된 지하수 때문에 이미 반쯤 버려졌던 마을. 지금은 완전히 유령 마을이다."},
+      chinalake: {"n": "차이나레이크", "en": "China Lake", "x": 60, "y": 75, "danger": 0.5, "desc": "해군 무기 시험장. 경고 표지판 너머로 불발탄과 군인 좀비가 함께 굴러다닌다."},
+      calico: {"n": "캘리코 유령 마을", "en": "Calico", "x": 225, "y": 95, "danger": 0.25, "desc": "은광 시절을 재현한 관광지. 진짜 유령 마을이 되어 버린 지금은 아무도 웃지 않는다."},
+      newberry: {"n": "뉴베리 스프링스", "en": "Newberry Springs", "x": 205, "y": 200, "danger": 0.2, "desc": "사막 한복판 오아시스 같은 카페와 연못. 물이 있는 곳엔 늘 무언가가 모인다."},
+      daggett: {"n": "대깃 태양광 단지", "en": "Daggett", "x": 255, "y": 170, "danger": 0.3, "desc": "끝없이 늘어선 태양광 거울 사이로 정비 창고가 서 있다. 아직 전기가 흐르는 패널도 있다."},
+      ludlow: {"n": "러들로", "en": "Ludlow", "x": 275, "y": 215, "danger": 0.2, "desc": "루트 66의 버려진 휴게 마을. 녹슨 간판이 바람에 끼익거린다."},
+      amboy: {"n": "앰보이", "en": "Amboy", "x": 250, "y": 275, "danger": 0.15, "desc": "분화구 옆 텅 빈 마을. 모텔 간판의 네온은 꺼졌지만 주유소 펌프에는 기름이 남아 있다."},
+      kelso: {"n": "켈소 사구", "en": "Kelso Dunes", "x": 330, "y": 110, "danger": 0.2, "desc": "노래하는 모래 언덕과 옛 기차역. 모래 속에 반쯤 묻힌 워커들이 발목을 노린다."},
+      zzyzx: {"n": "지직스", "en": "Zzyzx", "x": 285, "y": 65, "danger": 0.2, "desc": "마른 소다 호수 옆 사막 연구소. 연구원들이 남긴 물탱크가 아직 차 있다는 소문이 있다."},
+      mountainpass: {"n": "마운틴 패스", "en": "Mountain Pass", "x": 330, "y": 28, "danger": 0.35, "desc": "네바다로 넘어가는 고갯마루의 광산. 폭약 창고 문이 열린 채 방치돼 있다."}
+    },
+    vegas: {
+      mtcharleston: {"la":"start", "lx":-10, "n": "마운트 찰스턴", "en": "Mount Charleston", "x": 22, "y": 90, "danger": 0.12, "desc": "사막 위로 솟은 눈 덮인 산. 산장과 캠프장이 도시를 피해 온 사람들로 붐볐다."},
+      summerlin: {"n": "서머린", "en": "Summerlin", "x": 75, "y": 80, "danger": 0.2, "desc": "계획도시로 지어진 서쪽 교외. 골프장 잔디는 누렇게 말랐고 집들은 문이 잠겨 있다."},
+      meddistrict: {"n": "메디컬 디스트릭트", "en": "Medical District", "x": 120, "y": 100, "danger": 0.42, "desc": "대형 병원들이 모인 구역. 의약품이 많지만 마지막까지 환자가 실려 온 곳이다."},
+      northlv: {"n": "노스 라스베이거스", "en": "North Las Vegas", "x": 220, "y": 30, "danger": 0.38, "desc": "창고와 공장 사이로 낮은 주택가가 이어진다. 경찰서 앞에 버려진 순찰차가 줄지어 있다."},
+      artsdistrict: {"n": "아츠 디스트릭트", "en": "Arts District", "x": 195, "y": 115, "danger": 0.3, "desc": "벽화와 골동품 가게가 늘어선 거리. 전망 타워가 거리 위로 그림자를 드리운다."},
+      sunrise: {"n": "선라이즈 매너", "en": "Sunrise Manor", "x": 240, "y": 120, "danger": 0.32, "desc": "동쪽 산자락 아래 끝없는 주택가. 집집마다 창문에 판자가 덧대어져 있다."},
+      speedway: {"n": "모터 스피드웨이", "en": "Motor Speedway", "x": 320, "y": 110, "danger": 0.3, "desc": "사막 한가운데 자동차 경주장. 관중석 아래 정비고에 연료와 공구가 남아 있다."},
+      unlv: {"n": "UNLV 캠퍼스", "en": "UNLV", "x": 220, "y": 170, "danger": 0.35, "desc": "대학 캠퍼스와 농구 경기장. 기숙사 창문마다 구조 요청이 적힌 이불이 걸려 있다."},
+      springvalley: {"n": "스프링 밸리", "en": "Spring Valley", "x": 70, "y": 230, "danger": 0.25, "desc": "스트립 서쪽의 조용한 주택가. 수영장마다 빗물이 고여 있다."},
+      enterprise: {"n": "엔터프라이즈", "en": "Enterprise", "x": 120, "y": 275, "danger": 0.22, "desc": "남쪽으로 뻗은 신도시. 반쯤 지어진 집들 사이로 모래바람이 분다."},
+      greenvalley: {"n": "그린 밸리", "en": "Green Valley", "x": 335, "y": 215, "danger": 0.2, "desc": "공원과 쇼핑센터가 있는 헨더슨 동쪽 동네. 주민들이 순찰을 돌던 흔적이 있다."},
+      bouldercity: {"n": "볼더 시티", "en": "Boulder City", "x": 260, "y": 300, "danger": 0.15, "desc": "댐을 짓던 노동자들의 작은 마을. 도박이 금지된 마을이라 그런지 비교적 조용하다."},
+      lvchinatown: {"n": "차이나타운", "en": "Chinatown", "x": 105, "y": 195, "danger": 0.3, "desc": "스프링 마운틴 로드를 따라 늘어선 식당과 마트. 식재료 창고가 아직 다 털리지 않았다."}
+    },
+    denver: {
+      idahosprings: {"ly":-12, "n": "아이다호 스프링스", "en": "Idaho Springs", "x": 55, "y": 95, "danger": 0.2, "desc": "골드러시 시절의 광산 마을. 온천 증기가 아직도 협곡 위로 피어오른다."},
+      georgetown: {"n": "조지타운", "en": "Georgetown", "x": 30, "y": 200, "danger": 0.15, "desc": "빅토리아풍 목조 주택이 늘어선 산골 마을. 협곡 철도가 멈춘 채 눈에 덮였다."},
+      evergreen: {"n": "에버그린", "en": "Evergreen", "x": 60, "y": 240, "danger": 0.15, "desc": "소나무 숲속 호숫가 별장 마을. 사슴과 엘크가 빈 길을 어슬렁거린다."},
+      golden: {"n": "골든", "en": "Golden", "x": 95, "y": 140, "danger": 0.25, "desc": "산자락의 양조장 도시. 거대한 맥주 공장 탱크에 아직 무언가 남아 있다는 소문이 돈다."},
+      arvada: {"n": "아바다", "en": "Arvada", "x": 140, "y": 105, "danger": 0.25, "desc": "오래된 시가지와 끝없는 교외 주택가. 집집마다 창문에 판자가 덧대어져 있다."},
+      westminster: {"n": "웨스트민스터", "en": "Westminster", "x": 175, "y": 70, "danger": 0.3, "desc": "고속도로 옆 대형 쇼핑 단지. 주차장에 버려진 카트가 바람에 굴러다닌다."},
+      lodo: {"n": "야구장 거리", "en": "LoDo", "x": 225, "y": 100, "danger": 0.45, "desc": "벽돌 창고를 개조한 술집 거리와 야구장. 마지막 경기 날의 관중이 아직 거리를 메우고 있다."},
+      rmarsenal: {"n": "로키산 병기창", "en": "Rocky Mtn Arsenal", "x": 300, "y": 115, "danger": 0.45, "desc": "옛 화학무기 공장 터에 세운 야생동물 보호구역. 철조망 안쪽 벙커는 군이 다시 쓰고 있었다."},
+      commerce: {"n": "커머스 시티", "en": "Commerce City", "x": 320, "y": 175, "danger": 0.4, "desc": "정유 공장 굴뚝이 늘어선 공업 도시. 새어 나온 기름 냄새가 거리를 덮었다."},
+      citypark: {"n": "시티 파크", "en": "City Park", "x": 245, "y": 150, "danger": 0.3, "desc": "동물원과 자연사 박물관이 있는 큰 공원. 우리에서 빠져나온 동물 울음소리가 밤마다 들린다."},
+      capitolhill: {"n": "캐피톨 힐", "en": "Capitol Hill", "x": 225, "y": 190, "danger": 0.4, "desc": "금빛 돔의 주 의사당과 오래된 아파트 거리. 의사당 계단에 주 방위군의 모래주머니가 쌓여 있다."},
+      lakewood: {"n": "레이크우드", "en": "Lakewood", "x": 155, "y": 205, "danger": 0.25, "desc": "서쪽 교외의 주택가와 호수. 연방 정부 청사 단지가 철문을 굳게 닫았다."},
+      englewood: {"n": "잉글우드", "en": "Englewood", "x": 200, "y": 240, "danger": 0.35, "desc": "남쪽의 병원 거리. 구급차들이 응급실 입구를 막은 채 서 있다."},
+      littleton: {"n": "리틀턴", "en": "Littleton", "x": 160, "y": 280, "danger": 0.2, "desc": "강가의 조용한 옛 시가지. 주민들이 교회를 중심으로 모여 버티고 있다."},
+      buckley: {"n": "버클리 기지", "en": "Buckley Base", "x": 320, "y": 235, "danger": 0.5, "desc": "동쪽 들판의 공군 기지. 레이더 돔 아래 격납고 문이 반쯤 열려 있다."}
+    },
+    chicago: {
+      evanston: {"n": "에번스턴", "en": "Evanston", "x": 250, "y": 28, "danger": 0.2, "desc": "호숫가 대학 도시. 캠퍼스 시계탑 위에서 누군가 손전등으로 신호를 보낸다."},
+      skokie: {"n": "스코키", "en": "Skokie", "x": 140, "y": 30, "danger": 0.25, "desc": "대형 쇼핑몰이 있는 북쪽 교외. 주차장에 버려진 카트가 바람에 굴러다닌다."},
+      desplaines: {"n": "데스플레인스", "en": "Des Plaines", "x": 30, "y": 140, "danger": 0.25, "desc": "강가의 교외 도시. 불 꺼진 카지노 간판 아래로 강물이 불어나 있다."},
+      lincolnpark: {"n": "링컨 파크", "en": "Lincoln Park", "x": 255, "y": 85, "danger": 0.25, "desc": "호숫가 공원과 동물원. 우리를 빠져나온 동물들의 울음소리가 밤마다 들린다."},
+      logansquare: {"n": "로건 스퀘어", "en": "Logan Square", "x": 110, "y": 120, "danger": 0.3, "desc": "넓은 대로와 오래된 벽돌집이 이어진 주택가. 기념탑 광장에 바리케이드가 남아 있다."},
+      wickerpark: {"n": "위커 파크", "en": "Wicker Park", "x": 150, "y": 135, "danger": 0.35, "desc": "술집과 공연장이 몰린 번화가. 고가 철도 아래로 사람이던 것들이 몰려다닌다."},
+      oakpark: {"n": "오크 파크", "en": "Oak Park", "x": 70, "y": 175, "danger": 0.2, "desc": "나무가 우거진 서쪽 교외. 오래된 저택들의 높은 담이 아직 버티고 있다."},
+      westloop: {"n": "웨스트 루프", "en": "West Loop", "x": 155, "y": 185, "danger": 0.4, "desc": "식당가와 옛 정육 창고 거리. 냉동창고 문 너머에서 쿵쿵거리는 소리가 난다."},
+      pilsen: {"n": "필슨", "en": "Pilsen", "x": 160, "y": 225, "danger": 0.3, "desc": "벽화가 가득한 골목 동네. 주민들이 교회를 중심으로 구역을 지키고 있다."},
+      cicero: {"n": "시서로", "en": "Cicero", "x": 95, "y": 225, "danger": 0.3, "desc": "공장과 철도 차량기지가 늘어선 서쪽 공업 도시. 화물칸마다 물자가 실려 있다."},
+      museumcampus: {"n": "뮤지엄 캠퍼스", "en": "Museum Campus", "x": 270, "y": 185, "danger": 0.35, "desc": "박물관과 미식축구 경기장이 모인 호숫가. 경기장은 군 임시 진료소였다."},
+      hydepark: {"n": "하이드 파크", "en": "Hyde Park", "x": 262, "y": 250, "danger": 0.3, "desc": "대학 캠퍼스와 병원이 있는 남쪽 호숫가 동네. 연구동 창문에 경고 표시가 붙어 있다."},
+      calumet: {"n": "캘류멧", "en": "Calumet", "x": 240, "y": 290, "danger": 0.35, "desc": "제철소와 운하가 얽힌 남동쪽 공업 지대. 녹슨 크레인이 하늘을 가린다."},
+      midway: {"n": "미드웨이 공항", "en": "Midway", "x": 175, "y": 282, "danger": 0.4, "desc": "주택가 한가운데 박힌 작은 공항. 활주로 끝 담장을 넘어 워커들이 흘러든다."},
+      chichinatown: {"n": "차이나타운", "en": "Chinatown", "x": 230, "y": 215, "danger": 0.35, "desc": "붉은 문이 선 상점가. 식료품점 지하 창고에 마른 식량이 많다는 소문이 돈다."}
+    },
+    ny: {
+      fortlee: {"n": "포트리", "en": "Fort Lee", "x": 60, "y": 80, "danger": 0.25, "desc": "허드슨 강 절벽 위 마을. 맨해튼으로 건너가는 거대한 현수교가 차량 잔해로 막혀 있다."},
+      hoboken: {"ly":-12, "n": "호보컨", "en": "Hoboken", "x": 80, "y": 150, "danger": 0.3, "desc": "강변 벽돌 주택가와 오래된 기차역. 건너편 미드타운의 불 꺼진 빌딩 숲이 손에 잡힐 듯 보인다."},
+      upperwest: {"ly":-12, "n": "어퍼웨스트사이드", "en": "Upper West Side", "x": 160, "y": 95, "danger": 0.35, "desc": "공원 서쪽의 오래된 아파트 거리. 박물관 계단 위로 버려진 유모차들이 줄지어 있다."},
+      hellskitchen: {"n": "헬스키친", "en": "Hell's Kitchen", "x": 155, "y": 140, "danger": 0.45, "desc": "극장가 뒤편 식당 골목. 강 밑 터널로 피난하던 행렬이 그대로 멈춰 있다."},
+      chelsea: {"n": "첼시", "en": "Chelsea", "x": 165, "y": 205, "danger": 0.4, "desc": "고가 철길을 공원으로 바꾼 산책로와 실내 시장이 있다. 높은 산책로 위는 비교적 안전하다."},
+      village: {"la":"start", "lx":12, "ly":4, "n": "그리니치 빌리지", "en": "Greenwich Village", "x": 205, "y": 205, "danger": 0.35, "desc": "좁은 골목과 개선문이 선 광장. 대학 건물 창문마다 생존자 명단이 붙어 있다."},
+      chinatown: {"n": "차이나타운", "en": "Chinatown", "x": 210, "y": 245, "danger": 0.4, "desc": "건어물 가게와 약재상이 빽빽한 거리. 셔터를 내린 가게 안에 아직 물건이 남아 있다."},
+      bronx: {"n": "브롱크스", "en": "The Bronx", "x": 300, "y": 40, "danger": 0.45, "desc": "거대한 야구장이 마지막 집결지였다. 관중석에서 아직도 신음이 메아리친다."},
+      astoria: {"n": "아스토리아", "en": "Astoria", "x": 300, "y": 105, "danger": 0.3, "desc": "그리스 식당과 오래된 주택이 이어진 동네. 강변 공원에서 맨해튼이 한눈에 보인다."},
+      lic: {"n": "롱아일랜드시티", "en": "Long Island City", "x": 295, "y": 160, "danger": 0.35, "desc": "창고와 새 고층 아파트가 뒤섞인 강변. 섬으로 이어지는 작은 다리가 남아 있다."},
+      williamsburg: {"n": "윌리엄스버그", "en": "Williamsburg", "x": 320, "y": 205, "danger": 0.3, "desc": "공장을 고친 카페와 공방 거리. 옥상마다 텃밭과 빗물 탱크가 놓여 있다."},
+      jfk: {"n": "JFK 공항", "en": "JFK Airport", "x": 335, "y": 285, "danger": 0.45, "desc": "대서양을 건너려던 사람들이 몰렸던 공항. 격리 텐트가 활주로를 따라 늘어서 있다."},
+      coneyisland: {"n": "코니아일랜드", "en": "Coney Island", "x": 270, "y": 288, "danger": 0.25, "desc": "멈춘 목조 롤러코스터와 텅 빈 해변 산책로. 바닷바람에 녹슨 놀이기구가 삐걱거린다."}
+    }
+  };
+  Object.entries(REGION_MORE).forEach(([rg, list]) => Object.keys(list).forEach(k => { DISTRICTS[k] = Object.assign(list[k], { rg, weapons: [], food: [1,2], water: [1,2], med: 0.15 }); }));
   function rgOf(id) { return (DISTRICTS[id] && DISTRICTS[id].rg) || 'la'; }
   const REGION_KEYS = {};
   function regionKeys(rg) { return REGION_KEYS[rg] || (REGION_KEYS[rg] = Object.keys(DISTRICTS).filter(k => rgOf(k) === rg)); }
@@ -2169,6 +2254,145 @@ const FIREBASE_CONFIG = {
     ['eisenhower','boulder'],['eisenhower','redrocks'],['boulder','dendt'],['boulder','dia'],['redrocks','dendt'],['dendt','aurora'],['dendt','dia'],['aurora','dia'],
     ['ohare','lakeview'],['ohare','loop'],['lakeview','loop'],['lakeview','navypier'],['loop','navypier'],['loop','southside'],['southside','gary'],
     ['newark','jerseycity'],['jerseycity','lowermanhattan'],['jerseycity','midtown'],['lowermanhattan','midtown'],['lowermanhattan','brooklyn'],['midtown','centralpark'],['centralpark','harlem'],['midtown','rooseveltisland'],['rooseveltisland','brooklyn']
+    ,['hesperia','cajon'],
+    ['hesperia','victorville'],
+    ['hesperia','adelanto'],
+    ['applevalley','victorville'],
+    ['applevalley','lucerne'],
+    ['applevalley','newberry'],
+    ['lucerne','cajon'],
+    ['adelanto','helendale'],
+    ['adelanto','chinalake'],
+    ['helendale','victorville'],
+    ['helendale','hinkley'],
+    ['helendale','barstow'],
+    ['hinkley','chinalake'],
+    ['hinkley','fortirwin'],
+    ['calico','barstow'],
+    ['calico','fortirwin'],
+    ['newberry','barstow'],
+    ['newberry','daggett'],
+    ['daggett','baker'],
+    ['daggett','ludlow'],
+    ['ludlow','amboy'],
+    ['ludlow','primm'],
+    ['kelso','primm'],
+    ['amboy','newberry'],
+    ['amboy','primm'],
+    ['kelso','baker'],
+    ['kelso','mountainpass'],
+    ['zzyzx','baker'],
+    ['zzyzx','mountainpass'],
+    ['mtcharleston','summerlin'],
+    ['mtcharleston','redrock'],
+    ['summerlin','redrock'],
+    ['summerlin','meddistrict'],
+    ['meddistrict','fremont'],
+    ['meddistrict','northstrip'],
+    ['northlv','fremont'],
+    ['northlv','nellis'],
+    ['speedway','nellis'],
+    ['speedway','henderson'],
+    ['artsdistrict','fremont'],
+    ['artsdistrict','northstrip'],
+    ['artsdistrict','sunrise'],
+    ['sunrise','henderson'],
+    ['sunrise','unlv'],
+    ['unlv','northstrip'],
+    ['unlv','henderson'],
+    ['lvchinatown','southstrip'],
+    ['lvchinatown','redrock'],
+    ['lvchinatown','springvalley'],
+    ['springvalley','enterprise'],
+    ['enterprise','southstrip'],
+    ['greenvalley','henderson'],
+    ['greenvalley','hooverdam'],
+    ['bouldercity','hooverdam'],
+    ['bouldercity','airport'],
+    ['idahosprings','eisenhower'],
+    ['idahosprings','boulder'],
+    ['georgetown','eisenhower'],
+    ['georgetown','evergreen'],
+    ['evergreen','redrocks'],
+    ['golden','eisenhower'],
+    ['golden','arvada'],
+    ['golden','redrocks'],
+    ['arvada','boulder'],
+    ['arvada','dendt'],
+    ['westminster','boulder'],
+    ['westminster','lodo'],
+    ['westminster','dendt'],
+    ['lodo','dendt'],
+    ['lodo','dia'],
+    ['rmarsenal','dia'],
+    ['rmarsenal','commerce'],
+    ['commerce','aurora'],
+    ['commerce','buckley'],
+    ['buckley','aurora'],
+    ['citypark','dendt'],
+    ['citypark','aurora'],
+    ['capitolhill','dendt'],
+    ['capitolhill','aurora'],
+    ['capitolhill','englewood'],
+    ['lakewood','redrocks'],
+    ['lakewood','dendt'],
+    ['lakewood','englewood'],
+    ['englewood','littleton'],
+    ['littleton','redrocks'],
+    ['evanston','lincolnpark'],
+    ['evanston','skokie'],
+    ['evanston','lakeview'],
+    ['skokie','ohare'],
+    ['skokie','lakeview'],
+    ['lincolnpark','lakeview'],
+    ['lincolnpark','navypier'],
+    ['logansquare','ohare'],
+    ['logansquare','wickerpark'],
+    ['logansquare','oakpark'],
+    ['wickerpark','loop'],
+    ['wickerpark','westloop'],
+    ['desplaines','ohare'],
+    ['desplaines','oakpark'],
+    ['oakpark','westloop'],
+    ['oakpark','cicero'],
+    ['westloop','loop'],
+    ['westloop','pilsen'],
+    ['pilsen','cicero'],
+    ['pilsen','midway'],
+    ['chichinatown','loop'],
+    ['chichinatown','southside'],
+    ['chichinatown','museumcampus'],
+    ['museumcampus','navypier'],
+    ['museumcampus','loop'],
+    ['hydepark','chichinatown'],
+    ['hydepark','southside'],
+    ['hydepark','gary'],
+    ['calumet','gary'],
+    ['calumet','midway'],
+    ['midway','southside'],
+    ['fortlee','upperwest'],
+    ['fortlee','hoboken'],
+    ['hoboken','newark'],
+    ['hoboken','hellskitchen'],
+    ['upperwest','centralpark'],
+    ['upperwest','hellskitchen'],
+    ['hellskitchen','midtown'],
+    ['chelsea','midtown'],
+    ['village','midtown'],
+    ['village','chinatown'],
+    ['chinatown','lowermanhattan'],
+    ['chinatown','brooklyn'],
+    ['bronx','harlem'],
+    ['bronx','astoria'],
+    ['astoria','lic'],
+    ['lic','rooseveltisland'],
+    ['lic','williamsburg'],
+    ['williamsburg','brooklyn'],
+    ['williamsburg','jfk'],
+    ['jfk','brooklyn'],
+    ['jfk','coneyisland'],
+    ['coneyisland','brooklyn'],
+    ['chelsea','jerseycity']
   ].concat(GATES.map(G => [G.a, G.b]));
   const ADJ = {};
   EDGES.forEach(([a, b]) => { (ADJ[a] = ADJ[a] || []).push(b); (ADJ[b] = ADJ[b] || []).push(a); });
@@ -2231,6 +2455,7 @@ const FIREBASE_CONFIG = {
     ohare:'transit', lakeview:'stadium', loop:'police', navypier:'beach', southside:'medical', gary:'industry',
     newark:'transit', jerseycity:'home', lowermanhattan:'police', midtown:'fun', centralpark:'park', harlem:'home', brooklyn:'home', rooseveltisland:'haven'
   };
+  Object.assign(KIND_OF, {"hesperia": "home", "applevalley": "home", "adelanto": "police", "helendale": "home", "lucerne": "desert", "hinkley": "desert", "chinalake": "military", "calico": "fun", "newberry": "desert", "daggett": "industry", "ludlow": "desert", "amboy": "desert", "kelso": "park", "zzyzx": "park", "mountainpass": "industry", "mtcharleston": "park", "summerlin": "home", "meddistrict": "medical", "northlv": "police", "artsdistrict": "fun", "sunrise": "home", "speedway": "stadium", "unlv": "stadium", "springvalley": "home", "enterprise": "desert", "greenvalley": "market", "bouldercity": "home", "lvchinatown": "market", "idahosprings": "park", "georgetown": "home", "evergreen": "park", "golden": "industry", "arvada": "home", "westminster": "market", "lodo": "stadium", "rmarsenal": "military", "commerce": "industry", "citypark": "park", "capitolhill": "police", "lakewood": "home", "englewood": "medical", "littleton": "home", "buckley": "military", "evanston": "home", "skokie": "market", "desplaines": "fun", "lincolnpark": "park", "logansquare": "home", "wickerpark": "fun", "oakpark": "home", "westloop": "market", "pilsen": "home", "cicero": "industry", "museumcampus": "stadium", "hydepark": "medical", "calumet": "industry", "midway": "transit", "chichinatown": "market", "fortlee": "home", "hoboken": "home", "upperwest": "home", "hellskitchen": "fun", "chelsea": "market", "village": "fun", "chinatown": "market", "bronx": "stadium", "astoria": "home", "lic": "industry", "williamsburg": "fun", "jfk": "transit", "coneyisland": "beach"});
   const PORT_GLYPH = { longbeach:'⚓︎' };
 
   // 지형: 산, 공원, 강, 고속도로
@@ -2322,7 +2547,7 @@ const FIREBASE_CONFIG = {
       <text class="m-title sh" x="${G.tx + 2}" y="${G.ty + 2}">${G.en}</text>
       <text class="m-title fg" x="${G.tx}" y="${G.ty}">${G.en}</text>
       <text class="m-sub" x="${G.tx + 31}" y="${G.ty + 20}">${G.sub}</text>
-      <text class="m-note" transform="translate(${N[0]},${N[1]}) rotate(${N[2]})">${N[3]}</text>
+      ${N ? `<text class="m-note" transform="translate(${N[0]},${N[1]}) rotate(${N[2]})">${N[3]}</text>` : ''}
       <rect width="360" height="320" fill="url(#mVignette)" pointer-events="none"/>`;
   }
 
@@ -2461,8 +2686,10 @@ const FIREBASE_CONFIG = {
     ohare:["O'Hare Way",'I-190'], lakeview:['Clark St','Addison St'], loop:['State St','Wacker Dr'], navypier:['Grand Ave','Lake Shore Dr'], southside:['Halsted St','63rd St'], gary:['Broadway','US-12'],
     newark:['Broad St','McCarter Hwy'], jerseycity:['Grove St','Newark Ave'], lowermanhattan:['Broadway','Wall St'], midtown:['42nd St','7th Ave'], centralpark:['Central Park W','5th Ave'], harlem:['125th St','Lenox Ave'], brooklyn:['Atlantic Ave','Flatbush Ave'], rooseveltisland:['Main St','Roosevelt Island Br']
   };
+  Object.assign(STREETS, {"hesperia": ["Main St", "I Ave"], "applevalley": ["Apple Valley Rd", "Bear Valley Rd"], "adelanto": ["Air Expressway", "Adelanto Rd"], "helendale": ["National Trails Hwy", "Helendale Rd"], "lucerne": ["Old Woman Springs Rd", "Rabbit Springs Rd"], "hinkley": ["Hinkley Rd", "Community Blvd"], "chinalake": ["China Lake Blvd", "Inyokern Rd"], "calico": ["Calico Rd", "Ghost Town Rd"], "newberry": ["National Trails Hwy", "Newberry Rd"], "daggett": ["Santa Fe St", "Daggett Yermo Rd"], "ludlow": ["National Trails Hwy", "Crucero Rd"], "amboy": ["National Trails Hwy", "Amboy Rd"], "kelso": ["Kelbaker Rd", "Kelso Cima Rd"], "zzyzx": ["Zzyzx Rd", "Soda Springs Rd"], "mountainpass": ["I-15", "Bailey Rd"], "mtcharleston": ["Kyle Canyon Rd", "Lee Canyon Rd"], "summerlin": ["Summerlin Pkwy", "Town Center Dr"], "meddistrict": ["Charleston Blvd", "Shadow Ln"], "northlv": ["Las Vegas Blvd N", "Cheyenne Ave"], "artsdistrict": ["Main St", "Charleston Blvd"], "sunrise": ["Nellis Blvd", "Lake Mead Blvd"], "speedway": ["Speedway Blvd", "I-15"], "unlv": ["Maryland Pkwy", "Tropicana Ave"], "springvalley": ["Rainbow Blvd", "Desert Inn Rd"], "enterprise": ["Blue Diamond Rd", "Durango Dr"], "greenvalley": ["Green Valley Pkwy", "Sunset Rd"], "bouldercity": ["Nevada Way", "US-93"], "lvchinatown": ["Spring Mountain Rd", "Jones Blvd"], "idahosprings": ["Colorado Blvd", "Miner St"], "georgetown": ["Rose St", "6th St"], "evergreen": ["Evergreen Pkwy", "CO-74"], "golden": ["Washington Ave", "10th St"], "arvada": ["Wadsworth Blvd", "Olde Wadsworth"], "westminster": ["US-36", "Sheridan Blvd"], "lodo": ["Blake St", "20th St"], "rmarsenal": ["56th Ave", "Havana St"], "commerce": ["Brighton Blvd", "Vasquez Blvd"], "citypark": ["Colorado Blvd", "17th Ave"], "capitolhill": ["Colfax Ave", "Grant St"], "lakewood": ["Alameda Ave", "Union Blvd"], "englewood": ["Broadway", "Hampden Ave"], "littleton": ["Main St", "Santa Fe Dr"], "buckley": ["6th Ave", "Buckley Rd"], "evanston": ["Sheridan Rd", "Chicago Ave"], "skokie": ["Old Orchard Rd", "Skokie Blvd"], "desplaines": ["River Rd", "Rand Rd"], "lincolnpark": ["Clark St", "Fullerton Pkwy"], "logansquare": ["Milwaukee Ave", "Logan Blvd"], "wickerpark": ["North Ave", "Damen Ave"], "oakpark": ["Lake St", "Oak Park Ave"], "westloop": ["Randolph St", "Halsted St"], "pilsen": ["18th St", "Blue Island Ave"], "cicero": ["Cermak Rd", "Cicero Ave"], "museumcampus": ["Lake Shore Dr", "Solidarity Dr"], "hydepark": ["57th St", "Woodlawn Ave"], "calumet": ["130th St", "Torrence Ave"], "midway": ["Cicero Ave", "55th St"], "chichinatown": ["Wentworth Ave", "Cermak Rd"], "fortlee": ["Lemoine Ave", "Palisade Ave"], "hoboken": ["Washington St", "Hudson St"], "upperwest": ["Broadway", "Amsterdam Ave"], "hellskitchen": ["9th Ave", "42nd St"], "chelsea": ["10th Ave", "23rd St"], "village": ["Bleecker St", "Washington Sq"], "chinatown": ["Canal St", "Mott St"], "bronx": ["River Ave", "161st St"], "astoria": ["Ditmars Blvd", "31st St"], "lic": ["Vernon Blvd", "Jackson Ave"], "williamsburg": ["Bedford Ave", "Kent Ave"], "jfk": ["Van Wyck Expy", "JFK Expy"], "coneyisland": ["Surf Ave", "Boardwalk"]});
   const COASTAL = ['malibu', 'santamonica', 'venice', 'longbeach', 'hooverdam', 'navypier', 'jerseycity', 'lowermanhattan', 'rooseveltisland'];
-  const SEA_NAME = { la:'PACIFIC', vegas:'LAKE MEAD', chicago:'LAKE MICHIGAN', ny:'HUDSON' };
+  COASTAL.push(...["evanston", "lincolnpark", "museumcampus", "hydepark", "hoboken", "fortlee", "coneyisland"]);
+  const SEA_NAME = { la:'PACIFIC', vegas:'LAKE MEAD', chicago:'LAKE MICHIGAN', ny:'HUDSON', rooseveltisland:'EAST RIVER', lowermanhattan:'EAST RIVER', coneyisland:'ATLANTIC' };
   const SPOT_COLOR = {
     hospital:'#d9443f', pharmacy:'#d9443f', police:'#6f63c9', gunshop:'#6f63c9', market:'#e48a32', gas:'#e48a32',
     burger:'#b9529f', pizza:'#b9529f', taco:'#b9529f', diner:'#b9529f', cafe:'#b9529f',
@@ -2495,7 +2722,7 @@ const FIREBASE_CONFIG = {
     roadsV.forEach(x => { h += `<path class="m-fwy-case" d="M${x},0 L${x},270"/><path class="m-fwy" d="M${x},0 L${x},270"/>`; });
     h += `<text class="m-road-lbl" x="300" y="${roadsH[0] + 2.5}" text-anchor="middle">${st[0]}</text>`;
     h += `<text class="m-road-lbl" transform="translate(${roadsV[1] + 2.5},40) rotate(90)" text-anchor="middle">${st[1]}</text>`;
-    if (coastal) h += `<text class="m-sea" x="22" y="160" transform="rotate(-90 22 160)" text-anchor="middle">${id === 'rooseveltisland' || id === 'lowermanhattan' ? 'EAST RIVER' : SEA_NAME[rgOf(id)] || 'WATER'}</text>`;
+    if (coastal) h += `<text class="m-sea" x="22" y="160" transform="rotate(-90 22 160)" text-anchor="middle">${SEA_NAME[id] || SEA_NAME[rgOf(id)] || 'WATER'}</text>`;
     // 조사 구역 건물
     spots.forEach(([t, n], i) => {
       const [x, y] = slots[i], T = SPOT_TYPES[t];
@@ -3727,6 +3954,7 @@ const FIREBASE_CONFIG = {
     brooklyn:    [['house','브라운스톤 주택'],['pizza','브루클린 피자집'],['market','애틀랜틱 마트'],['hospital','브루클린 병원'],['church','브루클린 성당']],
     rooseveltisland: [['shelter','뉴욕 생존자 쉘터'],['market','쉘터 배급소'],['hospital','섬 병원 의무동'],['office','쉘터 무전실']]
   });
+  Object.assign(SPOTS, {"hesperia": [["house", "사막 주택 단지"], ["market", "메인 스트리트 마트"], ["school", "헤스페리아 고등학교"], ["gas", "고속도로 진입로 주유소"], ["church", "헤스페리아 교회"]], "applevalley": [["house", "목장 주택"], ["park", "마른 골프장"], ["pharmacy", "애플밸리 약국"], ["diner", "카우보이 스테이크하우스"], ["fire", "애플밸리 소방서"]], "adelanto": [["police", "사막 구치소"], ["gunshop", "교도관 무기고"], ["house", "구치소 앞 주택가"], ["gas", "아델란토 주유소"]], "helendale": [["house", "호숫가 주택"], ["park", "인공 호수 공원"], ["cafe", "호숫가 카페"], ["market", "동네 잡화점"]], "lucerne": [["house", "외딴 농가"], ["cabin", "건조호 관측 초소"], ["gas", "시골 주유소"], ["church", "사막 예배당"]], "hinkley": [["house", "버려진 농가"], ["school", "폐교된 초등학교"], ["warehouse", "양수장 창고"], ["gas", "힝클리 잡화 주유소"]], "chinalake": [["police", "기지 경비대"], ["gunshop", "무기 시험 창고"], ["hospital", "기지 의무실"], ["warehouse", "탄약 보관고"], ["office", "시험장 통제소"]], "calico": [["studio", "은광 체험 공연장"], ["diner", "광부 식당"], ["motel", "캠핑장 숙소"], ["cabin", "폐광 입구 초소"]], "newberry": [["cafe", "오아시스 카페"], ["motel", "사막 모텔"], ["gas", "뉴베리 주유소"], ["house", "연못가 주택"]], "daggett": [["warehouse", "태양광 정비 창고"], ["office", "발전소 관리동"], ["hardware", "전기 자재 창고"], ["gas", "대깃 주유소"]], "ludlow": [["diner", "루트 66 휴게 식당"], ["motel", "러들로 모텔"], ["gas", "버려진 주유소"], ["cafe", "간이 커피숍"]], "amboy": [["motel", "네온 간판 모텔"], ["gas", "분화구 주유소"], ["church", "앰보이 교회"], ["cabin", "분화구 탐방 초소"]], "kelso": [["terminal", "켈소 옛 기차역"], ["cabin", "국립 보호구역 초소"], ["park", "노래하는 모래 언덕"], ["house", "관리인 숙소"]], "zzyzx": [["office", "사막 연구소"], ["cabin", "연구원 숙소"], ["park", "소다 호숫가"], ["warehouse", "물탱크 창고"]], "mountainpass": [["warehouse", "광산 폭약 창고"], ["office", "광산 관리동"], ["hardware", "채굴 장비 창고"], ["gas", "고갯마루 주유소"], ["motel", "광부 숙소"]], "mtcharleston": [["cabin", "산장 레인저 초소"], ["park", "눈 덮인 캠프장"], ["motel", "산악 로지"], ["gas", "산길 주유소"]], "summerlin": [["house", "골프장 옆 저택"], ["market", "서머린 쇼핑센터"], ["school", "서머린 고등학교"], ["church", "서머린 교회"], ["park", "말라버린 골프장"]], "meddistrict": [["hospital", "대학 메디컬 센터"], ["hospital", "어린이 병원"], ["pharmacy", "병원 앞 약국"], ["office", "의료 연구동"], ["cafe", "병원 카페"]], "northlv": [["police", "노스 라스베이거스 경찰서"], ["warehouse", "물류 창고 단지"], ["house", "낮은 주택가"], ["school", "노스 라스베이거스 고등학교"], ["hardware", "공구 도매점"]], "artsdistrict": [["studio", "벽화 작업실"], ["cafe", "골동품 거리 카페"], ["motel", "전망 타워 호텔"], ["diner", "네온 간판 다이너"], ["library", "옛 우체국 박물관"]], "sunrise": [["house", "판자로 막은 주택"], ["market", "동네 마트"], ["school", "선라이즈 고등학교"], ["church", "선라이즈 교회"], ["fire", "선라이즈 소방서"]], "speedway": [["studio", "경주장 관중석 무대"], ["warehouse", "피트 정비고"], ["gas", "경주장 주유소"], ["motel", "레이서 숙소"]], "unlv": [["school", "UNLV 강의동"], ["library", "대학 도서관"], ["shelter", "농구 경기장 대피소"], ["pizza", "대학가 피자집"], ["pharmacy", "캠퍼스 보건소"]], "springvalley": [["house", "수영장 딸린 주택"], ["school", "스프링 밸리 고등학교"], ["gas", "레인보우 대로 주유소"], ["burger", "햄버거 가게"]], "enterprise": [["house", "반쯤 지어진 주택 단지"], ["hardware", "건축 자재 야적장"], ["gas", "남부 고속도로 주유소"], ["taco", "타코 트럭"]], "greenvalley": [["market", "그린 밸리 쇼핑센터"], ["park", "주민 공원"], ["house", "순찰대 본부 주택"], ["pharmacy", "그린 밸리 약국"], ["fire", "그린 밸리 소방서"]], "bouldercity": [["house", "댐 노동자 주택"], ["diner", "올드타운 식당"], ["library", "댐 건설 박물관"], ["church", "볼더 시티 교회"], ["gas", "93번 국도 주유소"]], "lvchinatown": [["market", "아시아 식료품 마트"], ["diner", "스프링 마운틴 국숫집"], ["pharmacy", "한약방"], ["warehouse", "식재료 창고"], ["cafe", "버블티 카페"]], "idahosprings": [["cabin", "폐광 관리소"], ["motel", "온천 여관"], ["diner", "광부 식당"], ["gas", "협곡 주유소"]], "georgetown": [["house", "빅토리아풍 목조 주택"], ["terminal", "협곡 관광 열차역"], ["church", "산골 교회"], ["cafe", "마을 찻집"]], "evergreen": [["cabin", "호숫가 별장"], ["park", "에버그린 호수 공원"], ["fire", "산림 소방서"], ["market", "산골 잡화점"]], "golden": [["warehouse", "양조장 저장고"], ["school", "광업 대학교"], ["hardware", "골든 철물점"], ["diner", "워싱턴 애비뉴 식당"], ["park", "클리어 크릭 강변"]], "arvada": [["house", "교외 주택가"], ["school", "아바다 고등학교"], ["market", "올드타운 마트"], ["church", "아바다 교회"], ["pharmacy", "동네 약국"]], "westminster": [["market", "쇼핑 단지 대형 마트"], ["burger", "고속도로 햄버거 가게"], ["gas", "36번 도로 주유소"], ["office", "교외 오피스 단지"], ["pizza", "쇼핑몰 피자집"]], "lodo": [["shelter", "야구장 대피소"], ["diner", "벽돌 창고 술집"], ["warehouse", "철로변 창고"], ["pizza", "야구장 앞 피자집"], ["motel", "유니언 역 옆 호텔"]], "rmarsenal": [["gunshop", "병기창 무기고"], ["police", "보호구역 경비대"], ["warehouse", "화학 처리 벙커"], ["cabin", "야생동물 관찰소"]], "commerce": [["warehouse", "정유 공장 저장고"], ["gas", "정유소 주유소"], ["hardware", "공업용 자재 창고"], ["office", "정유 공장 관리동"], ["taco", "공장 앞 타코 트럭"]], "citypark": [["park", "동물원 산책로"], ["library", "자연사 박물관"], ["cafe", "호숫가 보트하우스 카페"], ["shelter", "공원 임시 대피소"]], "capitolhill": [["office", "주 의사당"], ["police", "주 방위군 지휘소"], ["house", "오래된 아파트 거리"], ["church", "대성당"], ["pharmacy", "콜팩스 약국"]], "lakewood": [["office", "연방 정부 청사"], ["house", "레이크우드 주택가"], ["market", "교외 마트"], ["school", "레이크우드 고등학교"], ["park", "호숫가 공원"]], "englewood": [["hospital", "잉글우드 종합병원"], ["pharmacy", "병원 앞 약국"], ["burger", "브로드웨이 햄버거 가게"], ["motel", "병원 거리 모텔"]], "littleton": [["church", "리틀턴 교회"], ["house", "강가 옛 주택"], ["library", "리틀턴 도서관"], ["diner", "메인 스트리트 식당"]], "buckley": [["police", "기지 헌병대"], ["warehouse", "격납고"], ["hospital", "기지 의무대"], ["gunshop", "기지 탄약고"], ["shelter", "기지 피난 캠프"]], "evanston": [["school", "노스쇼어 대학 캠퍼스"], ["library", "대학 도서관"], ["house", "호숫가 주택"], ["lifeguard", "에번스턴 비치 초소"], ["cafe", "대학가 카페"]], "skokie": [["market", "올드 오처드 쇼핑몰"], ["gas", "에든스 고속도로 주유소"], ["house", "스코키 주택가"], ["pharmacy", "스코키 약국"], ["school", "스코키 고등학교"]], "desplaines": [["motel", "강변 카지노 호텔"], ["gas", "공항 가는 길 주유소"], ["park", "데스플레인스 강변 숲"], ["warehouse", "물류 단지 창고"]], "lincolnpark": [["park", "링컨 파크 동물원"], ["cabin", "동물원 사육사 관리동"], ["house", "링컨 파크 주택"], ["lifeguard", "노스 애비뉴 비치 초소"], ["cafe", "공원 앞 카페"]], "logansquare": [["house", "로건 스퀘어 벽돌집"], ["church", "광장 루터교회"], ["taco", "밀워키 애비뉴 타코 트럭"], ["cafe", "기념탑 앞 카페"], ["fire", "로건 스퀘어 소방서"]], "wickerpark": [["pizza", "노스 애비뉴 피자집"], ["studio", "고가 철도 밑 공연장"], ["burger", "밀워키 애비뉴 햄버거 가게"], ["motel", "위커 파크 부티크 호텔"], ["pharmacy", "다멘 애비뉴 약국"]], "oakpark": [["house", "프레리 양식 저택"], ["library", "오크 파크 공공도서관"], ["church", "오크 파크 교회"], ["hospital", "웨스트 서버브 병원"], ["school", "오크 파크 고등학교"]], "westloop": [["warehouse", "옛 정육 냉동창고"], ["diner", "랜돌프 스트리트 식당가"], ["market", "웨스트 루프 식료품점"], ["office", "풀턴 마켓 사무동"], ["hospital", "러시 대학 병원"]], "pilsen": [["church", "성 프로코피우스 성당"], ["taco", "18번가 타코 트럭"], ["house", "벽화 골목 주택"], ["school", "필슨 고등학교"], ["market", "18번가 시장"]], "cicero": [["warehouse", "철도 차량기지 창고"], ["hardware", "시서로 공업용 자재상"], ["gas", "서마크 로드 주유소"], ["police", "시서로 경찰서"], ["house", "노동자 주택가"]], "museumcampus": [["shelter", "경기장 임시 진료소"], ["library", "자연사 박물관"], ["park", "호숫가 산책로"], ["lifeguard", "호숫가 해안경비 초소"], ["office", "수족관 관리동"]], "hydepark": [["hospital", "대학 의료 센터"], ["school", "하이드 파크 대학 캠퍼스"], ["library", "대학 연구 도서관"], ["house", "호숫가 고급 주택"], ["church", "록펠러 채플"]], "calumet": [["warehouse", "제철소 원자재 야적장"], ["hardware", "운하 옆 공구 창고"], ["gas", "캘류멧 트럭 휴게소"], ["fire", "캘류멧 소방서"]], "midway": [["terminal", "미드웨이 공항 터미널"], ["warehouse", "공항 화물 창고"], ["motel", "공항 모텔"], ["gas", "시서로 애비뉴 주유소"], ["police", "공항 경찰대"]], "chichinatown": [["market", "차이나타운 식료품점"], ["diner", "웬트워스 애비뉴 식당"], ["pharmacy", "한약방 겸 약국"], ["church", "차이나타운 교회"], ["office", "상인 협회 건물"]], "fortlee": [["house", "절벽 위 주택가"], ["gas", "다리 입구 주유소"], ["market", "한인 마트"], ["park", "강변 절벽 공원"]], "hoboken": [["terminal", "호보컨 기차역"], ["house", "강변 벽돌 주택"], ["pizza", "워싱턴 스트리트 피자집"], ["pharmacy", "호보컨 약국"], ["fire", "호보컨 소방서"]], "upperwest": [["library", "자연사 박물관"], ["house", "공원 서쪽 아파트"], ["market", "브로드웨이 식료품점"], ["church", "대성당"], ["school", "컬럼비아 대학 캠퍼스"]], "hellskitchen": [["diner", "극장가 식당"], ["studio", "브로드웨이 극장"], ["terminal", "강 밑 터널 입구"], ["motel", "타임스스퀘어 뒷골목 호텔"], ["police", "미드타운 노스 경찰서"]], "chelsea": [["market", "실내 식품 시장"], ["park", "고가 철길 산책로"], ["office", "첼시 갤러리 빌딩"], ["hospital", "첼시 병원"], ["cafe", "첼시 카페"]], "village": [["school", "대학 캠퍼스"], ["cafe", "골목 카페"], ["pizza", "블리커 스트리트 피자집"], ["park", "개선문 광장"], ["church", "빌리지 교회"]], "chinatown": [["market", "차이나타운 건어물 시장"], ["pharmacy", "약재상"], ["diner", "딤섬 식당"], ["warehouse", "커낼 스트리트 창고"], ["house", "리틀 이탈리아 아파트"]], "bronx": [["shelter", "야구장 집결지"], ["hospital", "브롱크스 병원"], ["school", "브롱크스 고등학교"], ["park", "브롱크스 동물원 숲"], ["burger", "야구장 앞 햄버거 가게"]], "astoria": [["diner", "그리스 식당"], ["house", "아스토리아 주택가"], ["park", "강변 공원"], ["church", "정교회 성당"], ["studio", "영화 촬영소"]], "lic": [["warehouse", "강변 물류 창고"], ["office", "유리 오피스 타워"], ["terminal", "지하철 환승역"], ["hardware", "공업용 자재상"], ["gas", "퀸스 대로 주유소"]], "williamsburg": [["cafe", "공장 개조 카페"], ["hardware", "공방 공구점"], ["house", "옥상 텃밭 아파트"], ["market", "유기농 마트"], ["burger", "강변 햄버거 가게"]], "jfk": [["terminal", "JFK 국제선 터미널"], ["warehouse", "항공 화물 창고"], ["shelter", "활주로 격리 캠프"], ["motel", "공항 호텔"], ["police", "공항 경찰대"]], "coneyisland": [["lifeguard", "해변 구조대 초소"], ["burger", "핫도그 가게"], ["park", "놀이공원"], ["house", "해변 아파트"]]});
   const SPOT_TOTAL = Object.values(SPOTS).reduce((t, a) => t + a.length, 0);
   function spotTotal(rg) { return regionKeys(rg).reduce((t, l) => t + (SPOTS[l] || []).length, 0); }
   const DEPLETE_DAYS = 5;
@@ -5742,6 +5970,7 @@ const FIREBASE_CONFIG = {
   // 업데이트할 때마다 맨 위에 추가한다
   const PATCH_NOTES = [
     { d:'10.18', items:[
+      '🗺️ LA 밖 지방 확장: 지방마다 LA처럼 21곳 (지역 71곳 추가)',
       '📻 무전기에 NPC 무전이 잡힐 확률이 25%에서 35%로 올라갔어요',
       '🧳 떠돌이 상인의 백신은 하루 1개만 팔아요. 먼저 바꾼 사람이 가져가고 그 뒤엔 품절',
       '🗺️ LA 밖 지방 전용 이벤트 10종과 구간별 이동 장면 추가',
@@ -6341,7 +6570,7 @@ const FIREBASE_CONFIG = {
 </div>
 <script>
 (function(){
-  var BUILD_ID = '20261018121737';
+  var BUILD_ID = '20261018122408';
   function check(){
     fetch('version.txt?t=' + Date.now(), { cache: 'no-store' }).then(function(r){ return r.ok ? r.text() : ''; }).then(function(v){
       v = (v || '').trim();
