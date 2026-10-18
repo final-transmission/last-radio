@@ -1327,7 +1327,7 @@
     h += `<text x="100" y="386" text-anchor="middle" style="font:700 8px var(--font-mono); letter-spacing:2px; fill:#7a6b4f">FRONT VIEW</text>`;
     $('bodySvg').innerHTML = h;
     $('mcName').textContent = myName || '-';
-    $('mcDay').textContent = 'Day ' + myDoc.day;
+    $('mcDay').textContent = 'Day ' + myDoc.day + ' · 생존 ' + survDays(myDoc) + '일째';
     $('mcHp').textContent = Math.max(0, myDoc.hp) + ' / 100';
     $('mcNo').textContent = 'No. ' + String(hashStr(myName || 'x') % 10000).padStart(4, '0');
     const stamp = $('mcStamp');
@@ -5923,6 +5923,7 @@
   // 업데이트할 때마다 맨 위에 추가한다
   const PATCH_NOTES = [
     { d:'10.18', items:[
+      '🩺 신체 검진표의 검진일에 생존 일수도 함께 표시 (Day는 세계 날짜, 생존 일수는 캐릭터가 버틴 날)',
       '❓ 무전·쉘터 동료·초대 목록에서 내가 가 보지 않은 지역 이름은 ???로 보여요',
       '🪦 같은 캐릭터로 다시 시작하면 예전에 밝힌 지도가 그대로 남아요',
       '🩸 물릴 확률을 절반으로 낮췄어요 (좀비와 마주칠 때 약 22% → 11%)',
