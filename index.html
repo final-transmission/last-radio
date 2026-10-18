@@ -262,11 +262,18 @@
   #loginCard, .tabs, #tabChar, #tabJournal, #tabShelter, #permNotice, .play-grid { max-width: 640px; margin-left: auto; margin-right: auto; }
   .play-grid { display: flex; flex-direction: column; }
   .play-grid > #tabPlay, .play-grid > #tabMap { display: contents; }
-  #mapCard { order: 1; } #actionsCard { order: 2; } #mapInfo { order: 3; } .comm-tabs, .radio-dev, #talkCard, #shelterCard { order: 4; } #bagCard { order: 5; } #memoCard { order: 6; }
+  .play-grid > #tabComm { display: contents; }
+  #mapCard { order: 1; } #actCard { order: 2; } #actionsCard { order: 3; } .feed-card { order: 3; } .comm-tabs, .radio-dev, #talkCard, #shelterCard { order: 4; } #bagCard { order: 5; } #memoCard { order: 6; }
   @media (min-width: 900px) {
-    .play-grid { max-width: none; display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 0 20px; align-items: start; }
+    .play-grid { max-width: none; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 0 20px; align-items: start; }
     .play-grid > .radio-card { grid-column: 1 / -1; }
-    .play-grid > #tabPlay, .play-grid > #tabMap { display: block; }
+    .play-grid > #tabPlay, .play-grid > #tabMap, .play-grid > #tabComm { display: block; }
+    .play-grid > #tabComm { grid-column: 1 / -1; }
+  }
+  @media (min-width: 1280px) {
+    .play-grid { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr); }
+    .play-grid > #tabComm { grid-column: auto; }
+    .wrap { max-width: 1480px; }
     .tabs { max-width: none; }
   }
   .who-btn { display: inline-flex; align-items: center; gap: 8px; background: transparent; border: 1px solid transparent; border-radius: 3px; padding: 3px 6px; color: var(--text); font: inherit; cursor: pointer; }
@@ -600,7 +607,75 @@
         <div class="map-legend" id="mapLegend"></div>
         <div class="muted" id="mapHint">지역을 눌러 정보를 보세요. 이웃한 지역으로만 이동할 수 있고, 거리에 따라 5~30분이 걸려요. 가본 지역은 「지역 확대」로 거리와 건물을 자세히 볼 수 있어요.</div>
       </div>
-      <div class="card feed-card"><div class="feed" id="feed" role="log" aria-live="polite"></div></div>
+      <div class="card" id="actCard">
+      <div class="action-grid">
+        <button class="action" id="forageBtn"><span class="ic">🍄</span><span>채집</span><small>3분</small></button>
+        <button class="action" id="huntBtn"><span class="ic">🔪</span><span>사냥</span><small>10분</small></button>
+        <button class="action" id="farmBtn"><span class="ic">🌾</span><span>농사</span><small>30분</small></button>
+        <button class="action rest" id="restBtn"><span class="ic">🛌</span><span>휴식</span><small>10분</small></button>
+        <button class="action rest" id="sleepBtn"><span class="ic">😴</span><span>잠자기</span><small>1시간</small></button>
+        <button class="action raid" id="raidBtn" hidden><span class="ic">⚔️</span><span>약탈</span><small>5분</small></button>
+        <button class="action explore" id="exploreBtn" hidden><span class="ic">🏚️</span><span id="exploreLbl">선택한 구역 조사 · 파밍</span></button>
+      </div>
+      <div class="weapon-row">
+        <label for="weaponSelect">사냥 무기</label>
+        <select id="weaponSelect">
+          <option>맨손</option>
+        </select>
+      </div>
+      <div class="owned" id="weaponOwned"></div>
+      <div class="loc-line" id="locLine"></div>
+      <div class="veh-line" id="vehLine"></div>
+      <div class="owned" id="exploreInfo"></div>
+      </div>
+    </div>
+
+    <div id="tabPlay">
+
+    <div class="card" id="actionsCard">
+      <h2>행동 <span style="font-weight:400; color:var(--text-dim);" id="actionHint"></span></h2>
+      <div class="event-box" id="eventBox" hidden></div>
+      <div class="busy" id="busyBox" hidden>
+        <div class="busy-top"><span id="busyLbl"></span><span class="busy-left" id="busyLeft"></span></div>
+        <div class="bar-bg"><div class="bar-fill" id="busyBar" style="width:0%"></div></div>
+        <button class="secondary busy-cancel" id="busyCancel" type="button">그만두기</button>
+      </div>
+      <div class="spots-head"><b>조사할 구역 고르기</b><span id="spotCount"></span></div>
+      <div class="spots" id="spotList"></div>
+      <div class="point-panel" id="pointPanel"></div>
+      <div class="raid-row" id="raidRow" hidden>
+        <label for="raidTarget">약탈 대상</label>
+        <select id="raidTarget"><option value="">대상 없음</option></select>
+      </div>
+    </div>
+    <div class="card feed-card"><div class="feed" id="feed" role="log" aria-live="polite"></div></div>
+
+    <div class="card" id="bagCard">
+      <h2>🎒 배낭</h2>
+      <div class="bag-weight" id="bagWeight"></div>
+      <div id="bagList"></div>
+      <div class="char-msg" id="bagMsg" role="status"></div>
+      <div class="bag-cat" style="margin-top:14px">🔥 제작</div>
+      <div id="craftList"></div>
+      <div class="muted">배고프거나 목마르면 배낭에서 알아서 꺼내 먹어요. 신선식품은 하루마다 조금씩 상해요. 가방이 꽉 차면 더 챙길 수 없으니 쉘터 창고를 쓰세요.</div>
+    </div>
+
+    <div class="card" id="memoCard">
+      <h2>📌 이 지역에 남겨진 메모</h2>
+      <div class="memo-list" id="memoList"></div>
+      <div style="height:14px"></div>
+      <textarea id="memoInput" maxlength="140" placeholder="이곳에 들를 다음 생존자에게 메모를 남기세요."></textarea>
+      <div class="bio-count" id="memoCount">0 / 140</div>
+      <div style="height:8px"></div>
+      <button class="secondary" id="memoBtn" type="button">메모 남기기</button>
+      <div class="inv" id="invLine"></div>
+      <div class="char-msg" id="memoMsg" role="status"></div>
+    </div>
+
+
+    </div>
+
+    <div id="tabComm">
       <div class="comm-tabs" role="tablist" aria-label="소통 방법">
         <button type="button" role="tab" id="commRadio" aria-selected="true">📻 무전기</button>
         <button type="button" role="tab" id="commTalk" aria-selected="false">🗣️ 같은 곳</button>
@@ -664,69 +739,6 @@
         <div class="muted">같은 쉘터 동료끼리만 보여요. 어느 지역에 있든 대화할 수 있어요.</div>
         <div class="char-msg" id="shelterMsg" role="status"></div>
       </div>
-    </div>
-
-    <div id="tabPlay">
-
-    <div class="card" id="actionsCard">
-      <h2>행동 <span style="font-weight:400; color:var(--text-dim);" id="actionHint"></span></h2>
-      <div class="event-box" id="eventBox" hidden></div>
-      <div class="busy" id="busyBox" hidden>
-        <div class="busy-top"><span id="busyLbl"></span><span class="busy-left" id="busyLeft"></span></div>
-        <div class="bar-bg"><div class="bar-fill" id="busyBar" style="width:0%"></div></div>
-        <button class="secondary busy-cancel" id="busyCancel" type="button">그만두기</button>
-      </div>
-      <div class="action-grid">
-        <button class="action" id="forageBtn"><span class="ic">🍄</span><span>채집</span><small>3분</small></button>
-        <button class="action" id="huntBtn"><span class="ic">🔪</span><span>사냥</span><small>10분</small></button>
-        <button class="action" id="farmBtn"><span class="ic">🌾</span><span>농사</span><small>30분</small></button>
-        <button class="action rest" id="restBtn"><span class="ic">🛌</span><span>휴식</span><small>10분</small></button>
-        <button class="action rest" id="sleepBtn"><span class="ic">😴</span><span>잠자기</span><small>1시간</small></button>
-        <button class="action raid" id="raidBtn" hidden><span class="ic">⚔️</span><span>약탈</span><small>5분</small></button>
-        <button class="action explore" id="exploreBtn" hidden><span class="ic">🏚️</span><span id="exploreLbl">선택한 구역 조사 · 파밍</span></button>
-      </div>
-      <div class="weapon-row">
-        <label for="weaponSelect">사냥 무기</label>
-        <select id="weaponSelect">
-          <option>맨손</option>
-        </select>
-      </div>
-      <div class="owned" id="weaponOwned"></div>
-      <div class="loc-line" id="locLine"></div>
-      <div class="veh-line" id="vehLine"></div>
-      <div class="owned" id="exploreInfo"></div>
-      <div class="spots-head"><b>조사할 구역 고르기</b><span id="spotCount"></span></div>
-      <div class="spots" id="spotList"></div>
-      <div class="point-panel" id="pointPanel"></div>
-      <div class="raid-row" id="raidRow" hidden>
-        <label for="raidTarget">약탈 대상</label>
-        <select id="raidTarget"><option value="">대상 없음</option></select>
-      </div>
-    </div>
-
-    <div class="card" id="bagCard">
-      <h2>🎒 배낭</h2>
-      <div class="bag-weight" id="bagWeight"></div>
-      <div id="bagList"></div>
-      <div class="char-msg" id="bagMsg" role="status"></div>
-      <div class="bag-cat" style="margin-top:14px">🔥 제작</div>
-      <div id="craftList"></div>
-      <div class="muted">배고프거나 목마르면 배낭에서 알아서 꺼내 먹어요. 신선식품은 하루마다 조금씩 상해요. 가방이 꽉 차면 더 챙길 수 없으니 쉘터 창고를 쓰세요.</div>
-    </div>
-
-    <div class="card" id="memoCard">
-      <h2>📌 이 지역에 남겨진 메모</h2>
-      <div class="memo-list" id="memoList"></div>
-      <div style="height:14px"></div>
-      <textarea id="memoInput" maxlength="140" placeholder="이곳에 들를 다음 생존자에게 메모를 남기세요."></textarea>
-      <div class="bio-count" id="memoCount">0 / 140</div>
-      <div style="height:8px"></div>
-      <button class="secondary" id="memoBtn" type="button">메모 남기기</button>
-      <div class="inv" id="invLine"></div>
-      <div class="char-msg" id="memoMsg" role="status"></div>
-    </div>
-
-
     </div>
     </div>
 
@@ -4489,7 +4501,7 @@ const FIREBASE_CONFIG = {
 </div>
 <script>
 (function(){
-  var BUILD_ID = '20261018033958';
+  var BUILD_ID = '20261018035836';
   function check(){
     fetch('version.txt?t=' + Date.now(), { cache: 'no-store' }).then(function(r){ return r.ok ? r.text() : ''; }).then(function(v){
       v = (v || '').trim();
