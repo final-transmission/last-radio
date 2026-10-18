@@ -5164,7 +5164,7 @@
     const lt = lootText(got);
     const taken = Object.keys(got).filter(k => ITEMS[k] && ['food','drink','med'].includes(ITEMS[k].cat) && k !== 'rotten').reduce((t, k) => t + got[k], 0);
     if (taken) regEvent('dep', loc, Math.min(3, taken));
-    addLog(head + (lt ? '쓸 만한 물자를 챙겼다. (' + lt + ')' : depleted ? '며칠 전에 뒤진 곳이라 남은 게 없다.' : '아무것도 없었다. 누군가 먼저 다녀간 모양이다.'));
+    addLog(head + (lt ? '쓸 만한 물자를 챙겼다. (' + lt + ')' : depleted ? '며칠 전에 뒤진 곳이라 남은 게 없다.' : '아무것도 찾지 못했다.'));
     if (!depleted && ['ward','medshelf','armory'].includes(P.id) && ch(0.04)) { const g = gainItem('vaccine', 1); if (g) addLog('🧪 잠긴 냉장 보관함 안에서 「실험용 백신」 앰플을 찾았다! 라벨에는 손글씨로 "효과 미확인"이라고 적혀 있다. (실험용 백신 +1)'); }
     if (!depleted) findStationery(P.st || 0);
   }
