@@ -970,7 +970,7 @@
           <input type="text" id="renameInput" placeholder="새 닉네임" maxlength="12" aria-label="새 닉네임">
           <button class="primary" id="renameBtn" type="button" style="width:auto; white-space:nowrap; padding:12px 16px">이름 바꾸기</button>
         </div>
-        <div class="muted">다음에 입장할 때는 새 닉네임을 입력해야 해요. 다른 생존자가 쓰는 이름은 쓸 수 없어요.</div>
+        <div class="muted">이름을 바꿔도 로그인은 지금 아이디로 그대로 해요. 다른 생존자와 같은 이름도 쓸 수 있어요.</div>
         <div class="char-msg" id="charMsg" role="status"></div>
       </div>
       <div class="card">
@@ -4751,7 +4751,7 @@ const FIREBASE_CONFIG = {
 </div>
 <script>
 (function(){
-  var BUILD_ID = '20261018044401';
+  var BUILD_ID = '20261018044528';
   function check(){
     fetch('version.txt?t=' + Date.now(), { cache: 'no-store' }).then(function(r){ return r.ok ? r.text() : ''; }).then(function(v){
       v = (v || '').trim();
