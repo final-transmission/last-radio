@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-NzWzSr/JJIt0kS48PXCsqUjn9/ALxUaH31f7sTmbH+s=' 'sha256-XBhYyYOXmyHU+rUeBJm1vZW172xgTyzDLX1SllyaCU8=' 'sha256-QilBNDI8rK8jG2Q6+glySA9PiQ01ee/80r6NM75k3cw=' 'sha256-MYCNeUNGsBI6DbaeFBzbIknMtzyoi0JKtsEJRwEZwo0='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self' https://*.googleapis.com https://*.firebaseapp.com https://*.firebaseio.com wss://*.firebaseio.com; frame-src https://*.firebaseapp.com; object-src 'none'; base-uri 'self'; form-action 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-NzWzSr/JJIt0kS48PXCsqUjn9/ALxUaH31f7sTmbH+s=' 'sha256-XBhYyYOXmyHU+rUeBJm1vZW172xgTyzDLX1SllyaCU8=' 'sha256-RQZWjyenfuiLYssri8Wb34+EkLh9xyQpOqnCS2N3zN0=' 'sha256-ht1Ep1httrAHG8rLkA7jAokyg08f+NK6OB/pYKRu+GE='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self' https://*.googleapis.com https://*.firebaseapp.com https://*.firebaseio.com wss://*.firebaseio.com; frame-src https://*.firebaseapp.com; object-src 'none'; base-uri 'self'; form-action 'self'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <style id="antiClickjack">html{display:none !important}</style>
 <script>if (window.self === window.top) { var ack = document.getElementById('antiClickjack'); ack.parentNode.removeChild(ack); } else { try { window.top.location = window.self.location.href; } catch (e) {} }</script>
@@ -606,6 +606,7 @@
   .m-route.blocked { stroke: #c0281e; stroke-dasharray: 3 3; }
   .m-block, .m-env { font-size: 10px; }
   #mapSvg .m-fold, #mapSvg .m-fold-hi, #mapSvg .m-note, #mapSvg .m-stain, #mapSvg .m-sub, #mapSvg .m-title, #mapSvg .m-fog, #mapSvg .m-env, #mapSvg .m-block { pointer-events: none; }
+  .bag-row .bag-drop { margin-left: 6px; padding: 6px 8px; font-size: 11px; color: var(--text-dim); }
 </style>
 </head>
 <body>
@@ -928,7 +929,7 @@
           <details><summary>🗺️ 지도와 이동</summary><p>처음엔 위험이 낮은 지역 한 곳에서 시작해요. 지도에서 지역을 눌러 정보를 보고, 이웃한 지역으로만 이동할 수 있어요(5~30분). 가본 지역만 이름과 건물이 보이고, 「지역 확대」로 거리와 건물을 자세히 볼 수 있어요.</p></details>
           <details><summary>🏚️ 조사와 이벤트</summary><p>「조사할 구역 고르기」에서 건물을 고르고, 그 안의 지점(주방·창고·사물함…)을 하나씩 뒤져요. 지점마다 나오는 물자와 위험도가 달라요. 뒤진 곳은 5일 동안 거의 비어 있어요.</p><p>조사 중엔 가끔 돌발 이벤트가 생겨요. 선택지가 나오면 고르기 전까지 다른 행동을 할 수 없어요. 어떤 이벤트는 다음 이벤트로 이어지기도 해요.</p></details>
           <details><summary>🚗 탈것</summary><p>주차장·차고·주유소·터미널 등에서 자전거, 오토바이, 승용차, 스포츠카, 트럭, 버스를 발견할 수 있어요. 시동은 30% 확률로만 걸려요. 자전거 말고는 연료가 필요하고, 휘발유 통 1개 = 연료 5예요. 탈것이 같은 지역에 있으면 이동 시간이 20~60%로 줄어요. 트럭·버스는 가방 한도도 늘려줘요.</p></details>
-          <details><summary>🍖 배고픔·갈증·피로</summary><p>시간이 지나면 포만감·수분이 줄고 피로가 쌓여요. 배낭의 음식과 물은 필요할 때 알아서 꺼내 먹어요. 피로는 휴식·잠으로 풀어요. 굶주림·갈증·피로만으로는 죽지 않고 체력 1에서 버텨요.</p></details>
+          <details><summary>🍖 배고픔·갈증·피로</summary><p>시간이 지나면 포만감·수분이 줄고 피로가 쌓여요. 배낭의 음식과 물은 필요할 때 알아서 꺼내 먹어요. 피로는 휴식·잠으로 풀어요. 굶주림·갈증·피로만으로는 죽지 않고 체력 1에서 버텨요. 음식을 먹으면 체력도 조금 차고, 다쳤을 때 포만감을 100까지 채우면 상처가 하루 빨리 아물어요.</p></details>
           <details><summary>🩸 부상과 감염</summary><p>워커와 싸우면 부위별로 타박상·할큄·열상·물림을 입어요. 물리면 감염이 시작되고, 머리·목을 물리면 더 빨리 퍼져요. 감염이 100%가 되면 워커가 돼요. 항생제·혼합 허브로 감염을, 붕대·소독약·봉합 키트로 상처를 치료해요. 아주 드물게 나오는 🧪 실험용 백신은 감염을 완전히 없애고 게임 10일(현실 5시간) 동안 물려도 감염되지 않게 해 줘요. 병동·약품 진열대·무기고, 방호복 좀비, 보급 투하, 치료 임무, 검역 검문소에서 얻을 수 있어요. 캐릭터 탭의 신체 검진표에서 상태를 볼 수 있어요.</p></details>
           <details><summary>🎒 아이템과 제작</summary><p>배낭은 기본 15kg, 등산 배낭이 있으면 25kg까지 들 수 있어요. 신선식품은 하루마다 조금씩 상해요. 무기는 쓸수록 닳고, 권총은 탄약이 필요해요. 라이터·성냥이 있으면 고기를 굽고 빗물을 끓일 수 있고, 천 조각으로 붕대를 만들 수 있어요.</p></details>
           <details><summary>📻 무전기와 소통</summary><p>무전기는 전체 채널과 숫자 채널(100.1처럼 소수점 가능)이 있어요. 멀리 있는 사람의 무전일수록 잡음이 섞여요. 가끔 미확인 구조 신호가 잡히기도 해요. 「같은 곳」은 같은 건물에 있는 생존자끼리 얼굴을 보며 대화하는 곳이고, 물물교환도 할 수 있어요. 지역에 종이와 필기구로 메모를 남길 수도 있어요.</p></details>
@@ -1271,11 +1272,14 @@ const FIREBASE_CONFIG = {
 
   // away: 자리를 비운 동안 — 감염은 1/4 속도로 진행되고 95%(말기)에서 멈춘다
   function progressBody(withLog, away) {
+    // 배부른 날(포만감 100을 채운 뒤 하루)은 상처가 이틀치씩 아문다
+    if (myDoc.wellFed >= myDoc.day) myDoc.injuries.forEach(i => { if (!(i.type === 'bite' && myDoc.infection > 0)) i.day -= 1; });
     myDoc.injuries = myDoc.injuries.filter(i => {
       const age = myDoc.day - i.day;
       if (i.type === 'bite') return myDoc.infection > 0 || age < INJ.bite.heal;
       return age < INJ[i.type].heal;
     });
+    if (myDoc.wellFed >= myDoc.day && myDoc.injuries.length && myDoc.hp > 0) myDoc.hp = clamp(myDoc.hp + 3);
     if (myDoc.infection > 0) {
       const before = infStage(myDoc.infection)[0];
       const fast = (myDoc.infectionPart === 'head' || myDoc.infectionPart === 'neck') ? 1.6 : 1;
@@ -2581,14 +2585,14 @@ const FIREBASE_CONFIG = {
   // ---------- 물물교환 ----------
   let trades = [], tradeUnsub = null, tradeBusy = false;
   function sameRoom(t) { return t.loc === myDoc.loc && (t.spot == null ? null : t.spot) === mySpot(); }
-  function tItem(x) { return x && ITEMS[x.id] ? ITEMS[x.id].ic + ' ' + ITEMS[x.id].n + ' ×' + (Math.floor(+x.n) || 0) : '?'; }
+  function tItem(x) { return x && ITEMS[x.id] ? ITEMS[x.id].ic + ' ' + ITEMS[x.id].n + ' ×' + (Math.floor(+x.n) || 0) : x && !x.id ? '🎁 없음' : '?'; }
   function tradeMsg(t, ok) { const m = $('tradeMsg'); m.textContent = t; m.className = 'char-msg ' + (ok ? 'ok' : 'err'); }
   function renderTrades() {
     if (!myDoc || $('talkCard').hidden) return;
     const mine = trades.filter(t => t.fromKey === myKey && t.status === 'open');
     const here = trades.filter(t => t.fromKey !== myKey && t.status === 'open' && sameRoom(t));
     const dead = myDoc.status === 'dead';
-    const row = (t, me) => `<div class="trade"><div class="tinfo">${tItem(t.give)} <span class="trade-arrow">⇄</span> ${tItem(t.want)}<small>${me ? '내 제안' + (sameRoom(t) ? '' : ' · ' + placeName(t.loc, t.spot)) : escapeHtml(String(t.from || '').slice(0, 12)) + '님의 제안 · 왼쪽을 주고 오른쪽을 원함'}</small></div>${me ? `<button class="secondary" type="button" data-tcancel="${escapeHtml(t.id)}">취소</button>` : `<button class="primary" type="button" data-taccept="${escapeHtml(t.id)}"${dead || inv(t.want.id) < t.want.n ? ' disabled' : ''}>교환</button>`}</div>`;
+    const row = (t, me) => `<div class="trade"><div class="tinfo">${tItem(t.give)} <span class="trade-arrow">⇄</span> ${tItem(t.want)}<small>${me ? '내 제안' + (sameRoom(t) ? '' : ' · ' + placeName(t.loc, t.spot)) : escapeHtml(String(t.from || '').slice(0, 12)) + '님의 제안 · 왼쪽을 주고 오른쪽을 원함'}</small></div>${me ? `<button class="secondary" type="button" data-tcancel="${escapeHtml(t.id)}">취소</button>` : `<button class="primary" type="button" data-taccept="${escapeHtml(t.id)}"${dead || inv(t.want.id) < t.want.n ? ' disabled' : ''}>${t.want && t.want.id ? '교환' : '받기'}</button>`}</div>`;
     $('tradeList').innerHTML = mine.map(t => row(t, true)).join('') + here.map(t => row(t, false)).join('') || '<div class="muted" style="margin:0">이곳에 걸린 교환 제안이 없다.</div>';
     const gSel = $('tgGive'), wSel = $('tgWant');
     if (document.activeElement !== gSel) {
@@ -2596,20 +2600,28 @@ const FIREBASE_CONFIG = {
       gSel.innerHTML = '<option value="">내줄 것</option>' + Object.keys(v).filter(k => ITEMS[k] && v[k] > 0).map(k => `<option value="${k}">${ITEMS[k].ic} ${ITEMS[k].n} (${v[k]})</option>`).join('');
       if (v[cur] > 0) gSel.value = cur;
     }
-    if (!wSel.options.length) wSel.innerHTML = '<option value="">받을 것</option>' + Object.keys(ITEMS).filter(k => k !== 'rotten').map(k => `<option value="${k}">${ITEMS[k].ic} ${ITEMS[k].n}</option>`).join('');
+    if (document.activeElement !== wSel) {
+      // 받을 것: 같은 장소에 있는 다른 생존자들의 배낭에 실제로 있는 물건만
+      const cur = wSel.value, pool = {};
+      latestDocs.filter(d => !isMe(d) && d.status !== 'dead' && d.loc === myDoc.loc && spotOf(d) === mySpot()).forEach(d => { const v = invOf(d); Object.keys(v).forEach(k => { if (ITEMS[k] && k !== 'rotten' && +v[k] > 0) pool[k] = (pool[k] || 0) + Math.floor(+v[k]); }); });
+      const ks = Object.keys(pool);
+      wSel.innerHTML = '<option value="">받을 것</option><option value="__none">🎁 없음 (그냥 주기)</option>' + (ks.length ? ks.map(k => `<option value="${k}">${ITEMS[k].ic} ${ITEMS[k].n} (이곳 사람들에게 ${pool[k]})</option>`).join('') : '<option value="" disabled>같은 곳에 다른 생존자가 없어요</option>');
+      if (cur === '__none' || pool[cur]) wSel.value = cur;
+    }
     $('tgPost').disabled = dead;
   }
   $('tgPost').addEventListener('click', async () => {
     if (!myDoc || !db || tradeBusy || myDoc.status === 'dead') return;
     const g = $('tgGive').value, w = $('tgWant').value;
-    const gn = Math.max(1, Math.min(99, parseInt($('tgGiveN').value, 10) || 1)), wn = Math.max(1, Math.min(99, parseInt($('tgWantN').value, 10) || 1));
-    if (!g || !w) { tradeMsg('내줄 것과 받을 것을 고르세요.'); return; }
+    const gift = w === '__none';
+    const gn = Math.max(1, Math.min(99, parseInt($('tgGiveN').value, 10) || 1)), wn = gift ? 0 : Math.max(1, Math.min(99, parseInt($('tgWantN').value, 10) || 1));
+    if (!g || !w) { tradeMsg('내줄 것과 받을 것을 고르세요. 그냥 주려면 받을 것에서 「없음」을 고르세요.'); return; }
     if (inv(g) < gn) { tradeMsg('내줄 물건이 모자라요.'); return; }
     tradeBusy = true;
     try {
       addItem(g, -gn);
-      await db.collection('trades').add({ fromKey: myKey, from: myName, loc: myDoc.loc, spot: mySpot(), give: { id: g, n: gn }, want: { id: w, n: wn }, status: 'open', ts: Date.now() });
-      addLog('🤝 ' + placeName(myDoc.loc, mySpot()) + '에 교환을 걸었다: ' + ITEMS[g].n + ' ×' + gn + ' ⇄ ' + ITEMS[w].n + ' ×' + wn);
+      await db.collection('trades').add({ fromKey: myKey, from: myName, loc: myDoc.loc, spot: mySpot(), give: { id: g, n: gn }, want: { id: gift ? '' : w, n: wn }, status: 'open', ts: Date.now() });
+      addLog('🤝 ' + placeName(myDoc.loc, mySpot()) + (gift ? '에 필요한 사람이 가져가도록 ' + ITEMS[g].n + ' ×' + gn + '을(를) 내놓았다.' : '에 교환을 걸었다: ' + ITEMS[g].n + ' ×' + gn + ' ⇄ ' + ITEMS[w].n + ' ×' + wn));
       tradeMsg('교환 제안을 걸었어요. 내줄 물건은 맡겨 뒀어요.', true);
       renderStatus(); await saveDoc();
     } catch(e) { addItem(g, gn); tradeMsg('제안하지 못했어요. 잠시 후 다시 시도해보세요.'); }
@@ -2634,12 +2646,12 @@ const FIREBASE_CONFIG = {
       } else {
         if (myDoc.status === 'dead' || !sameRoom(t)) return;
         if (inv(t.want.id) < t.want.n) { tradeMsg('상대가 원하는 물건이 모자라요.'); return; }
-        const extra = (ITEMS[t.give.id].wt || 0) * t.give.n - (ITEMS[t.want.id].wt || 0) * t.want.n;
+        const extra = (ITEMS[t.give.id].wt || 0) * t.give.n - (ITEMS[t.want.id] ? ITEMS[t.want.id].wt || 0 : 0) * t.want.n;
         if (!canCarry(Math.max(0, extra))) { tradeMsg('가방이 꽉 차서 받을 수 없어요.'); return; }
         const ok = await txUpdate('trades/' + id, cur => cur && cur.status === 'open' ? Object.assign(cur, { status: 'done', acceptKey: myKey, acceptName: myName, doneTs: Date.now(), claimed: false }) : null);
         if (!ok) { tradeMsg('한발 늦었어요. 다른 사람이 먼저 교환했어요.'); return; }
         addItem(t.want.id, -t.want.n); addItem(t.give.id, t.give.n);
-        addLog('🤝 ' + String(t.from || '누군가').slice(0, 12) + '님과 교환했다. (' + ITEMS[t.want.id].n + ' ×' + t.want.n + ' 주고 ' + ITEMS[t.give.id].n + ' ×' + t.give.n + ' 받음)');
+        addLog('🤝 ' + String(t.from || '누군가').slice(0, 12) + (ITEMS[t.want.id] ? '님과 교환했다. (' + ITEMS[t.want.id].n + ' ×' + t.want.n + ' 주고 ' : '님이 내놓은 것을 받았다. (') + ITEMS[t.give.id].n + ' ×' + t.give.n + ' 받음)');
         tradeMsg('교환했어요!', true); sfx('done');
       }
       renderStatus(); await saveDoc();
@@ -2659,7 +2671,7 @@ const FIREBASE_CONFIG = {
         const ok = await txUpdate('trades/' + t.id, c => c && !c.claimed && c.status === 'done' ? (cur = Object.assign(c, { claimed: true })) : null);
         if (!ok || !cur) continue;
         addItem(cur.want.id, cur.want.n);
-        addLog('🤝 ' + String(cur.acceptName || '누군가').slice(0, 12) + '님이 교환에 응했다. (' + ITEMS[cur.want.id].n + ' ×' + cur.want.n + ' 받음)');
+        addLog('🤝 ' + String(cur.acceptName || '누군가').slice(0, 12) + (ITEMS[cur.want.id] ? '님이 교환에 응했다. (' + ITEMS[cur.want.id].n + ' ×' + cur.want.n + ' 받음)' : '님이 내가 내놓은 ' + (ITEMS[cur.give.id] ? ITEMS[cur.give.id].n : '물건') + '을(를) 받아 갔다.'));
       }
       renderStatus(); await saveDoc();
     } catch(e) {}
@@ -5251,6 +5263,9 @@ const FIREBASE_CONFIG = {
   // 업데이트할 때마다 맨 위에 추가한다
   const PATCH_NOTES = [
     { d:'10.18', items:[
+      '🍖 음식을 먹으면 체력도 조금 회복돼요. 다쳤을 때 포만감을 100까지 채우면 상처가 하루 빨리 낫고 체력도 더 회복돼요',
+      '🤝 물물교환: 받을 것은 같은 곳 사람들 배낭에 있는 물건만 떠요. 「없음」을 고르면 그냥 나눠줄 수 있어요',
+      '🗑️ 배낭에 버리기 버튼이 생겼어요',
       '🛠 버그 수정: 관리자가 부활·회복시켜도 그 사람의 열려 있던 화면이 옛 상태로 덮어쓰던 문제',
       '🔒 보안 강화: 남의 캐릭터·쉘터·공지 등을 고칠 수 없도록 서버 규칙을 좁혔어요. 쉘터·교환은 동시에 눌러도 꼬이지 않게 처리해요',
       '🩹 버그 수정: 새로 만든 캐릭터가 1일차부터 지난 날들을 한꺼번에 겪어 상처투성이로 시작하던 문제',
@@ -5553,6 +5568,10 @@ const FIREBASE_CONFIG = {
     if (it.hyd) myDoc.hyd = clamp(myDoc.hyd + it.hyd);
     if (it.fat) myDoc.fat = clamp(myDoc.fat + it.fat);
     let text = (auto ? (it.cat === 'food' ? '허기가 져서 ' : '목이 말라 ') : '') + josa(it.n, '을', '를') + ' ' + (it.cat === 'food' ? '먹었다.' : '마셨다.');
+    // 음식은 체력도 조금 채운다 (포만감 10당 1, 최소 1)
+    if (it.cat === 'food' && it.sat > 0 && myDoc.hp > 0 && myDoc.hp < 100) { const hh = Math.min(100 - myDoc.hp, Math.max(1, Math.round(it.sat / 10))); myDoc.hp += hh; text += ' (체력 +' + hh + ')'; }
+    // 배가 가득 차면(포만감 100) 다음 날까지 상처가 하루 더 빨리 아문다
+    if (it.cat === 'food' && myDoc.sat >= 100 && myDoc.injuries && myDoc.injuries.length && !(myDoc.wellFed >= myDoc.day + 1)) { myDoc.wellFed = myDoc.day + 1; text += ' 배가 든든하다. 상처가 더 빨리 아물 것 같다.'; }
     if (it.sick && Math.random() < it.sick) { myDoc.hp = clamp(myDoc.hp - 6); myDoc.hyd = clamp(myDoc.hyd - 10); text += ' 배가 뒤틀린다. 탈이 났다. (체력 -6)'; }
     if (!quiet) addLog(text);
     return text;
@@ -5651,7 +5670,7 @@ const FIREBASE_CONFIG = {
         const eff = it.cat === 'med' ? it.desc : [it.sat ? '포만감 ' + (it.sat > 0 ? '+' : '') + it.sat : '', it.hyd ? '수분 ' + (it.hyd > 0 ? '+' : '') + it.hyd : '', it.fat ? '피로 ' + it.fat : '', it.sick ? '배탈 주의' : ''].filter(Boolean).join(' · ');
         const label = it.cat === 'food' ? '먹기' : it.cat === 'drink' ? '마시기' : '사용 · 1분';
         const off = dead || (it.cat === 'med' ? (busy || !canUseMed(k)) : false);
-        const btn = it.cat === 'tool' ? '' : `<button class="secondary" type="button" data-use="${k}"${off ? ' disabled' : ''}>${label}</button>`;
+        const btn = (it.cat === 'tool' ? '' : `<button class="secondary" type="button" data-use="${k}"${off ? ' disabled' : ''}>${label}</button>`) + `<button class="secondary bag-drop" type="button" data-drop="${k}"${dead ? ' disabled' : ''} aria-label="${it.n} 버리기">버리기</button>`;
         return `<div class="bag-row"><span class="bic">${it.ic}</span><div class="bnm">${it.n} <b>×${v[k]}</b><small>${eff || it.desc || ''} · ${Math.round((it.wt || 0) * v[k] * 10) / 10}kg</small></div>${btn}</div>`;
       }).join('');
     }).join('');
@@ -5661,6 +5680,19 @@ const FIREBASE_CONFIG = {
     if (b && !b.disabled) startAction('craft', b.dataset.craft);
   });
   $('bagList').addEventListener('click', async (e) => {
+    const dr = e.target.closest('button[data-drop]');
+    if (dr && !dr.disabled && myDoc) {
+      const id = dr.dataset.drop, it = ITEMS[id], have = inv(id);
+      if (!it || !have) return;
+      const ans = have === 1 ? (confirm(it.n + '을(를) 버릴까요?') ? '1' : null) : prompt(it.n + '을(를) 몇 개 버릴까요? (가진 수: ' + have + ')', '1');
+      const n = Math.min(have, Math.max(0, parseInt(ans, 10) || 0));
+      if (!n) return;
+      addItem(id, -n);
+      addLog('🗑️ ' + josa(it.n, '을', '를') + ' ' + n + '개 버렸다.');
+      $('bagMsg').textContent = it.n + ' ' + n + '개를 버렸어요.';
+      renderStatus(); await saveDoc();
+      return;
+    }
     const b = e.target.closest('button[data-use]');
     if (!b || b.disabled || !myDoc) return;
     const id = b.dataset.use, it = ITEMS[id];
@@ -5808,7 +5840,7 @@ const FIREBASE_CONFIG = {
 </div>
 <script>
 (function(){
-  var BUILD_ID = '20261018074904';
+  var BUILD_ID = '20261018080021';
   function check(){
     fetch('version.txt?t=' + Date.now(), { cache: 'no-store' }).then(function(r){ return r.ok ? r.text() : ''; }).then(function(v){
       v = (v || '').trim();

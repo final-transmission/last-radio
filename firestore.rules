@@ -68,7 +68,9 @@ service cloud.firestore {
     match /trades/{id} {
       allow read: if signedIn();
       allow create: if signedIn() && d().fromKey == myKey() && d().status == 'open'
-        && d().give.n is int && d().give.n > 0 && d().give.n <= 99 && d().want.n is int && d().want.n > 0 && d().want.n <= 99;
+        && d().give.n is int && d().give.n > 0 && d().give.n <= 99
+        // 받을 것: 1~99개, 또는 '없음'(그냥 주기: id가 빈 칸, 0개)
+        && d().want.n is int && ((d().want.n > 0 && d().want.n <= 99) || (d().want.n == 0 && d().want.id == ''));
       allow update: if signedIn()
         && d().diff(resource.data).affectedKeys().hasOnly(['status', 'claimed', 'acceptKey', 'acceptName', 'doneTs'])
         && (

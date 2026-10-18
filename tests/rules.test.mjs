@@ -66,6 +66,8 @@ await no('bob accepts as alice', setDoc(doc(B, 'trades/' + td.id), Object.assign
 await ok('bob accepts', setDoc(doc(B, 'trades/' + td.id), Object.assign({}, tr, { status: 'done', acceptKey: 'uid-bob', acceptName: '밥', doneTs: now, claimed: false })));
 await no('bob re-accepts done', setDoc(doc(B, 'trades/' + td.id), Object.assign({}, tr, { status: 'done', acceptKey: 'uid-bob', acceptName: '밥2', doneTs: now, claimed: false })));
 await ok('alice claims', setDoc(doc(A, 'trades/' + td.id), Object.assign({}, tr, { status: 'done', acceptKey: 'uid-bob', acceptName: '밥', doneTs: now, claimed: true })));
+await ok('gift trade', addDoc(collection(A, 'trades'), Object.assign({}, tr, { want: { id: '', n: 0 } })));
+await no('want 0 with item', addDoc(collection(A, 'trades'), Object.assign({}, tr, { want: { id: 'water', n: 0 } })));
 const td2 = await addDoc(collection(A, 'trades'), tr);
 await ok('alice cancels own', setDoc(doc(A, 'trades/' + td2.id), Object.assign({}, tr, { status: 'cancel', claimed: true })));
 // shelters

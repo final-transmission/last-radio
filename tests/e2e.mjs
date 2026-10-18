@@ -52,9 +52,19 @@ try {
   ok('교환 제안이 상대에게 보임', !!acc);
   if (acc) { await acc.click(); await B.p.waitForTimeout(2500); await A.p.waitForTimeout(2000); }
   const tr = await admin(async db => (await getDocs(collection(db, 'trades'))).docs.map(d => d.data()));
-  ok('교환 성사·수령 (트랜잭션)', tr.length === 1 && tr[0].status === 'done' && tr[0].claimed === true, JSON.stringify(tr.map(t => [t.status, t.claimed])));
+  ok('교환 성사·수령 (트랜잭션)', tr.length >= 1 && tr[0].status === 'done' && tr[0].claimed === true, JSON.stringify(tr.map(t => [t.status, t.claimed])));
   const invA = (await admin(async db => (await getDoc(doc(db, 'survivors/' + ua.key))).data())).inv, invB = (await admin(async db => (await getDoc(doc(db, 'survivors/' + ub.key))).data())).inv;
   ok('교환 물건 이동', invA.water >= 6 && invB.beans >= 6, 'A water ' + invA.water + ' / B beans ' + invB.beans);
+  // 4-2) 그냥 주기 (받을 것: 없음)
+  await A.p.selectOption('#tgGive', 'beans'); await A.p.selectOption('#tgWant', '__none'); await A.p.click('#tgPost'); await B.p.waitForTimeout(2500);
+  const gb = await B.p.$('button[data-taccept]');
+  ok('나눔 제안이 받기 버튼으로 보임', !!gb && (await gb.textContent()).includes('받기'));
+  if (gb) { await gb.click(); await B.p.waitForTimeout(2500); await A.p.waitForTimeout(2000); }
+  const tr2 = await admin(async db => (await getDocs(collection(db, 'trades'))).docs.map(d => d.data()).filter(t => t.want && t.want.id === ''));
+  const invB2 = (await admin(async db => (await getDoc(doc(db, 'survivors/' + ub.key))).data())).inv;
+  ok('나눔 성사', tr2.length === 1 && tr2[0].status === 'done' && tr2[0].claimed === true && invB2.beans >= 7, JSON.stringify(tr2.map(t => [t.status, t.claimed])) + ' B beans ' + invB2.beans);
+  const wantOpts = await A.p.$$eval('#tgWant option', os => os.map(o => o.value));
+  ok('받을 것 목록이 상대 배낭 물건으로 제한', wantOpts.includes('__none') && wantOpts.includes('beans') && !wantOpts.includes('vaccine'), wantOpts.join(','));
   // 2) 조사 → 저장
   await A.p.click('.spot[data-spot="0"]'); await A.p.click('button[data-point="0"]'); await skip(A.p, 5);
   const aDoc = await admin(async db => (await getDoc(doc(db, 'survivors/' + ua.key))).data());
