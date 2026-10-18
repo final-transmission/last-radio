@@ -328,6 +328,11 @@
   .st-qty input { width: 80px; background: var(--bg-elevated); border: 1px solid var(--border); color: var(--text); border-radius: 3px; padding: 8px 10px; font: inherit; font-size: 15px; }
   .st-row { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; gap: 8px; align-items: center; padding: 9px 0; border-bottom: 1px solid var(--border); }
   .st-row:last-child { border-bottom: none; }
+  .st-pick { display: grid; grid-template-columns: minmax(0, 1fr) 72px; gap: 8px; margin-bottom: 8px; }
+  .st-pick select, .st-pick input { width: 100%; background: var(--bg-elevated); border: 1px solid var(--border); color: var(--text); border-radius: 3px; padding: 8px 10px; font: inherit; font-size: 14px; min-width: 0; }
+  .st-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .st-have { margin-top: 12px; display: flex; flex-wrap: wrap; gap: 6px; }
+  .st-have button { width: auto; padding: 4px 8px; font-size: 12px; }
   .st-row .nm { font-size: 14px; font-weight: 700; min-width: 0; }
   .st-row .nm small { display: block; font-weight: 400; font-size: 11.5px; color: var(--text-dim); font-variant-numeric: tabular-nums; }
   .st-row button { width: auto; padding: 7px 10px; font-size: 12px; white-space: nowrap; }
@@ -880,7 +885,6 @@
       </div>
       <div class="card" id="storageCard" hidden>
         <h2>📦 쉘터 창고</h2>
-        <div class="st-qty"><label for="storageQty">한 번에 옮길 수량</label><input type="number" id="storageQty" min="1" max="99" value="1"></div>
         <div id="storageList"></div>
         <div class="section-lbl" style="margin-top:16px">최근 창고 기록</div>
         <div id="storageLog" class="st-log"></div>
@@ -3138,32 +3142,46 @@
     delete st.food; delete st.med;
     return st;
   }
-  function renderStorage() {
+  function renderStorage(force) {
     const has = !!myDoc.party;
     $('storageCard').hidden = !has;
     if (!has) return;
     const st = normalizeStorage(shelterDoc && shelterDoc.storage), sw = st.weapons || {};
     const dead = myDoc.status === 'dead';
-    const rows = storeItems().filter(it => myQty(it) > 0 || (+st[it.k] || 0) > 0);
-    let h = (rows.length ? '' : '<div class="muted" style="margin:4px 0 8px">창고도 배낭도 비어 있다.</div>') + rows.map(it => {
+    // 목록에서 물건을 고르고 넣기·꺼내기 (값: i:아이템 / w:무기)
+    const opts = [], groups = { food:'음식', drink:'음료', med:'의료품', tool:'도구·재료', st:'필기구', weapon:'무기' };
+    storeItems().forEach(it => {
       const mine = myQty(it), kept = Math.max(0, +st[it.k] || 0);
-      return `<div class="st-row"><div class="nm">${it.ic} ${it.n}<small>내 소지 ${mine} · 창고 ${kept}</small></div>
-        <button class="secondary" type="button" data-st="${it.k}" data-dir="in"${dead || !mine ? ' disabled' : ''}>넣기</button>
-        <button class="secondary" type="button" data-st="${it.k}" data-dir="out"${dead || !kept ? ' disabled' : ''}>꺼내기</button></div>`;
-    }).join('');
-    const wnames = Array.from(new Set(Object.keys(WEAPON_TIER).filter(w => w !== '맨손' && (myDoc.weapons.includes(w) || (+sw[w] || 0) > 0))));
-    h += wnames.map(w => {
-      const mine = myDoc.weapons.includes(w), kept = Math.max(0, +sw[w] || 0);
-      return `<div class="st-row"><div class="nm">🗡️ ${w}<small>${mine ? '내가 들고 있음' : '없음'} · 창고 ${kept}</small></div>
-        <button class="secondary" type="button" data-stw="${w}" data-dir="in"${dead || !mine ? ' disabled' : ''}>넣기</button>
-        <button class="secondary" type="button" data-stw="${w}" data-dir="out"${dead || !kept || mine ? ' disabled' : ''}>꺼내기</button></div>`;
-    }).join('');
-    $('storageList').innerHTML = h;
+      if (mine || kept) opts.push({ v: 'i:' + it.k, g: it.bag ? ITEMS[it.k].cat : 'st', label: it.ic + ' ' + it.n, mine, kept, canIn: mine > 0, canOut: kept > 0 });
+    });
+    Object.keys(WEAPON_TIER).filter(w => w !== '맨손' && (myDoc.weapons.includes(w) || (+sw[w] || 0) > 0)).forEach(w => {
+      const mine = myDoc.weapons.includes(w) ? 1 : 0, kept = Math.max(0, +sw[w] || 0);
+      opts.push({ v: 'w:' + w, g: 'weapon', label: '🗡️ ' + w, mine, kept, canIn: !!mine, canOut: kept > 0 && !mine });
+    });
+    if (!opts.some(o => o.v === storageSel)) storageSel = (opts[0] || {}).v || '';
+    const cur = opts.find(o => o.v === storageSel);
+    const qtyNow = $('storageQty') ? $('storageQty').value : '1';
+    let h = !opts.length ? '<div class="muted" style="margin:4px 0 8px">창고도 배낭도 비어 있다.</div>' : `<div class="st-pick"><select id="storageItem" aria-label="옮길 물건">${Object.keys(groups).map(g => {
+      const list = opts.filter(o => o.g === g);
+      return list.length ? `<optgroup label="${groups[g]}">${list.map(o => `<option value="${escapeHtml(o.v)}"${o.v === storageSel ? ' selected' : ''}>${escapeHtml(o.label)} · 내 ${o.mine} / 창고 ${o.kept}</option>`).join('')}</optgroup>` : '';
+    }).join('')}</select><input type="number" id="storageQty" min="1" max="99" value="${escapeHtml(qtyNow)}" aria-label="옮길 수량"></div>`;
+    if (cur) {
+      const at = cur.v.startsWith('w:') ? `data-stw="${escapeHtml(cur.v.slice(2))}"` : `data-st="${escapeHtml(cur.v.slice(2))}"`;
+      h += `<div class="st-btns"><button class="secondary" type="button" ${at} data-dir="in"${dead || !cur.canIn ? ' disabled' : ''}>⬆ 창고에 넣기</button><button class="secondary" type="button" ${at} data-dir="out"${dead || !cur.canOut ? ' disabled' : ''}>⬇ 꺼내기</button></div>`;
+    }
+    // 창고에 들어 있는 것만 한눈에 (누르면 그 물건을 고른다)
+    const kept = opts.filter(o => o.kept > 0);
+    h += `<div class="section-lbl" style="margin-top:14px">창고에 있는 것</div><div class="st-have">${kept.length ? kept.map(o => `<button type="button" class="secondary" data-stpick="${escapeHtml(o.v)}">${escapeHtml(o.label)} ${o.kept}</button>`).join('') : '<span class="muted" style="margin:0">비어 있어요.</span>'}</div>`;
+    // 목록을 펼쳐 고르는 중엔 다시 그리지 않는다 (닫혀 버리지 않게)
+    if (force || !document.activeElement || document.activeElement.id !== 'storageItem') $('storageList').innerHTML = h;
     const log = shelterDoc && Array.isArray(shelterDoc.storageLog) ? shelterDoc.storageLog.slice(-10).reverse() : [];
     $('storageLog').innerHTML = log.length ? log.map(l => `<div>${hhmm(l.ts)} · <b>${escapeHtml(String(l.who || '').slice(0, 12))}</b> ${escapeHtml(String(l.text || '').slice(0, 60))}</div>`).join('') : '아직 기록이 없어요.';
   }
-  let storageBusy = false;
+  let storageBusy = false, storageSel = '';
+  $('storageList').addEventListener('change', (e) => { if (e.target.id === 'storageItem') { storageSel = e.target.value; renderStorage(true); } });
   $('storageList').addEventListener('click', async (e) => {
+    const pk = e.target.closest('button[data-stpick]');
+    if (pk) { storageSel = pk.dataset.stpick; renderStorage(true); return; }
     const b = e.target.closest('button[data-dir]');
     if (!b || b.disabled || storageBusy || !db || !myDoc.party || myDoc.status === 'dead') return;
     const dir = b.dataset.dir, msg = $('storageMsg');
@@ -3473,15 +3491,16 @@
   const STATIONERY = [
     { k:'paper', n:'종이', w:4, add:2, text:'구겨진 종이 몇 장을 주워 펴서 챙겼다. (종이 +2)' },
     { k:'pages', n:'노트', w:2, add:5, text:'책상 서랍에서 쓰다 만 노트를 찾았다. 빈 쪽이 남아 있다. (노트 5쪽)' },
-    { k:'pencil', n:'연필', w:3, add:1, text:'몽당연필 한 자루를 주머니에 넣었다. (연필 +1)' },
-    { k:'pen', n:'볼펜', w:3, add:1, text:'잉크가 남은 볼펜을 찾았다. (볼펜 +1)' }
+    { k:'pencil', n:'연필', w:5, add:2, text:'몽당연필 두 자루를 주머니에 넣었다. (연필 +2)' },
+    { k:'pen', n:'볼펜', w:5, add:1, text:'잉크가 남은 볼펜을 찾았다. (볼펜 +1)' }
   ];
   function normalizeItems() {
     const it = myDoc.items && typeof myDoc.items === 'object' ? myDoc.items : {};
     myDoc.items = { paper: +it.paper || 0, pages: +it.pages || 0, pencil: +it.pencil || 0, pen: +it.pen || 0 };
   }
   function findStationery(chance) {
-    if (myDoc.status === 'dead' || Math.random() >= chance) return;
+    // 필기구가 소모품이 되면서 찾을 확률을 1.5배로 올렸다
+    if (myDoc.status === 'dead' || Math.random() >= Math.min(0.9, chance * 1.5)) return;
     let r = Math.random() * STATIONERY.reduce((t, x) => t + x.w, 0), got = STATIONERY[0];
     for (const x of STATIONERY) { r -= x.w; if (r < 0) { got = x; break; } }
     myDoc.items[got.k] += got.add;
@@ -5612,6 +5631,8 @@
   // 업데이트할 때마다 맨 위에 추가한다
   const PATCH_NOTES = [
     { d:'10.18', items:[
+      '📦 쉘터 창고: 목록에서 물건을 골라 넣고 꺼내요. 창고에 든 물건은 아래에 한눈에 보여요',
+      '✏️ 필기구(종이·노트·연필·볼펜)를 찾을 확률이 올라갔어요',
       '📌 메모: 한 장 남길 때마다 종이(또는 노트 1쪽)와 볼펜(또는 연필)이 1개씩 없어져요',
       '🗽 LA 밖으로: 누군가 LA의 모든 지역을 탐사하면 전체 무전과 함께 {mojave}(으)로 가는 길이 열려요. {vegas}·{denver}·{chicago}를 거쳐 {ny}까지 (지방 5곳, 지역 34곳 추가)',
       '🔧 무기 수리: 배낭 아래 「무기 수리」에서 고철·못·천 조각으로 닳은 무기를 고쳐요 (정비 기술이 오를수록 더 많이)',

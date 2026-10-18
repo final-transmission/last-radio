@@ -83,6 +83,7 @@ try {
   ok('내보내진 쉘터 재가입 차단', (await B.p.textContent('#partyMsg')).includes('내보내진'));
   // 9) 쉘터 창고 넣기 (트랜잭션 + 회원 확인 규칙)
   await A.p.click('#tabBtnShelter'); await A.p.waitForTimeout(800);
+  await A.p.selectOption('#storageItem', 'i:beans').catch(() => {}); await A.p.waitForTimeout(300);
   const stIn = await A.p.$('button[data-st="beans"][data-dir="in"]');
   ok('창고 넣기 버튼', !!stIn);
   if (stIn) { await stIn.click(); await A.p.waitForTimeout(2000); }
