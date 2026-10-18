@@ -714,7 +714,7 @@
           <button class="secondary" id="epitaphBtn" type="button">묘비에 새기기</button>
         </div>
         <button class="primary" id="rebirthBtn" type="button" style="margin-top:10px">🔄 같은 이름으로 다시 시작하기</button>
-        <div class="muted">이름·사진·캐릭터 설정·쉘터는 그대로, 몸과 배낭은 처음부터. 어딘가 낯선 곳에서 다시 눈을 떠요.</div>
+        <div class="muted">이름·사진·캐릭터 설정·쉘터·지도는 그대로, 몸과 배낭은 처음부터. 어딘가 낯선 곳에서 다시 눈을 떠요.</div>
       </div>
       <div class="mission-line" id="missionLine" hidden></div>
       <div class="merchant-box" id="merchantBox" hidden></div>
@@ -943,7 +943,7 @@
           <details><summary>🏠 쉘터</summary><p>쉘터를 만들거나 들어가면 동료끼리 쉘터 채팅, 공용 창고, 시설을 함께 써요. 빗물 수집기·텃밭은 3단계까지 강화할 수 있고 날씨에 따라 수확이 달라져요(비 오는 날 더 많이, 폭염엔 줄어요). 약초 화단은 매일 녹색 허브를 줘요. 바리케이드는 무리 습격 피해를 줄여요. 같은 지역에 쉘터 동료가 있으면 조사와 사냥이 더 안전해져요.</p></details>
           <details><summary>💤 자리를 비우면</summary><p>현실 1시간 반 넘게 접속하지 않으면 잠든 것으로 쳐요. 소모는 1/4로 줄고 피로는 회복돼요. 감염도 1/4 속도로 진행되다가 95%(말기)에서 멈추니, 돌아오면 서둘러 치료하세요.</p></details>
           <details><summary>🛡️ 신참 보호</summary><p>캐릭터를 만든 뒤 현실 14일 동안은 체력이 0이 돼도 죽지 않고 체력 1로 버텨요. 남은 기간은 맨 위 상단바에 보여요.</p></details>
-          <details><summary>🪦 죽음과 다시 시작</summary><p>죽으면 묘비명을 새기고, 죽은 자리에 묘비를 남긴 채 같은 이름으로 다시 시작할 수 있어요. 이름·사진·설정·쉘터·일지는 그대로, 몸과 배낭·지도는 처음부터예요. 묘비는 그 지역 메모 칸과 생존자 탭에 남아요.</p></details>
+          <details><summary>🪦 죽음과 다시 시작</summary><p>죽으면 묘비명을 새기고, 죽은 자리에 묘비를 남긴 채 같은 이름으로 다시 시작할 수 있어요. 이름·사진·설정·쉘터·일지·지도는 그대로, 몸과 배낭은 처음부터예요. 묘비는 그 지역 메모 칸과 생존자 탭에 남아요.</p></details>
         </div>
       </div>
       </div>
@@ -1234,8 +1234,8 @@
     let type;
     if (kind === 'human') type = r < 0.6 ? 'bruise' : 'wound';
     else if (INJ[kind]) type = kind;
-    else if (kind === 'fight') type = r < 0.3 ? 'bite' : r < 0.65 ? 'wound' : 'scratch';
-    else type = r < 0.15 ? 'bite' : r < 0.6 ? 'scratch' : 'bruise';
+    else if (kind === 'fight') type = r < 0.15 ? 'bite' : r < 0.55 ? 'wound' : 'scratch';
+    else type = r < 0.08 ? 'bite' : r < 0.55 ? 'scratch' : 'bruise';
     myDoc.injuries.push({ part: part.id, type, day: myDoc.day });
     let note = ' [' + part.n + ' ' + INJ[type].n + ']';
     if ((type === 'bite' || type === 'scratch') && immune()) { if (type === 'bite') note += ' 백신 덕분인지 상처가 검게 변하지 않았다.'; }
@@ -2380,7 +2380,8 @@
     if (!DISTRICTS[myDoc.loc]) {
       const pool = regionKeys('la').filter(k => DISTRICTS[k].danger < 0.4);
       myDoc.loc = pick(pool);
-      myDoc.visited = [myDoc.loc];
+      // 다시 시작한 캐릭터는 예전에 밝힌 지도를 그대로 기억한다
+      myDoc.visited = Array.isArray(myDoc.visited) ? myDoc.visited : [];
       addLog(fmt(pick(BIRTH_TEXT), DISTRICTS[myDoc.loc].n, ''));
     }
     // 만든 시각: 예전 캐릭터는 태어난 게임 날짜로 역산한다
@@ -5867,17 +5868,17 @@
 
   // 죽은 자리에 묘비를 남기고 같은 이름으로 새 삶을 시작한다
   $('rebirthBtn').addEventListener('click', async () => {
-    if (!myDoc || myDoc.status !== 'dead' || !confirm('이 자리에 묘비를 남기고 같은 이름으로 다시 시작할까요? 배낭과 몸 상태는 처음부터예요.')) return;
+    if (!myDoc || myDoc.status !== 'dead' || !confirm('이 자리에 묘비를 남기고 같은 이름으로 다시 시작할까요? 배낭과 몸 상태는 처음부터, 지도는 그대로예요.')) return;
     $('rebirthBtn').disabled = true;
     try {
       if (db) await db.collection('graves').add({ loc: myDoc.loc, name: myName, key: myKey, epitaph: myDoc.epitaph || '', turned: !!myDoc.turned, days: survDays(myDoc), kills: myDoc.zombieKills || 0, day: myDoc.day, ts: Date.now() });
     } catch(e) {}
-    const keep = { name: myDoc.name, key: myDoc.key, account: myDoc.account, bio: myDoc.bio, party: myDoc.party, bornAt: myDoc.bornAt, log: myDoc.log, lives: (myDoc.lives || 1) + 1 };
+    const keep = { name: myDoc.name, key: myDoc.key, account: myDoc.account, bio: myDoc.bio, party: myDoc.party, bornAt: myDoc.bornAt, log: myDoc.log, lives: (myDoc.lives || 1) + 1, visited: (myDoc.visited || []).slice(), frSeen: myDoc.frSeen };
     const prev = myDoc.loc;
     myDoc = Object.assign(defaultDoc(myName), keep, { day: worldDay(), born: worldDay(), loc: null });
     ensureLocation();
     normalizeItems();
-    addLog('── ' + keep.lives + '번째 삶 ── ' + (DISTRICTS[prev] ? DISTRICTS[prev].n + '에 묘비를 남겼다. ' : '') + DISTRICTS[myDoc.loc].n + '에서 다시 눈을 떴다. 이전의 기억은 흐릿하다.');
+    addLog('── ' + keep.lives + '번째 삶 ── ' + (DISTRICTS[prev] ? DISTRICTS[prev].n + '에 묘비를 남겼다. ' : '') + DISTRICTS[myDoc.loc].n + '에서 다시 눈을 떴다. 이전의 기억은 흐릿하지만, 지도에 적어 둔 길만은 또렷하다.');
     logDirty = true;
     selSpot = 0; mapSel = myDoc.loc;
     $('rebirthBtn').disabled = false;
@@ -5920,6 +5921,8 @@
   // 업데이트할 때마다 맨 위에 추가한다
   const PATCH_NOTES = [
     { d:'10.18', items:[
+      '🪦 같은 캐릭터로 다시 시작하면 예전에 밝힌 지도가 그대로 남아요',
+      '🩸 물릴 확률을 절반으로 낮췄어요 (좀비와 마주칠 때 약 22% → 11%)',
       '🗺️ LA 밖 지방 확장: 지방마다 LA처럼 21곳 (지역 71곳 추가)',
       '📻 무전기에 NPC 무전이 잡힐 확률이 25%에서 35%로 올라갔어요',
       '🧳 떠돌이 상인의 백신은 하루 1개만 팔아요. 먼저 바꾼 사람이 가져가고 그 뒤엔 품절',
