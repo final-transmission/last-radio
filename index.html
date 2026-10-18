@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://apis.google.com 'sha256-NzWzSr/JJIt0kS48PXCsqUjn9/ALxUaH31f7sTmbH+s=' 'sha256-XBhYyYOXmyHU+rUeBJm1vZW172xgTyzDLX1SllyaCU8=' 'sha256-pn4otLhEzrznRB8B7IsW+a9VfSbXRXgJeh0zMGbnyDM=' 'sha256-cinI8CgpArtxD4EscbyaMo95FJmIyoUWAV2ApR7C5EY='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://www.google.com; connect-src 'self' https://*.googleapis.com https://*.firebaseapp.com https://*.firebaseio.com wss://*.firebaseio.com; frame-src https://*.firebaseapp.com; object-src 'none'; base-uri 'self'; form-action 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://apis.google.com 'sha256-NzWzSr/JJIt0kS48PXCsqUjn9/ALxUaH31f7sTmbH+s=' 'sha256-XBhYyYOXmyHU+rUeBJm1vZW172xgTyzDLX1SllyaCU8=' 'sha256-hV2p3E5B2LNEAN3xGzJSkUaCRI4oRfTTz59e3/USvB8=' 'sha256-bVFTd95sy9qJBoXUKMYRpiS/7uz7Yg6vyfc27QLxzDI='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://www.google.com; connect-src 'self' https://*.googleapis.com https://*.firebaseapp.com https://*.firebaseio.com wss://*.firebaseio.com; frame-src https://*.firebaseapp.com; object-src 'none'; base-uri 'self'; form-action 'self'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <style id="antiClickjack">html{display:none !important}</style>
 <script>if (window.self === window.top) { var ack = document.getElementById('antiClickjack'); ack.parentNode.removeChild(ack); } else { try { window.top.location = window.self.location.href; } catch (e) {} }</script>
@@ -1188,12 +1188,18 @@ const FIREBASE_CONFIG = {
   function saveName(n) { try { localStorage.setItem('survival_log_name', n); } catch(e) {} }
   function clearSavedName() { try { localStorage.removeItem('survival_log_name'); } catch(e) {} }
 
+  // 시작 물품: 기본 식량 + 야구방망이·붕대·주스·통조림(무작위) 1개씩
+  function starterInv() {
+    const inv = { beans: 2, water: 3, crackers: 1, bandage: 2, juice: 1 }, can = pick(['beans', 'tuna', 'soup']);
+    inv[can] = (inv[can] || 0) + 1;
+    return inv;
+  }
   function defaultDoc(name) {
     return {
       name, day: worldDay(), born: worldDay(), worldClock: 1, hp: 100, sat: 80, hyd: 80, fat: 15,
-      inv: { beans: 2, water: 3, crackers: 1, bandage: 1 },
+      inv: starterInv(), weapons: ['야구방망이'], wdur: { '야구방망이': 20 }, equip: '야구방망이',
       zombieKills: 0, weaponCounts: {}, party: '', epitaph: null,
-      status: 'alive', actedToday: false, log: [], bio: '', weapons: [], loc: null, visited: [], searched: {}, items: { paper: 0, pages: 0, pencil: 0, pen: 0 }, injuries: [], infection: 0, infectionPart: null, turned: false, bornAt: Date.now(), updatedAt: Date.now()
+      status: 'alive', actedToday: false, log: [], bio: '', loc: null, visited: [], searched: {}, items: { paper: 0, pages: 0, pencil: 0, pen: 0 }, injuries: [], infection: 0, infectionPart: null, turned: false, bornAt: Date.now(), updatedAt: Date.now()
     };
   }
 
@@ -5179,7 +5185,7 @@ const FIREBASE_CONFIG = {
     }
     if (depleted) head += '며칠 전에 뒤진 곳이라 남은 게 별로 없다. ';
     const missing = T.weapons.filter(w => !myDoc.weapons.includes(w));
-    if (!depleted && missing.length && Math.random() < (P.weapon || 0)) {
+    if (!depleted && missing.length && P.weapon && Math.random() < P.weapon + 0.05) {
       const w = pick(missing);
       if (!canCarry(WEAPON_WT[w] || 0)) { addLog(head + w + '을(를) 찾았지만 가방이 꽉 차서 들고 올 수 없었다.'); return; }
       myDoc.weapons.push(w);
@@ -6043,6 +6049,8 @@ const FIREBASE_CONFIG = {
   // 업데이트할 때마다 맨 위에 추가한다
   const PATCH_NOTES = [
     { d:'10.18', items:[
+      '🎒 새 캐릭터(다시 시작 포함)는 야구방망이·붕대·주스·통조림(무작위) 1개씩을 더 들고 시작해요',
+      '🗡️ 조사 중 무기를 찾을 확률 +5%',
       '🩹 부상 완화: 조사 중 좀비와 마주칠 확률 약 40% 감소, 좋은 무기일수록 상처 없이 넘길 확률↑(맨손 20%~총 68%), 할큄 감염 15%→5%',
       '🩺 신체 검진표의 검진일에 생존 일수도 함께 표시 (Day는 세계 날짜, 생존 일수는 캐릭터가 버틴 날)',
       '❓ 무전·쉘터 동료·초대 목록에서 내가 가 보지 않은 지역 이름은 ???로 보여요',
@@ -6648,7 +6656,7 @@ const FIREBASE_CONFIG = {
 </div>
 <script>
 (function(){
-  var BUILD_ID = '20261018155136';
+  var BUILD_ID = '20261018232543';
   function check(){
     fetch('version.txt?t=' + Date.now(), { cache: 'no-store' }).then(function(r){ return r.ok ? r.text() : ''; }).then(function(v){
       v = (v || '').trim();
