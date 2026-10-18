@@ -15,5 +15,8 @@ git add -A && git commit -m "..." && git push origin main
 ```
 푸시 후 1~2분 뒤 GitHub Pages에 반영된다. 같은 원본으로 claude.ai 아티팩트(https://claude.ai/artifact/VAfyFZvbWHwJxMn3UGZbMF)도 갱신할 수 있다.
 
+## 패치 노트
+기능을 바꿔 배포할 때마다 `src/game.html`의 `PATCH_NOTES` 맨 위(오늘 날짜 항목)에 한 줄씩 추가한다. 안내 탭(📜)의 게임 안내 문구도 바뀐 기능에 맞춰 고친다.
+
 ## 사용자 선호
 한국어로, 최소한의 말로 핵심만 답한다.

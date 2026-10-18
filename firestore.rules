@@ -6,7 +6,13 @@ service cloud.firestore {
     // 게임 데이터: 로그인한 생존자는 모두 읽고 쓸 수 있다 (약탈, 쉘터 내보내기 때문에 남의 문서도 고친다)
     match /{coll}/{docId} {
       allow read: if signedIn();
-      allow write: if signedIn() && coll != 'users';
+      allow write: if signedIn() && coll != 'users' && coll != 'notices';
+    }
+
+    // 공지사항: 관리자 아이디만 쓸 수 있다
+    match /notices/{docId} {
+      allow read: if signedIn();
+      allow write: if signedIn() && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.id.lower() == 'akdma0528';
     }
 
     // 캐릭터별 일지 (survivors/{key}/private/log)

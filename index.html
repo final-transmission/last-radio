@@ -254,6 +254,23 @@
   .m-pin rect { fill: var(--m-paper); stroke: var(--m-ink-dim); stroke-width: .8; }
   .m-pin line { stroke: #2c3f93; stroke-width: .7; }
   #tabAdmin { max-width: 760px; margin-left: auto; margin-right: auto; }
+  #tabGuide { max-width: 1100px; margin: 0 auto; }
+  @media (min-width: 900px) { .guide-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 0 20px; align-items: start; } }
+  .tab-dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: var(--danger); margin-left: 4px; vertical-align: top; }
+  .notice-item { border-top: 1px dashed var(--border); padding: 10px 0; }
+  .notice-item:first-child { border-top: 0; padding-top: 0; }
+  .ni-head { display: flex; align-items: baseline; gap: 8px; }
+  .ni-head small { color: var(--text-dim); font-size: 11px; }
+  .ni-head button { margin-left: auto; width: auto; padding: 3px 10px; font-size: 11px; }
+  .ni-body { white-space: pre-wrap; font-size: 13.5px; line-height: 1.6; margin-top: 4px; }
+  .patch { display: flex; gap: 12px; padding: 8px 0; border-top: 1px dashed var(--border); }
+  .patch:first-child { border-top: 0; }
+  .patch .pd { font: 700 12px var(--font-mono); color: var(--accent); min-width: 40px; padding-top: 2px; }
+  .patch ul { margin: 0; padding-left: 16px; font-size: 13px; line-height: 1.7; }
+  .guide details { border-top: 1px dashed var(--border); padding: 8px 0; }
+  .guide details:first-child { border-top: 0; }
+  .guide summary { cursor: pointer; font-weight: 700; font-size: 14px; }
+  .guide p { font-size: 13.5px; line-height: 1.65; margin: 6px 0 0; color: var(--text); }
   .adm { display: flex; align-items: center; gap: 8px; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
   .adm .ainfo { flex: 1; min-width: 0; overflow-wrap: anywhere; }
   .adm .ainfo small { display: block; color: var(--text-dim); font-size: 11px; }
@@ -606,6 +623,7 @@
       <button class="tab" role="tab" aria-selected="false" data-tab="board" id="tabBtnBoard">📋 생존자</button>
       <button class="tab" role="tab" aria-selected="false" data-tab="shelter" id="tabBtnShelter">🏚️ 쉘터</button>
       <button class="tab" role="tab" aria-selected="false" data-tab="char" id="tabBtnChar">👤 캐릭터</button>
+      <button class="tab" role="tab" aria-selected="false" data-tab="guide" id="tabBtnGuide">📜 안내<span class="tab-dot" id="noticeDot" hidden></span></button>
       <button class="tab" role="tab" aria-selected="false" data-tab="admin" id="tabBtnAdmin" hidden>🛠 관리</button>
     </nav>
 
@@ -840,6 +858,48 @@
         <div class="muted" style="margin:0 0 8px">재료는 쉘터 창고에서 꺼내 써요. 나무판자·못·고철은 철물점, 창고, 스튜디오 같은 곳에서 구할 수 있어요.</div>
         <div id="buildList"></div>
         <div class="char-msg" id="buildMsg" role="status"></div>
+      </div>
+    </div>
+
+    <div id="tabGuide" hidden>
+      <div class="guide-grid">
+      <div>
+      <div class="card">
+        <h2>📢 공지사항</h2>
+        <div id="noticeForm" hidden>
+          <input type="text" id="noticeTitle" maxlength="60" placeholder="공지 제목">
+          <div style="height:8px"></div>
+          <textarea id="noticeBody" maxlength="2000" style="min-height:100px" placeholder="공지 내용"></textarea>
+          <div style="height:8px"></div>
+          <button class="primary" id="noticeBtn" type="button">공지 등록</button>
+          <div class="char-msg" id="noticeMsg" role="status"></div>
+          <div style="height:10px"></div>
+        </div>
+        <div id="noticeList"></div>
+      </div>
+      <div class="card">
+        <h2>🛠 패치 노트</h2>
+        <div id="patchList"></div>
+      </div>
+      </div>
+      <div class="card">
+        <h2>📖 게임 안내</h2>
+        <div class="guide" id="guideBox">
+          <details open><summary>🧟 어떤 게임인가요</summary><p>좀비 사태가 휩쓴 LA에서 살아남는 생존 게임이에요. 모든 생존자는 같은 세계, 같은 시간을 살아요. 지역을 탐색하고 물자를 모으고, 무전기로 다른 생존자와 연락하며 버티세요.</p></details>
+          <details><summary>⏱️ 시간</summary><p>현실 30분이 게임 하루예요. 아침 6시에 하루가 시작되고, 20시~5시는 밤이라 더 위험해요. 행동은 현실 시간으로 1분~1시간이 걸리고, 진행 중엔 다른 행동을 못 해요. 날씨(맑음·흐림·비·안개)와 무리 습격도 날마다 바뀌어요.</p></details>
+          <details><summary>🗺️ 지도와 이동</summary><p>처음엔 위험이 낮은 지역 한 곳에서 시작해요. 지도에서 지역을 눌러 정보를 보고, 이웃한 지역으로만 이동할 수 있어요(5~30분). 가본 지역만 이름과 건물이 보이고, 「지역 확대」로 거리와 건물을 자세히 볼 수 있어요.</p></details>
+          <details><summary>🏚️ 조사와 이벤트</summary><p>「조사할 구역 고르기」에서 건물을 고르고, 그 안의 지점(주방·창고·사물함…)을 하나씩 뒤져요. 지점마다 나오는 물자와 위험도가 달라요. 뒤진 곳은 5일 동안 거의 비어 있어요.</p><p>조사 중엔 가끔 돌발 이벤트가 생겨요. 선택지가 나오면 고르기 전까지 다른 행동을 할 수 없어요. 어떤 이벤트는 다음 이벤트로 이어지기도 해요.</p></details>
+          <details><summary>🚗 탈것</summary><p>주차장·차고·주유소·터미널 등에서 자전거, 오토바이, 승용차, 스포츠카, 트럭, 버스를 발견할 수 있어요. 시동은 30% 확률로만 걸려요. 자전거 말고는 연료가 필요하고, 휘발유 통 1개 = 연료 5예요. 탈것이 같은 지역에 있으면 이동 시간이 20~60%로 줄어요. 트럭·버스는 가방 한도도 늘려줘요.</p></details>
+          <details><summary>🍖 배고픔·갈증·피로</summary><p>시간이 지나면 포만감·수분이 줄고 피로가 쌓여요. 배낭의 음식과 물은 필요할 때 알아서 꺼내 먹어요. 피로는 휴식·잠으로 풀어요. 굶주림·갈증·피로만으로는 죽지 않고 체력 1에서 버텨요.</p></details>
+          <details><summary>🩸 부상과 감염</summary><p>워커와 싸우면 부위별로 타박상·할큄·열상·물림을 입어요. 물리면 감염이 시작되고, 머리·목을 물리면 더 빨리 퍼져요. 감염이 100%가 되면 워커가 돼요. 항생제·혼합 허브로 감염을, 붕대·소독약·봉합 키트로 상처를 치료해요. 캐릭터 탭의 신체 검진표에서 상태를 볼 수 있어요.</p></details>
+          <details><summary>🎒 아이템과 제작</summary><p>배낭은 기본 15kg, 등산 배낭이 있으면 25kg까지 들 수 있어요. 신선식품은 하루마다 조금씩 상해요. 무기는 쓸수록 닳고, 권총은 탄약이 필요해요. 라이터·성냥이 있으면 고기를 굽고 빗물을 끓일 수 있고, 천 조각으로 붕대를 만들 수 있어요.</p></details>
+          <details><summary>📻 무전기와 소통</summary><p>무전기는 전체 채널과 숫자 채널(100.1처럼 소수점 가능)이 있어요. 멀리 있는 사람의 무전일수록 잡음이 섞여요. 가끔 미확인 구조 신호가 잡히기도 해요. 「같은 곳」은 같은 건물에 있는 생존자끼리 얼굴을 보며 대화하는 곳이고, 물물교환도 할 수 있어요. 지역에 종이와 필기구로 메모를 남길 수도 있어요.</p></details>
+          <details><summary>🏠 쉘터</summary><p>쉘터를 만들거나 들어가면 동료끼리 쉘터 채팅, 공용 창고, 시설(빗물 수집기·텃밭·바리케이드)을 함께 써요. 같은 지역에 쉘터 동료가 있으면 조사와 사냥이 더 안전해져요.</p></details>
+          <details><summary>💤 자리를 비우면</summary><p>현실 1시간 반 넘게 접속하지 않으면 잠든 것으로 쳐요. 소모는 1/4로 줄고 피로는 회복돼요. 감염도 1/4 속도로 진행되다가 95%(말기)에서 멈추니, 돌아오면 서둘러 치료하세요.</p></details>
+          <details><summary>🛡️ 신참 보호</summary><p>캐릭터를 만든 뒤 현실 14일 동안은 체력이 0이 돼도 죽지 않고 체력 1로 버텨요. 남은 기간은 맨 위 상단바에 보여요.</p></details>
+          <details><summary>🪦 죽음과 다시 시작</summary><p>죽으면 묘비명을 새기고, 죽은 자리에 묘비를 남긴 채 같은 이름으로 다시 시작할 수 있어요. 이름·사진·설정·쉘터·일지는 그대로, 몸과 배낭·지도는 처음부터예요. 묘비는 그 지역 메모 칸과 생존자 탭에 남아요.</p></details>
+        </div>
+      </div>
       </div>
     </div>
 
@@ -3841,6 +3901,10 @@ const FIREBASE_CONFIG = {
           claimTrades();
           renderTrades();
         }, () => {});
+        if (noticeUnsub) noticeUnsub();
+        noticeUnsub = db.collection('notices').orderBy('ts', 'desc').limit(30).onSnapshot((snap) => {
+          onNotices((snap && snap.docs) ? snap.docs.map(d => { const v = d.data(); return v ? Object.assign({ id: d.id }, v) : null; }).filter(Boolean) : []);
+        }, () => {});
         if (graveUnsub) graveUnsub();
         graveUnsub = db.collection('graves').orderBy('ts', 'desc').limit(200).onSnapshot((snap) => {
           graves = (snap && snap.docs) ? snap.docs.map(d => { const v = d.data(); return v ? Object.assign({ id: d.id }, v) : null; }).filter(g => g && DISTRICTS[g.loc] && typeof g.name === 'string') : [];
@@ -4122,6 +4186,71 @@ const FIREBASE_CONFIG = {
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !$('statusPop').hidden) { setStatusPop(false); $('whoBtn').focus(); } });
 
   // ---------- 탭 / 캐릭터 설정 ----------
+  // ---------- 안내 탭: 공지사항 · 패치 노트 ----------
+  // 업데이트할 때마다 맨 위에 추가한다
+  const PATCH_NOTES = [
+    { d:'10.18', items:[
+      '📜 안내 탭 추가: 공지사항, 패치 노트, 게임 안내',
+      '🪦 죽으면 그 자리에 묘비를 남기고 같은 이름으로 다시 시작할 수 있어요',
+      '💤 자리를 비운 동안은 잠든 것으로 처리: 소모 1/4, 피로 회복, 감염은 95%에서 멈춤',
+      '🍖 굶주림·갈증·피로로는 체력 1 밑으로 떨어지지 않아요',
+      '🛡️ 신참 보호: 캐릭터를 만든 뒤 현실 14일 동안 죽지 않아요',
+      '🖥️ 화면 개편: 생존 탭 3단(지도·행동 / 조사·기록 / 무전), 캐릭터 탭 3단(프로필 / 신체 / 배낭)',
+      '📝 실시간 기록창 추가, 지역 정보는 지도에서 누를 때 팝업으로',
+      '❓ 안 가본 지역에 있는 생존자의 위치는 ???로 표시',
+      '🚗 탈것 6종(자전거·오토바이·승용차·스포츠카·트럭·버스), 휘발유 통',
+      '🧟 조사 중 돌발 이벤트 64종, 선택지와 후속 이벤트',
+      '🏚️ 건물 안 조사 지점(주방·창고·사물함 등) 추가, 조사 시간 단축'
+    ] },
+    { d:'10.17', items:[
+      '🛠 관리자 화면',
+      '🤝 같은 곳에 있는 생존자끼리 물물교환',
+      '🏚️ 쉘터 시설: 빗물 수집기, 텃밭, 바리케이드',
+      '🎒 무게 제한, 음식 부패, 무기 내구도·탄약, 도구와 제작',
+      '🌙 효과음, 밤낮, 날씨, 무리 습격',
+      '🔔 새 버전 알림',
+      '🥫 음식·음료·의료품을 세부 아이템으로, 배낭 추가'
+    ] }
+  ];
+  let notices = [], noticeUnsub = null;
+  function lastNoticeSeen() { try { return +localStorage.getItem('lr_notice_seen') || 0; } catch(e) { return 0; } }
+  function markNoticesSeen() {
+    const t = notices.reduce((m, n) => Math.max(m, +n.ts || 0), 0);
+    try { if (t) localStorage.setItem('lr_notice_seen', String(t)); } catch(e) {}
+    $('noticeDot').hidden = true;
+  }
+  function renderGuide() {
+    const admin = isAdmin();
+    $('noticeForm').hidden = !admin;
+    $('noticeList').innerHTML = notices.length ? notices.map(n => `<div class="notice-item">
+      <div class="ni-head"><b>${escapeHtml(String(n.title || '공지').slice(0, 60))}</b><small>${new Date(+n.ts || 0).toLocaleDateString('ko-KR')}</small>${admin ? `<button type="button" class="secondary" data-notice="${escapeHtml(n.id)}">삭제</button>` : ''}</div>
+      <div class="ni-body">${escapeHtml(String(n.body || '').slice(0, 2000))}</div></div>`).join('') : '<div class="muted" style="margin:0">아직 공지가 없어요.</div>';
+    $('patchList').innerHTML = PATCH_NOTES.map(p => `<div class="patch"><div class="pd">${p.d}</div><ul>${p.items.map(x => '<li>' + escapeHtml(x) + '</li>').join('')}</ul></div>`).join('');
+  }
+  function onNotices(list) {
+    notices = list.sort((a, b) => (+b.ts || 0) - (+a.ts || 0));
+    const newest = notices.length ? +notices[0].ts || 0 : 0;
+    if ($('tabGuide').hidden) $('noticeDot').hidden = !(newest > lastNoticeSeen());
+    else { renderGuide(); markNoticesSeen(); }
+  }
+  $('noticeBtn').addEventListener('click', async () => {
+    if (!isAdmin() || !db) return;
+    const title = $('noticeTitle').value.trim(), body = $('noticeBody').value.trim();
+    if (!title || !body) { $('noticeMsg').textContent = '제목과 내용을 모두 적어 주세요.'; $('noticeMsg').className = 'char-msg err'; return; }
+    $('noticeBtn').disabled = true;
+    try {
+      await db.collection('notices').add({ title, body, author: myName, ts: Date.now() });
+      $('noticeTitle').value = ''; $('noticeBody').value = '';
+      $('noticeMsg').textContent = '공지를 올렸어요.'; $('noticeMsg').className = 'char-msg ok';
+    } catch(e) { $('noticeMsg').textContent = '올리지 못했어요. 잠시 뒤 다시 시도하세요.'; $('noticeMsg').className = 'char-msg err'; }
+    $('noticeBtn').disabled = false;
+  });
+  $('noticeList').addEventListener('click', async (e) => {
+    const b = e.target.closest('button[data-notice]');
+    if (!b || !isAdmin() || !db || !confirm('이 공지를 지울까요?')) return;
+    try { await db.collection('notices').doc(b.dataset.notice).delete(); notices = notices.filter(n => n.id !== b.dataset.notice); renderGuide(); } catch(err) {}
+  });
+
   function showTab(t) {
     $('playGrid').hidden = t !== 'play';
     $('tabChar').hidden = t !== 'char';
@@ -4129,6 +4258,8 @@ const FIREBASE_CONFIG = {
     $('tabShelter').hidden = t !== 'shelter';
     $('tabBoard').hidden = t !== 'board';
     $('tabAdmin').hidden = t !== 'admin';
+    $('tabGuide').hidden = t !== 'guide';
+    if (t === 'guide') { renderGuide(); markNoticesSeen(); }
     if (t === 'admin') renderAdmin();
     if (t === 'play' && myDoc) renderMap();
     document.querySelectorAll('.tab').forEach(b => { const on = b.dataset.tab === t; b.classList.toggle('active', on); b.setAttribute('aria-selected', on); });
@@ -4536,6 +4667,8 @@ const FIREBASE_CONFIG = {
     if (unsub) { try { unsub(); } catch(e){} unsub = null; }
     if (memoUnsub) { try { memoUnsub(); } catch(e){} memoUnsub = null; }
     if (graveUnsub) { try { graveUnsub(); } catch(e){} graveUnsub = null; }
+    if (noticeUnsub) { try { noticeUnsub(); } catch(e){} noticeUnsub = null; }
+    notices = [];
     graves = [];
     if (tradeUnsub) { try { tradeUnsub(); } catch(e){} tradeUnsub = null; }
     trades = [];
@@ -4589,7 +4722,7 @@ const FIREBASE_CONFIG = {
 </div>
 <script>
 (function(){
-  var BUILD_ID = '20261018043027';
+  var BUILD_ID = '20261018043405';
   function check(){
     fetch('version.txt?t=' + Date.now(), { cache: 'no-store' }).then(function(r){ return r.ok ? r.text() : ''; }).then(function(v){
       v = (v || '').trim();
