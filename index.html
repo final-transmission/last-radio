@@ -517,6 +517,17 @@
   .pt { padding: 5px 0; }
   .pt .bic { font-size: 15px; }
   .pt button { padding: 3px 12px; border-radius: 999px; font-size: 11px; }
+  /* 지역 정보: 지도 위 팝업 */
+  .map-wrap { position: relative; }
+  .map-wrap .map-info { position: absolute; left: 8px; right: 8px; bottom: 8px; max-height: 75%; overflow-y: auto; margin: 0; z-index: 3; box-shadow: 0 6px 24px rgba(0,0,0,.35); padding: 14px 16px; }
+  .mi-close { position: sticky; top: 0; float: right; width: 28px; height: 28px; padding: 0; border-radius: 50%; border: 1px solid var(--border); background: var(--bg-elevated); color: var(--text); cursor: pointer; font-size: 13px; line-height: 1; }
+  /* 실시간 기록창 */
+  .feed-card { padding: 0; overflow: hidden; }
+  .feed { height: 190px; min-height: 90px; max-height: 70vh; overflow-y: auto; resize: vertical; padding: 10px 14px; font-size: 13px; line-height: 1.6; }
+  .feed .fl { padding: 1px 0; }
+  .feed .fd { font: 600 10px var(--font-mono); color: var(--text-dim); margin-right: 8px; }
+  .feed .fl.bad { color: var(--danger); }
+  .feed .fl.good { color: var(--ok); }
 </style>
 </head>
 <body>
@@ -581,11 +592,14 @@
       <div class="card" id="mapCard">
         <h2>로스앤젤레스 <span style="font-family:var(--font-mono); font-size:12px; color:var(--text-dim);" id="mapCount"></span></h2>
         <div class="pol-row" style="margin:0 0 10px"><button class="secondary" id="mapViewCity" type="button" aria-pressed="true">🗺️ LA 전체</button><button class="secondary" id="mapViewLocal" type="button" aria-pressed="false">🔍 지역 확대</button></div>
-        <svg class="map-svg" id="mapSvg" viewBox="0 0 360 320" role="group" aria-label="로스앤젤레스 지도"></svg>
+        <div class="map-wrap">
+          <svg class="map-svg" id="mapSvg" viewBox="0 0 360 320" role="group" aria-label="로스앤젤레스 지도"></svg>
+          <div class="card map-info" id="mapInfo" hidden></div>
+        </div>
         <div class="map-legend" id="mapLegend"></div>
         <div class="muted" id="mapHint">지역을 눌러 정보를 보세요. 이웃한 지역으로만 이동할 수 있고, 거리에 따라 5~30분이 걸려요. 가본 지역은 「지역 확대」로 거리와 건물을 자세히 볼 수 있어요.</div>
       </div>
-      <div class="card map-info" id="mapInfo"></div>
+      <div class="card feed-card"><div class="feed" id="feed" role="log" aria-live="polite"></div></div>
       <div class="comm-tabs" role="tablist" aria-label="소통 방법">
         <button type="button" role="tab" id="commRadio" aria-selected="true">📻 무전기</button>
         <button type="button" role="tab" id="commTalk" aria-selected="false">🗣️ 같은 곳</button>
@@ -1249,7 +1263,21 @@ const FIREBASE_CONFIG = {
     populateRaidTargets();
   }
 
+  // 지도 아래 실시간 기록창: 오래된 것이 위, 새 기록이 오면 맨 아래로 스크롤
+  let feedLast = '';
+  function renderFeed() {
+    const el = $('feed'), L = (myDoc.log || []).slice(-60);
+    const last = L.length ? L[L.length - 1].ts + ':' + L.length : '';
+    if (last === feedLast) return;
+    feedLast = last;
+    el.innerHTML = L.length ? L.map(l => {
+      const t = l.text || '', cls = /체력 -[1-9]|물림|사망|죽었/.test(t) ? 'bad' : /^→|발견|획득|손에 넣었다|\+\d/.test(t) ? 'good' : '';
+      return `<div class="fl ${cls}"><span class="fd">D${l.day}</span>${escapeHtml(t)}</div>`;
+    }).join('') : '<div class="fl muted">아직 기록이 없어요.</div>';
+    el.scrollTop = el.scrollHeight;
+  }
   function renderMyLog() {
+    renderFeed();
     const el = $('myLog');
     if (!myDoc.log || myDoc.log.length === 0) { el.innerHTML = '<div class="empty">아직 기록이 없어요.</div>'; return; }
     el.innerHTML = myDoc.log.slice().reverse().slice(0, 40).map(l => `
@@ -1689,7 +1717,7 @@ const FIREBASE_CONFIG = {
     if (!myDoc.visited.includes(myDoc.loc)) myDoc.visited.push(myDoc.loc);
   }
 
-  let mapSel = null;
+  let mapSel = null, mapInfoOpen = false;
   // 지역 종류: 지도 블록의 색과 기호
   const KINDS = {
     medical:  { n:'병원', c:'#d9443f', g:'✚' },
@@ -1824,7 +1852,8 @@ const FIREBASE_CONFIG = {
     const id = DISTRICTS[mapSel] ? mapSel : myDoc.loc, D = DISTRICTS[id];
     const known = vis.has(id), isCur = id === myDoc.loc, adj = (ADJ[myDoc.loc] || []).includes(id);
     const dead = myDoc.status === 'dead';
-    let h = known ? `<h3>${D.n}<small>${D.en.toUpperCase()}</small></h3><p>${D.desc}</p>` : `<h3>미확인 지역</h3><p>가보기 전엔 어떤 곳인지 알 수 없다.</p>`;
+    let h = '<button type="button" class="mi-close" id="mapInfoClose" aria-label="닫기">✕</button>';
+    h += known ? `<h3>${D.n}<small>${D.en.toUpperCase()}</small></h3><p>${D.desc}</p>` : `<h3>미확인 지역</h3><p>가보기 전엔 어떤 곳인지 알 수 없다.</p>`;
     if (known) {
       const here = latestDocs.filter(d => !isMe(d) && d.status !== 'dead' && d.loc === id).map(d => escapeHtml(d.name));
       h += `<div class="facts"><span class="pill">위험도 ${dangerWord(D.danger)} · ${Math.round(D.danger * 100)}%</span>`;
@@ -1843,6 +1872,8 @@ const FIREBASE_CONFIG = {
     else h += `<div class="muted" style="margin:0">현재 위치에서 바로 갈 수 없어요. 이웃한 지역을 거쳐 가세요.</div>`;
     h += '</div>';
     $('mapInfo').innerHTML = h;
+    $('mapInfo').hidden = !mapInfoOpen;
+    $('mapInfoClose').addEventListener('click', () => { mapInfoOpen = false; $('mapInfo').hidden = true; });
     if ($('moveBtn')) $('moveBtn').addEventListener('click', () => startAction('move', id));
     if ($('zoomBtn')) $('zoomBtn').addEventListener('click', () => mapView === 'city' ? setMapView('local', id) : setMapView('city'));
   }
@@ -1963,6 +1994,7 @@ const FIREBASE_CONFIG = {
     const g = e.target.closest && e.target.closest('.map-node');
     if (!g) return;
     mapSel = g.dataset.id;
+    mapInfoOpen = true;
     renderMap();
     const again = $('mapSvg').querySelector('.map-node[data-id="' + mapSel + '"]');
     if (again && e.type === 'keydown') again.focus();
@@ -4459,7 +4491,7 @@ const FIREBASE_CONFIG = {
 </div>
 <script>
 (function(){
-  var BUILD_ID = '20261018033356';
+  var BUILD_ID = '20261018033758';
   function check(){
     fetch('version.txt?t=' + Date.now(), { cache: 'no-store' }).then(function(r){ return r.ok ? r.text() : ''; }).then(function(v){
       v = (v || '').trim();
