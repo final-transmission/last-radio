@@ -92,6 +92,9 @@ await ok('world frontier open', setDoc(doc(A, 'world/state'), { v: 1, tick: 5, r
 await no('world frontier close', setDoc(doc(A, 'world/state'), { v: 1, tick: 6, r: {}, f: { open: 0, names: [], ts: 1 } }));
 await no('world frontier drop', setDoc(doc(A, 'world/state'), { v: 1, tick: 6, r: {} }));
 await no('world frontier too far', setDoc(doc(A, 'world/state'), { v: 1, tick: 6, r: {}, f: { open: 9, names: [], ts: 1 } }));
+await ok('merchant sale', setDoc(doc(A, 'merchantSales/la-10'), { by: 'uid-alice', name: '앨리스', day: 10, ts: 1 }));
+await no('merchant sale again', setDoc(doc(B, 'merchantSales/la-10'), { by: 'uid-bob', name: '밥', day: 10, ts: 2 }));
+await no('merchant sale as other', setDoc(doc(B, 'merchantSales/la-11'), { by: 'uid-alice', name: '밥', day: 11, ts: 2 }));
 const ev = { kind: 'noise', loc: 'dtla', a: 15, day: 5, ts: now, cid: 'abc', by: 'uid-alice' };
 const e1 = await assertSucceeds(addDoc(collection(A, 'regionEvents'), ev)).catch(e => { bad.push('OK regionEvent ' + e.message); return null; }); if (e1) pass++; else fail++;
 await no('region a=100', addDoc(collection(A, 'regionEvents'), Object.assign({}, ev, { a: 100 })));
