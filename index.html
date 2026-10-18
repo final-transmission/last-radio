@@ -1147,7 +1147,7 @@ const FIREBASE_CONFIG = {
 
   function defaultDoc(name) {
     return {
-      name, day: 1, hp: 100, sat: 80, hyd: 80, fat: 15,
+      name, day: worldDay(), born: worldDay(), worldClock: 1, hp: 100, sat: 80, hyd: 80, fat: 15,
       inv: { beans: 2, water: 3, crackers: 1, bandage: 1 },
       zombieKills: 0, weaponCounts: {}, party: '', epitaph: null,
       status: 'alive', actedToday: false, log: [], bio: '', weapons: [], loc: null, visited: [], searched: {}, items: { paper: 0, pages: 0, pencil: 0, pen: 0 }, injuries: [], infection: 0, infectionPart: null, turned: false, bornAt: Date.now(), updatedAt: Date.now()
@@ -1697,9 +1697,10 @@ const FIREBASE_CONFIG = {
     if (myDoc.sat <= 0) starve(8);
     if (myDoc.hyd <= 0) starve(10);
     if (myDoc.sat > 0 && myDoc.hyd > 0) myDoc.hp = clamp(myDoc.hp + 1);
-    const hp0 = myDoc.hp;
+    const hp0 = myDoc.hp, inf0 = myDoc.infection;
     hordeHit(true);
     if (hp0 > 0 && myDoc.hp <= 0) myDoc.hp = 1;
+    if (myDoc.infection > Math.max(inf0, 95)) myDoc.infection = Math.max(inf0, 95);
     gevSiege(true);
     compDaily(true);
     spoilFresh(true);
@@ -1750,9 +1751,9 @@ const FIREBASE_CONFIG = {
     $('gevLine').hidden = !gt;
     if (gt && $('gevLine').textContent !== gt) $('gevLine').textContent = gt;
   }
-  let clockDay = 0;
+  let clockDay = 0, docReady = false;
   setInterval(async () => {
-    if (!myDoc) return;
+    if (!myDoc || !docReady) return;
     const wd = worldDay();
     if (wd !== clockDay) {
       clockDay = wd;
@@ -4712,6 +4713,7 @@ const FIREBASE_CONFIG = {
   }
 
   async function enterGame(key, name, accountId) {
+    docReady = false;
     await ensureDb();
     if (db) {
       try {
@@ -4779,6 +4781,7 @@ const FIREBASE_CONFIG = {
       if (myDoc.busy && Date.now() >= myDoc.busy.until) await completeAction();
 
       await saveDoc();
+      docReady = true;
       startListeners();
     } else {
       myDoc = defaultDoc(name);
@@ -4786,6 +4789,7 @@ const FIREBASE_CONFIG = {
       ensureLocation();
       normalizeItems();
       myDoc.searched = {};
+      docReady = true;
       permNotice.style.display = 'block';
       renderBoard([]);
     }
@@ -5119,6 +5123,7 @@ const FIREBASE_CONFIG = {
   // 업데이트할 때마다 맨 위에 추가한다
   const PATCH_NOTES = [
     { d:'10.18', items:[
+      '🩹 버그 수정: 새로 만든 캐릭터가 1일차부터 지난 날들을 한꺼번에 겪어 상처투성이로 시작하던 문제',
       '🧪 실험용 백신: 감염을 완전히 없애고 현실 5시간 동안 물려도 감염되지 않아요. 병동·약품 진열대·무기고, 방호복 좀비, 보급 투하, 치료 임무, 검역 검문소에서 드물게 얻어요',
       '🧹 3일 지난 무전은 자동으로 지워져요',
       '⚙️ 데이터 절약: 탭을 10분 넘게 안 보면 실시간 연결을 잠시 끊었다가 돌아오면 다시 이어요. 같은 곳 대화·쉘터 채팅은 그 탭을 볼 때만 연결해요',
@@ -5630,7 +5635,7 @@ const FIREBASE_CONFIG = {
     shelterMsgs = []; shelterKey = null;
     chat = [];
     memos = [];
-    myDoc = null; myName = null;
+    myDoc = null; myName = null; docReady = false;
     gameArea.style.display = 'none';
     loginCard.style.display = 'block';
     $('nameInput').value = '';
@@ -5673,7 +5678,7 @@ const FIREBASE_CONFIG = {
 </div>
 <script>
 (function(){
-  var BUILD_ID = '20261018061626';
+  var BUILD_ID = '20261018062704';
   function check(){
     fetch('version.txt?t=' + Date.now(), { cache: 'no-store' }).then(function(r){ return r.ok ? r.text() : ''; }).then(function(v){
       v = (v || '').trim();
