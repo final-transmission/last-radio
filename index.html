@@ -421,6 +421,16 @@
   button.primary, button.action, button.secondary { border-radius: 3px; font-family: var(--font-display); font-weight: 400; font-size: 15px; letter-spacing: 1px; }
   button.primary:focus-visible, button.action:focus-visible, button.secondary:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
   .action-grid button.action.explore { background: var(--bg-elevated); color: var(--accent); border: 1px solid var(--accent); grid-column: 1 / -1; }
+  .point-panel { margin-top: 10px; background: var(--bg-elevated); border: 1px solid var(--accent-dim); border-radius: 3px; padding: 10px 12px; }
+  .point-panel:empty { display: none; }
+  .pp-head { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; font-size: 14px; margin-bottom: 4px; }
+  .pp-in { font: 700 11px var(--font-mono); color: var(--accent); }
+  .pt { display: flex; align-items: center; gap: 10px; padding: 6px 0; border-top: 1px dashed var(--border); }
+  .pt .bic { font-size: 18px; width: 24px; text-align: center; flex-shrink: 0; }
+  .pt .bnm { flex: 1; min-width: 0; font-size: 13.5px; font-weight: 700; }
+  .pt .bnm small { display: block; font-weight: 400; font-size: 11px; color: var(--text-dim); }
+  .pt.dep { opacity: .55; }
+  .pt button { width: auto; padding: 7px 10px; font-size: 12px; white-space: nowrap; }
   .spots-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; margin-top: 14px; font-size: 12px; color: var(--text-dim); }
   .spots-head b { color: var(--text); font-weight: 700; }
   .spots { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 6px; margin-top: 8px; }
@@ -628,7 +638,7 @@
         <button class="action rest" id="restBtn"><span class="ic">🛌</span><span>휴식</span><small>10분</small></button>
         <button class="action rest" id="sleepBtn"><span class="ic">😴</span><span>잠자기</span><small>1시간</small></button>
         <button class="action raid" id="raidBtn" hidden><span class="ic">⚔️</span><span>약탈</span><small>5분</small></button>
-        <button class="action explore" id="exploreBtn"><span class="ic">🏚️</span><span id="exploreLbl">선택한 구역 조사 · 파밍</span></button>
+        <button class="action explore" id="exploreBtn" hidden><span class="ic">🏚️</span><span id="exploreLbl">선택한 구역 조사 · 파밍</span></button>
       </div>
       <div class="weapon-row">
         <label for="weaponSelect">사냥 무기</label>
@@ -641,6 +651,7 @@
       <div class="owned" id="exploreInfo"></div>
       <div class="spots-head"><b>조사할 구역 고르기</b><span id="spotCount"></span></div>
       <div class="spots" id="spotList"></div>
+      <div class="point-panel" id="pointPanel"></div>
       <div class="raid-row" id="raidRow" hidden>
         <label for="raidTarget">약탈 대상</label>
         <select id="raidTarget"><option value="">대상 없음</option></select>
@@ -1773,7 +1784,7 @@ const FIREBASE_CONFIG = {
     });
     h += mapDecorLayer();
     $('mapSvg').innerHTML = h;
-    $('mapCount').textContent = '지역 ' + vis.size + '/' + Object.keys(DISTRICTS).length + ' · 구역 ' + Object.keys(myDoc.searched).length + '/' + SPOT_TOTAL;
+    $('mapCount').textContent = '지역 ' + vis.size + '/' + Object.keys(DISTRICTS).length + ' · 구역 ' + Object.keys(DISTRICTS).reduce((t, l) => t + (SPOTS[l] || []).filter((_, i) => buildingSearched(l, i)).length, 0) + '/' + SPOT_TOTAL;
     renderMapInfo(vis);
   }
 
@@ -1786,7 +1797,7 @@ const FIREBASE_CONFIG = {
       const here = latestDocs.filter(d => !isMe(d) && d.status !== 'dead' && d.loc === id).map(d => escapeHtml(d.name));
       h += `<div class="facts"><span class="pill">위험도 ${dangerWord(D.danger)} · ${Math.round(D.danger * 100)}%</span>`;
       h += `<span class="pill">조사 구역 ${(SPOTS[id] || []).length}곳</span>${hordeOf(worldDay()) === id ? '<span class="pill" style="color:var(--danger)">☠ 오늘 무리 출몰</span>' : ''}</div>`;
-      h += `<div class="facts">` + (SPOTS[id] || []).map(([t, n], i) => `<span class="pill" title="${SPOT_TYPES[t].n}">${SPOT_TYPES[t].ic} ${n}${myDoc.searched[spotKey(id, i)] != null ? ' ✓' : ''}</span>`).join('') + `</div>`;
+      h += `<div class="facts">` + (SPOTS[id] || []).map(([t, n], i) => `<span class="pill" title="${SPOT_TYPES[t].n}">${SPOT_TYPES[t].ic} ${n}${buildingSearched(id, i) ? ' ✓' : ''}</span>`).join('') + `</div>`;
       const nm = memos.filter(m => m.loc === id).length;
       if (nm) h += `<p class="muted" style="margin-top:10px">📌 ${isCur ? '이곳에 메모 ' + nm + '장이 붙어 있다. 메모 카드에서 읽을 수 있다.' : '메모 ' + nm + '장이 붙어 있다. 직접 가야 읽을 수 있다.'}</p>`;
       h += `<p class="muted" style="margin-top:10px">${here.length ? '👥 이 지역의 생존자: ' + here.join(', ') : '👥 이 지역에 다른 생존자는 보이지 않는다.'}</p>`;
@@ -1860,7 +1871,7 @@ const FIREBASE_CONFIG = {
     // 조사 구역 건물
     spots.forEach(([t, n], i) => {
       const [x, y] = slots[i], T = SPOT_TYPES[t];
-      const done = myDoc.searched[spotKey(id, i)] != null, dep = done && spotState(id, i).depleted;
+      const done = buildingSearched(id, i), dep = false;
       const sel = isCur && i === selSpot;
       const short = n.length > 13 ? n.slice(0, 12) + '…' : n;
       h += `<g class="map-spot${sel ? ' sel' : ''}${dep ? ' dep' : ''}" data-spot="${i}" tabindex="0" role="button" aria-label="${n}, ${T.n}${done ? ', 조사함' : ''}">`;
@@ -1908,7 +1919,7 @@ const FIREBASE_CONFIG = {
       selSpot = +g.dataset.spot;
       renderSpots();
       renderMap();
-      $('mapHint').textContent = '「' + SPOTS[localId][selSpot][1] + '」을(를) 골랐어요. 행동 카드의 「선택한 구역 조사」로 뒤질 수 있어요.';
+      $('mapHint').textContent = '「' + SPOTS[localId][selSpot][1] + '」을(를) 골랐어요. 행동 카드 아래에서 안쪽 지점을 골라 뒤질 수 있어요.';
     } else {
       $('mapHint').textContent = localId === myDoc.loc ? '다른 행동을 하는 중이에요.' : '이 지역에 직접 가야 조사할 수 있어요.';
     }
@@ -2901,11 +2912,72 @@ const FIREBASE_CONFIG = {
   const DEPLETE_DAYS = 5;
   function spotKey(loc, i) { return loc + ':' + i; }
   function spotDanger(loc, i) { const T = SPOT_TYPES[SPOTS[loc][i][0]]; return Math.max(0.05, Math.min(0.7, DISTRICTS[loc].danger + T.dmod)); }
-  function spotState(loc, i) {
-    const last = myDoc.searched[spotKey(loc, i)];
+  // ---------- 건물 안 조사 지점 ----------
+  // food/drink: 개수 범위, med/tool/weapon/st: 나올 확률, dmod: 위험도 가감, min: 걸리는 분
+  const POINT_KINDS = {
+    kitchen:   { n:'주방', ic:'🍳', min:2, food:[1,3], drink:[0,1], weapon:.2 },
+    fridge:    { n:'냉장고', ic:'🧊', min:1, food:[0,2], drink:[1,2], fresh:true },
+    counter:   { n:'카운터', ic:'🧾', min:1, food:[0,1], drink:[0,1], st:.3 },
+    storeroom: { n:'창고', ic:'📦', min:3, food:[1,3], drink:[1,2], tool:.4 },
+    restroom:  { n:'화장실', ic:'🚽', min:1, med:.25, dmod:.05 },
+    lockers:   { n:'사물함', ic:'🗄️', min:2, weapon:.25, tool:.3, st:.2 },
+    office:    { n:'사무실', ic:'🗂️', min:2, drink:[0,1], med:.1, st:.6 },
+    ward:      { n:'병동', ic:'🛏️', min:3, med:.8, dmod:.1 },
+    medshelf:  { n:'약품 진열대', ic:'💊', min:2, med:.85 },
+    armory:    { n:'무기고', ic:'🔫', min:3, weapon:.45, tool:.6, dmod:.1 },
+    classroom: { n:'교실', ic:'✏️', min:2, food:[0,1], st:.7 },
+    gym:       { n:'체육관', ic:'🏀', min:2, drink:[0,1], weapon:.35 },
+    garage:    { n:'차고', ic:'🚗', min:3, tool:.6, weapon:.2 },
+    bedroom:   { n:'침실', ic:'🛏', min:2, drink:[0,1], med:.3, st:.3, weapon:.1 },
+    living:    { n:'거실', ic:'🛋️', min:1, food:[0,1], drink:[0,1], st:.2 },
+    shelves:   { n:'진열대', ic:'🛒', min:2, food:[1,4], drink:[1,3] },
+    toolwall:  { n:'공구 진열대', ic:'🧰', min:2, tool:.8, weapon:.35 },
+    roof:      { n:'옥상', ic:'🌇', min:2, drink:[0,2], dmod:-.05 },
+    basement:  { n:'지하실', ic:'🕯️', min:3, food:[0,2], tool:.4, dmod:.1 },
+    altar:     { n:'예배당', ic:'🕯', min:1, food:[0,1], med:.2, dmod:-.1 },
+    tents:     { n:'텐트촌', ic:'⛺', min:3, food:[1,3], med:.3, dmod:.1 },
+    trail:     { n:'산책로', ic:'🌳', min:2, food:[1,2], med:.2, dmod:-.05 },
+    shed:      { n:'관리 창고', ic:'🛖', min:2, tool:.5, weapon:.2 },
+    stage:     { n:'촬영장', ic:'🎬', min:2, tool:.5, weapon:.2 },
+    gate:      { n:'탑승구', ic:'✈️', min:2, food:[0,2], drink:[0,2], med:.2 },
+    baggage:   { n:'수하물 보관소', ic:'🧳', min:3, food:[0,2], med:.3, tool:.3, st:.2 },
+    firetruck: { n:'소방차', ic:'🚒', min:2, med:.6, weapon:.3, tool:.3 },
+    stacks:    { n:'서가', ic:'📚', min:2, st:.8 },
+    lobby:     { n:'로비', ic:'🚪', min:1, food:[0,1], drink:[0,1] },
+    parking:   { n:'주차장', ic:'🅿️', min:2, tool:.3, dmod:.05 },
+    dock:      { n:'선착장', ic:'⚓', min:2, drink:[0,1], tool:.35 },
+    tower:     { n:'감시탑', ic:'🗼', min:2, drink:[0,1], med:.35, dmod:-.05 }
+  };
+  // 건물 종류별 지점 (이름을 바꾸고 싶으면 [종류, '이름'])
+  const TYPE_POINTS = {
+    school:['classroom','gym',['office','교무실'],['kitchen','급식실'],'lockers'], fire:['firetruck','lockers','kitchen','office'],
+    burger:['kitchen','fridge','counter','storeroom','restroom'], pizza:['kitchen','fridge','counter','storeroom','restroom'],
+    taco:[['kitchen','트럭 주방'],'fridge','counter'], diner:['kitchen','fridge','counter','storeroom','restroom'],
+    cafe:['counter','kitchen','fridge','restroom'], hospital:['ward','medshelf','lobby','office','basement'],
+    pharmacy:['medshelf','counter','storeroom'], police:['armory','lockers','office',['lobby','유치장 앞']],
+    gunshop:['armory','counter','storeroom'], gas:['shelves','counter','garage','restroom'],
+    market:['shelves','fridge','storeroom','counter','office'], hardware:['toolwall','storeroom','counter','garage'],
+    house:['living','kitchen','bedroom','restroom','garage'], church:['altar','basement','office','kitchen'],
+    park:['trail','shed','restroom'], office:['office','lobby',['kitchen','탕비실'],'roof'], library:['stacks','office','lobby','basement'],
+    motel:[['bedroom','객실'],['counter','프런트'],['storeroom','세탁실'],'parking'], lifeguard:['lockers','storeroom','tower'],
+    studio:['stage',['storeroom','소품 창고'],'office','parking'], warehouse:['storeroom',['parking','하역장'],'office','basement'],
+    cabin:[['bedroom','숙소'],'storeroom',['basement','지하 저장고']], terminal:['gate','baggage',['shelves','면세점'],'restroom','office'],
+    shelter:['tents','storeroom',['ward','의무실'],['office','지휘소']]
+  };
+  function pointsOf(type) { return (TYPE_POINTS[type] || ['lobby','storeroom']).map(x => { const id = Array.isArray(x) ? x[0] : x; const K = POINT_KINDS[id]; return Object.assign({ id }, K, { n: Array.isArray(x) ? x[1] : K.n }); }); }
+  function pointKey(loc, i, j) { return loc + ':' + i + ':' + j; }
+  function pointState(loc, i, j) {
+    const last = myDoc.searched[pointKey(loc, i, j)];
     if (last == null) return { label:'미조사', cls:'new' };
     const left = DEPLETE_DAYS - (myDoc.day - last);
-    return left > 0 ? { label:'털림 · ' + left + '일 뒤 회복', cls:'dep', depleted:true } : { label:'조사함', cls:'done' };
+    return left > 0 ? { label:'털림 · ' + left + '일 뒤', cls:'dep', depleted:true } : { label:'조사함', cls:'done' };
+  }
+  function pointDanger(loc, i, j) { const P = pointsOf(SPOTS[loc][i][0])[j]; return Math.max(0.03, Math.min(0.7, spotDanger(loc, i) * 0.7 + (P.dmod || 0))); }
+  // 예전 기록(건물 단위)도 '조사한 건물'로 친다
+  function buildingSearched(loc, i) { const pre = loc + ':' + i; return Object.keys(myDoc.searched).some(k => k === pre || k.startsWith(pre + ':')); }
+  function spotState(loc, i) {
+    const pts = pointsOf(SPOTS[loc][i][0]), done = pts.filter((_, j) => myDoc.searched[pointKey(loc, i, j)] != null).length;
+    return done ? { label:'지점 ' + done + '/' + pts.length + ' 조사', cls:'done' } : { label: buildingSearched(loc, i) ? '조사함' : '미조사', cls: buildingSearched(loc, i) ? 'done' : 'new' };
   }
   let selSpot = 0;
   function renderSpots() {
@@ -2915,12 +2987,28 @@ const FIREBASE_CONFIG = {
     $('spotList').innerHTML = list.map(([t, n], i) => {
       const T = SPOT_TYPES[t], st = spotState(myDoc.loc, i), dg = spotDanger(myDoc.loc, i);
       return `<button type="button" class="spot${i === selSpot ? ' sel' : ''} ${st.cls}" data-spot="${i}" aria-pressed="${i === selSpot}"${off ? ' disabled' : ''}>
-        <span class="sic">${T.ic}</span><span class="snm">${n}<small>${T.n} · ${spotMinutes(t)}분 · 위험 ${Math.round(dg * 100)}% · ${st.label}</small></span></button>`;
+        <span class="sic">${T.ic}</span><span class="snm">${n}${mySpot() === i ? ' 📍' : ''}<small>${T.n} · 지점 ${pointsOf(t).length}곳 · 위험 ${Math.round(dg * 100)}% · ${st.label}</small></span></button>`;
     }).join('');
-    if (list[selSpot]) $('exploreLbl').textContent = '선택한 구역 조사 · ' + spotMinutes(list[selSpot][0]) + '분';
-    const done = Object.keys(myDoc.searched).filter(k => SPOTS[k.split(':')[0]]).length;
+    const done = Object.keys(DISTRICTS).reduce((t, l) => t + (SPOTS[l] || []).filter((_, i) => buildingSearched(l, i)).length, 0);
     $('spotCount').textContent = '조사한 구역 ' + done + ' / ' + SPOT_TOTAL;
+    renderPoints();
   }
+  function renderPoints() {
+    const S = (SPOTS[myDoc.loc] || [])[selSpot];
+    if (!S) { $('pointPanel').innerHTML = ''; return; }
+    const inside = mySpot() === selSpot, off = myDoc.status === 'dead' || !!myDoc.busy;
+    const pts = pointsOf(S[0]);
+    $('pointPanel').innerHTML = `<div class="pp-head">${SPOT_TYPES[S[0]].ic} <b>${S[1]}</b> ${inside ? '<span class="pp-in">📍 지금 안에 있음</span>' : '<span class="muted" style="margin:0">지점을 고르면 걸어 들어가서 뒤져요</span>'}</div>` +
+      pts.map((P, j) => {
+        const st = pointState(myDoc.loc, selSpot, j), dg = pointDanger(myDoc.loc, selSpot, j);
+        const has = [P.food ? '음식' : '', P.drink ? '음료' : '', P.med ? '의료품' : '', P.tool ? '도구' : '', P.weapon ? '무기' : '', P.st ? '필기구' : ''].filter(Boolean).join('·');
+        return `<div class="pt ${st.cls}"><span class="bic">${P.ic}</span><div class="bnm">${P.n}<small>${has || '잡동사니'} · 위험 ${Math.round(dg * 100)}% · ${st.label}</small></div><button class="secondary" type="button" data-point="${j}"${off ? ' disabled' : ''}>뒤지기 · ${P.min}분</button></div>`;
+      }).join('');
+  }
+  $('pointPanel').addEventListener('click', (e) => {
+    const b = e.target.closest('button[data-point]');
+    if (b && !b.disabled) startAction('explore', selSpot + ':' + b.dataset.point);
+  });
   $('spotList').addEventListener('click', (e) => {
     const b = e.target.closest('button[data-spot]');
     if (!b || b.disabled) return;
@@ -2928,14 +3016,16 @@ const FIREBASE_CONFIG = {
     renderSpots();
   });
 
-  function doExplore(i) {
+  function doExplore(arg) {
+    const [i, j] = String(arg).split(':').map(Number);
     const loc = myDoc.loc, D = DISTRICTS[loc], S = (SPOTS[loc] || [])[i];
     if (!D || !S) return;
-    const T = SPOT_TYPES[S[0]], key = spotKey(loc, i), depleted = !!spotState(loc, i).depleted;
+    const P = pointsOf(S[0])[j];
+    if (!P) return;
+    const T = SPOT_TYPES[S[0]], key = pointKey(loc, i, j), depleted = !!pointState(loc, i, j).depleted;
     const bonus = partyBonusActive();
-    const danger = Math.min(0.85, spotDanger(loc, i) * (bonus ? 0.75 : 1) * dangerMult(loc, 'explore'));
-    const parts = [];
-    let head = S[1] + ' 조사. ';
+    const danger = Math.min(0.85, pointDanger(loc, i, j) * (bonus ? 0.75 : 1) * dangerMult(loc, 'explore'));
+    let head = S[1] + ' ' + P.n + ' 뒤지기. ';
     myDoc.searched[key] = myDoc.day;
     if (Math.random() < danger) {
       const dmg = rint(8, 18);
@@ -2946,27 +3036,30 @@ const FIREBASE_CONFIG = {
     }
     if (depleted) head += '며칠 전에 뒤진 곳이라 남은 게 별로 없다. ';
     const missing = T.weapons.filter(w => !myDoc.weapons.includes(w));
-    if (!depleted && missing.length && Math.random() < 0.3) {
+    if (!depleted && missing.length && Math.random() < (P.weapon || 0)) {
       const w = pick(missing);
       if (!canCarry(WEAPON_WT[w] || 0)) { addLog(head + w + '을(를) 찾았지만 가방이 꽉 차서 들고 올 수 없었다.'); return; }
       myDoc.weapons.push(w);
       myDoc.wdur = myDoc.wdur || {}; myDoc.wdur[w] = WEAPON_DUR[w] || 20;
       addLog(head + fmt(pick(EXPLORE_WEAPON), w, 0) + ' (무기 획득: ' + w + ')');
-      findStationery(T.st);
       return;
     }
-    let f = rint(T.food[0], T.food[1]) + (bonus && T.food[1] ? 1 : 0), wa = rint(T.water[0], T.water[1]);
-    let m = Math.random() < T.med * (depleted ? 0.3 : 1) ? (Math.random() < T.med / 2 ? 2 : 1) : 0;
+    const fr = P.food || [0, 0], dr = P.drink || [0, 0];
+    let f = rint(fr[0], fr[1]) + (bonus && fr[1] ? 1 : 0), wa = rint(dr[0], dr[1]);
+    let m = Math.random() < (P.med || 0) * (depleted ? 0.3 : 1) ? (Math.random() < (P.med || 0) / 2 ? 2 : 1) : 0;
     if (depleted) { f = Math.floor(f / 2); wa = Math.floor(wa / 2); }
     const got = {};
-    rollLoot(lootPool(S[0], 'food'), f, got);
-    rollLoot(lootPool(S[0], 'drink'), wa, got);
-    rollLoot(lootPool(S[0], 'med'), m, got);
+    let foodPool = lootPool(S[0], 'food');
+    if (P.fresh) { const fp = foodPool.filter(k => ITEMS[k].fresh); foodPool = fp.length ? fp : ['bread','apple','raw_meat']; }
+    if (P.id === 'trail') foodPool = ['berries','apple'];
+    if (P.id === 'roof') rollLoot(['rainwater'], wa, got); else rollLoot(lootPool(S[0], 'drink'), wa, got);
+    rollLoot(foodPool, f, got);
+    rollLoot(P.id === 'trail' ? ['green_herb','green_herb','mixed_herb'] : lootPool(S[0], 'med').length ? lootPool(S[0], 'med') : GENERAL_LOOT.med, m, got);
     const TL = TOOL_LOOT[S[0]] || [.1, ['cloth','matches']];
-    if (!depleted && Math.random() < TL[0]) rollLoot(TL[1], Math.random() < 0.3 ? 2 : 1, got);
+    if (!depleted && Math.random() < (P.tool || 0)) rollLoot(P.id === 'armory' ? ['ammo','ammo','pack'] : TL[1], Math.random() < 0.3 ? 2 : 1, got);
     const lt = lootText(got);
-    addLog(head + (lt ? '쓸 만한 물자를 챙겨 나왔다. (' + lt + ')' : '이미 누군가 싹 털어간 뒤였다. 빈손이다.'));
-    if (!depleted) findStationery(T.st);
+    addLog(head + (lt ? '쓸 만한 물자를 챙겼다. (' + lt + ')' : depleted ? '며칠 전에 뒤진 곳이라 남은 게 없다.' : '아무것도 없었다. 누군가 먼저 다녀간 모양이다.'));
+    if (!depleted) findStationery(P.st || 0);
   }
 
   // 무기는 쓸수록 닳고, 다 닳으면 부러진다
@@ -3085,8 +3178,8 @@ const FIREBASE_CONFIG = {
   function actionPlan(type, arg) {
     const A = ACTIONS[type];
     if (type === 'explore') {
-      const S = (SPOTS[myDoc.loc] || [])[arg];
-      return S ? { min: spotMinutes(S[0]), label: '🏚️ ' + S[1] + ' 조사' } : null;
+      const [i, j] = String(arg).split(':').map(Number), S = (SPOTS[myDoc.loc] || [])[i], P = S && pointsOf(S[0])[j];
+      return P ? { min: P.min, label: P.ic + ' ' + S[1] + ' ' + P.n + ' 뒤지기' } : null;
     }
     if (type === 'move') {
       if (!DISTRICTS[arg] || !(ADJ[myDoc.loc] || []).includes(arg)) return null;
@@ -3104,7 +3197,7 @@ const FIREBASE_CONFIG = {
     if (syncWorld()) { renderStatus(); await saveDoc(); }
     if (myDoc.status === 'dead' || myDoc.busy) return;
     if (type === 'hunt' && arg == null) arg = $('weaponSelect').value;
-    if (type === 'explore' && arg == null) arg = selSpot;
+    if (type === 'explore' && arg == null) return;
     if (type === 'raid' && !RAID_ENABLED) return;
     if (type === 'raid' && arg == null) arg = $('raidTarget').value;
     if (type === 'raid' && !arg) { $('actionHint').textContent = '· 약탈할 대상을 먼저 고르세요'; return; }
@@ -3113,7 +3206,7 @@ const FIREBASE_CONFIG = {
     if (!plan) return;
     const now = Date.now();
     myDoc.busy = { type, arg, label: plan.label, min: plan.min, start: now, until: now + plan.min * 60000 };
-    if (type === 'explore') myDoc.spot = arg;
+    if (type === 'explore') myDoc.spot = Number(String(arg).split(':')[0]);
     renderStatus();
     await saveDoc();
   }
@@ -3144,7 +3237,7 @@ const FIREBASE_CONFIG = {
         else if (t === 'hunt') resolveHunt(b.arg);
         else if (t === 'rest') doRest();
         else if (t === 'sleep') doSleep();
-        else if (t === 'explore') { if (myDoc.loc && SPOTS[myDoc.loc] && SPOTS[myDoc.loc][b.arg]) doExplore(b.arg); }
+        else if (t === 'explore') { if (myDoc.loc && SPOTS[myDoc.loc] && String(b.arg).includes(':')) doExplore(b.arg); else addLog('어디를 뒤질지 몰라 그냥 돌아 나왔다.'); }
         else if (t === 'move') doMove(b.arg);
         else if (t === 'raid') { if (RAID_ENABLED) await doRaid(b.arg); else addLog('누군가를 덮치려다 마음을 접었다.'); }
         else if (t === 'med') { if (canUseMed(b.arg)) useMed(b.arg); }
@@ -3997,7 +4090,7 @@ const FIREBASE_CONFIG = {
 </div>
 <script>
 (function(){
-  var BUILD_ID = '20261017171358';
+  var BUILD_ID = '20261018023803';
   function check(){
     fetch('version.txt?t=' + Date.now(), { cache: 'no-store' }).then(function(r){ return r.ok ? r.text() : ''; }).then(function(v){
       v = (v || '').trim();
