@@ -180,6 +180,8 @@
   .mc-legend svg { width: 12px; height: 12px; border: 1px solid var(--m-ink); }
   .mc-foot { font: 700 9px var(--font-mono); letter-spacing: 1px; color: var(--m-ink-dim); border-top: 1px solid rgba(59,50,38,.35); margin-top: 10px; padding-top: 6px; line-height: 1.6; }
   .loc-line { font-size: 13px; color: var(--text-dim); margin-top: 14px; }
+  .veh-line { font-size: 13px; margin-top: 8px; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+  .veh-line button { padding: 6px 10px; font-size: 12px; }
   .loc-line b { color: var(--accent); font-weight: 700; }
   /* 지도: 낡은 관광 안내 지도. 종이 위의 인쇄물이라 테마와 상관없이 같은 색을 쓴다 */
   .map-svg { width: 100%; height: auto; display: block; border-radius: 2px; -webkit-tap-highlight-color: transparent;
@@ -654,6 +656,7 @@
       </div>
       <div class="owned" id="weaponOwned"></div>
       <div class="loc-line" id="locLine"></div>
+      <div class="veh-line" id="vehLine"></div>
       <div class="owned" id="exploreInfo"></div>
       <div class="spots-head"><b>조사할 구역 고르기</b><span id="spotCount"></span></div>
       <div class="spots" id="spotList"></div>
@@ -1175,6 +1178,7 @@ const FIREBASE_CONFIG = {
     ['farmBtn','forageBtn','huntBtn','restBtn','sleepBtn','exploreBtn','raidBtn'].forEach(id => $(id).disabled = dead || busy);
     $('weaponSelect').disabled = dead || busy;
     renderBusy();
+    renderVehicle();
     const here = DISTRICTS[myDoc.loc];
     if (here) {
       $('locLine').innerHTML = '📍 현재 위치: <b>' + here.n + '</b> · 다른 지역으로 가려면 지도에서 이웃 지역을 누르세요';
@@ -1813,7 +1817,7 @@ const FIREBASE_CONFIG = {
       : `<button class="secondary" id="zoomBtn" type="button" style="margin-top:12px">🗺️ LA 전체 지도로</button>`;
     h += '<div class="act">';
     if (isCur) h += `<div class="loc-line" style="margin:0"><b>📍 지금 이곳에 있어요.</b> 「조사할 구역 고르기」에서 건물을 골라 뒤질 수 있어요.</div>`;
-    else if (adj) h += `<button class="primary" id="moveBtn" type="button"${dead || myDoc.busy ? ' disabled' : ''}>${known ? '이곳으로 이동' : '미지의 지역으로 이동'} · ${travelMinutes(myDoc.loc, id)}분</button>` + (myDoc.busy && !dead ? '<div class="muted">다른 행동을 하는 중이에요.</div>' : '');
+    else if (adj) h += `<button class="primary" id="moveBtn" type="button"${dead || myDoc.busy ? ' disabled' : ''}>${movePlan(id).veh ? VEHICLES[movePlan(id).veh].ic + ' ' : ''}${known ? '이곳으로 이동' : '미지의 지역으로 이동'} · ${movePlan(id).min}분</button>` + (myDoc.busy && !dead ? '<div class="muted">다른 행동을 하는 중이에요.</div>' : '');
     else h += `<div class="muted" style="margin:0">현재 위치에서 바로 갈 수 없어요. 이웃한 지역을 거쳐 가세요.</div>`;
     h += '</div>';
     $('mapInfo').innerHTML = h;
@@ -1949,12 +1953,14 @@ const FIREBASE_CONFIG = {
     '골목을 지나다 워커 무리와 마주쳐 한참을 돌아갔다.',
     '지하도에 숨어 있던 워커에게 붙잡힐 뻔했다.'
   ];
-  function doMove(id) {
+  function doMove(id, veh) {
     const from = DISTRICTS[myDoc.loc], to = DISTRICTS[id];
     if (!to || !(ADJ[myDoc.loc] || []).includes(id)) return;
     const first = !myDoc.visited.includes(id);
-    let text = from.n + '에서 ' + to.n + '(으)로 이동했다. ';
-    if (Math.random() < Math.min(0.85, to.danger * 0.5 * dangerMult(id, 'move'))) {
+    const v = veh && vehHere() && vehHere().id === veh ? vehHere() : null, V = v && VEHICLES[v.id];
+    let text = from.n + '에서 ' + to.n + '(으)로 ' + (V ? josa(V.n, '을', '를') + ' 타고 ' : '') + '이동했다. ';
+    if (V) { v.fuel = Math.max(0, v.fuel - V.use); v.loc = id; if (V.tank) text += '(연료 ' + v.fuel + '/' + V.tank + ') '; }
+    if (Math.random() < Math.min(0.85, to.danger * 0.5 * dangerMult(id, 'move') * (V ? V.noise : 1))) {
       const dmg = rint(5, 14);
       myDoc.hp = clamp(myDoc.hp - dmg);
       text += pick(TRAVEL_ENCOUNTER) + ' (체력 -' + dmg + ')' + injure('forage') + ' ';
@@ -3129,9 +3135,9 @@ const FIREBASE_CONFIG = {
       resolve: k => k === 'trunk' ? '정신없이 쓸어 담았다.' + evLoot(['beans','tuna','water','nails','scrap','matches'], 3) + (ch(.6) ? evHurt(8, 20, 'forage') : '')
         : k === 'off' ? '배선을 뜯어 경보를 껐다.' + evLoot(['scrap','fuel','cloth','water'], 2) + evFat(12)
         : '뒤도 안 보고 달렸다.' + evFat(5) },
-    { id:'bus', w:2, where:['terminal','dtla','koreatown','lobby'], title:'🚌 마지막 버스', text:'목적지 표시판에 \'EVACUATION CENTER\'가 떠 있는 버스. 아무도 없는 것 같지만 뒷좌석 커튼이 흔들린다.', opts:[['search','버스 안을 수색한다'],['drive','버스로 이동한다'],['pass','지나친다']],
+    { id:'bus', w:2, where:['terminal','dtla','koreatown','lobby'], title:'🚌 마지막 버스', text:'목적지 표시판에 \'EVACUATION CENTER\'가 떠 있는 버스. 아무도 없는 것 같지만 뒷좌석 커튼이 흔들린다.', opts:[['search','버스 안을 수색한다'],['drive','버스 시동을 걸어본다'],['pass','지나친다']],
       resolve: k => k === 'search' ? '좌석 밑을 뒤졌다.' + evLoot(['crackers','water','chips','pack'], 2) + (ch(.4) ? ' 커튼 뒤에 숨어 있던 것이 덮쳤다.' + evHurt(8, 18, 'fight') : '')
-        : k === 'drive' ? (inv('fuel') ? (addItem('fuel', -1), '휘발유를 붓고 시동을 걸었다. 굉음과 함께 몇 블록을 달렸다.' + evReveal() + (ch(.35) ? ' 소리를 따라온 무리를 겨우 떨쳤다.' + evHurt(5, 12, 'forage') : '')) : '시동이 걸리지 않는다. 연료가 없다.' + evFat(5))
+        : k === 'drive' ? EVENTS.find(e => e.id === 'veh_bus').resolve('try')
         : '버스를 지나쳤다.' },
     { id:'smarket', w:3, where:['market'], title:'🏪 잠긴 슈퍼마켓', text:'유리문에 출입 금지 안내. 안쪽 진열대엔 통조림과 생수가 남아 있는 듯하다.', opts:[['smash','유리문을 깬다'],['back','직원용 출입구를 찾는다'],['leave','포기한다']],
       resolve: k => k === 'smash' ? '와장창!' + evLoot(['beans','tuna','soup','water','water','ramen'], 5) + ' 소리에 몰려온 워커를 피해 달아났다.' + evHurt(10, 22, 'forage')
@@ -3248,6 +3254,62 @@ const FIREBASE_CONFIG = {
         : k === 'ask' ? '무전으로 물었다. 진짜 정보를 얻었다.' + evReveal() + (myDoc.sat = clamp(myDoc.sat - 6), ' (포만감 -6)')
         : '주파수를 따라갔다.' + evReveal() + evFat(12) + (ch(.35) ? ' 무장한 무리와 마주쳤다.' + evHurt(8, 18, 'human') : '') }
   );
+  // ---------- 이동 수단 ----------
+  // mult: 걷는 시간 대비 배율, tank/use: 연료(휘발유 통 1개 = 5), noise: 이동 중 마주칠 확률 배율, carry: 곁에 있을 때 가방 한도 +kg
+  const FUEL_PER_CAN = 5;
+  const VEHICLES = {
+    bicycle:   { n:'자전거', ic:'🚲', mult:.6, tank:0, use:0, noise:.8, where:['house','garage','park','school','trail','venice','santamonica'], text:'벽에 기대 세워진 자전거 한 대.', fail:['체인이 끊어져 있다.','타이어가 갈기갈기 찢어져 있다.','프레임이 휘어 페달이 돌지 않는다.'] },
+    motorbike: { n:'오토바이', ic:'🏍️', mult:.3, tank:6, use:1, noise:1.2, where:['garage','parking','gas'], text:'옆으로 쓰러진 오토바이. 키가 꽂혀 있다.', fail:['배터리가 완전히 방전됐다.','연료 호스가 끊어져 있다.','시동 모터가 헛돈다.'] },
+    sports:    { n:'스포츠카', ic:'🏎️', mult:.2, tank:8, use:3, noise:1.5, where:['garage','parking','beverlyhills','malibu','studio'], text:'먼지를 뒤집어쓴 빨간 스포츠카. 문이 열려 있다.', fail:['키가 없다. 직결도 안 된다.','앞바퀴가 통째로 빠져 있다.','계기판에 경고등만 깜빡인다.'] },
+    sedan:     { n:'승용차', ic:'🚗', mult:.35, tank:12, use:2, noise:1.1, where:['parking','garage','house','gas','motel'], text:'평범한 승용차. 운전석에 열쇠가 떨어져 있다.', fail:['배터리가 방전됐다.','엔진룸이 다 뜯겨 있다.','뒷바퀴 두 개가 펑크 났다.'] },
+    truck:     { n:'트럭', ic:'🛻', mult:.4, tank:16, use:3, noise:1.3, carry:10, where:['warehouse','hardware','parking','garage','vernon'], text:'짐칸이 넓은 픽업트럭. 차 문에 핏자국이 말라 있다.', fail:['라디에이터가 터져 있다.','시동은 걸리는데 바로 꺼진다.','변속기가 고장 났다.'] },
+    bus:       { n:'버스', ic:'🚌', mult:.5, tank:20, use:4, noise:1.6, carry:20, where:['terminal','lobby','gate','parking','dtla'], text:'문이 열린 채 서 있는 시내버스. 운전석이 비어 있다.', fail:['앞유리가 박살 나고 핸들이 부러져 있다.','에어 브레이크가 풀리지 않는다.','배터리가 방전됐다.'] }
+  };
+  function myVeh() { const v = myDoc.vehicle; return v && VEHICLES[v.id] ? v : null; }
+  function vehHere() { const v = myVeh(); return v && v.loc === myDoc.loc ? v : null; }
+  function canDrive() { const v = vehHere(); return !!v && v.fuel >= VEHICLES[v.id].use; }
+  function movePlan(dest) {
+    const walk = travelMinutes(myDoc.loc, dest), v = vehHere();
+    return canDrive() ? { min: Math.max(1, Math.round(walk * VEHICLES[v.id].mult)), veh: v.id } : { min: walk, veh: null };
+  }
+  Object.keys(VEHICLES).forEach(k => {
+    const V = VEHICLES[k];
+    EVENTS.push({ id:'veh_' + k, w:2.5, where:V.where, title:V.ic + ' ' + V.n + ' 발견', text:V.text + (V.tank ? ' 움직일지는 시동을 걸어봐야 안다.' : ' 탈 수 있을지는 살펴봐야 안다.'),
+      opts:[['try', V.tank ? '시동을 걸어본다' : '살펴본다'], ['leave', '그냥 둔다']],
+      resolve: kk => {
+        if (kk !== 'try') return josa(V.n, '은', '는') + ' 그대로 두고 왔다.';
+        if (!ch(.3)) return pick(V.fail) + ' 쓸 수 없다.' + (V.tank && ch(.2) ? ' 시동 거는 소리에 워커가 몰려왔다.' + evHurt(5, 12, 'forage') : '');
+        const old = myVeh(), fuel = V.tank ? rint(0, Math.ceil(V.tank / 2)) : 0;
+        myDoc.vehicle = { id: k, fuel, loc: myDoc.loc };
+        return (old ? '타던 ' + josa(VEHICLES[old.id].n, '은', '는') + ' 두고 ' : '') + V.ic + ' ' + josa(V.n, '을', '를') + ' 손에 넣었다!' +
+          (V.tank ? (fuel ? ' 연료가 ' + fuel + '/' + V.tank + ' 남아 있다.' : ' 그런데 연료 탱크가 비어 있다. 휘발유를 구해야 한다.') : ' 연료 없이 달릴 수 있다.');
+      } });
+  });
+  function refuel() {
+    const v = vehHere();
+    if (!v || !inv('fuel')) return;
+    const V = VEHICLES[v.id];
+    if (!V.tank || v.fuel >= V.tank) return;
+    addItem('fuel', -1);
+    v.fuel = Math.min(V.tank, v.fuel + FUEL_PER_CAN);
+    addLog('⛽ ' + V.n + '에 휘발유를 부었다. (연료 ' + v.fuel + '/' + V.tank + ')');
+  }
+  function renderVehicle() {
+    const v = myVeh(), el = $('vehLine');
+    if (!v) { el.innerHTML = '<span class="muted" style="margin:0">🚶 이동 수단 없음 · 주차장·차고 같은 곳을 뒤지다 보면 탈것을 찾을 수 있어요</span>'; return; }
+    const V = VEHICLES[v.id], here = v.loc === myDoc.loc, off = myDoc.status === 'dead' || !!myDoc.busy;
+    const fuel = V.tank ? '연료 ' + v.fuel + '/' + V.tank + (v.fuel < V.use ? ' (부족)' : '') : '연료 필요 없음';
+    el.innerHTML = `<span>${V.ic} <b>${V.n}</b> · ${fuel} · ${here ? '이곳에 세워 둠' : '📍 ' + DISTRICTS[v.loc].n + '에 두고 옴'}${here && V.carry ? ' · 가방 +' + V.carry + 'kg' : ''}</span>` +
+      (here && V.tank && v.fuel < V.tank ? `<button class="secondary" type="button" id="refuelBtn"${off || !inv('fuel') ? ' disabled' : ''}>⛽ 휘발유 넣기 (${inv('fuel')}통)</button>` : '') +
+      `<button class="secondary" type="button" id="dropVehBtn"${off ? ' disabled' : ''}>버리기</button>`;
+  }
+  $('vehLine').addEventListener('click', async (e) => {
+    if (e.target.id === 'refuelBtn') refuel();
+    else if (e.target.id === 'dropVehBtn') { if (!confirm('이 탈것을 버릴까요?')) return; addLog(VEHICLES[myVeh().id].n + '을(를) 버렸다.'); myDoc.vehicle = null; }
+    else return;
+    renderStatus(); await saveDoc();
+  });
+
   // where는 지점 종류·건물 종류·지역 중 하나와 맞으면 된다. 같은 이벤트 연속 금지, 후속 이벤트(chain)는 다음 이벤트 때 60% 확률로 이어진다
   function maybeEvent(loc, i, j, P, head) {
     const tags = [P.id, SPOTS[loc][i][0], loc];
@@ -3464,7 +3526,8 @@ const FIREBASE_CONFIG = {
     }
     if (type === 'move') {
       if (!DISTRICTS[arg] || !(ADJ[myDoc.loc] || []).includes(arg)) return null;
-      return { min: travelMinutes(myDoc.loc, arg), label: '🚶 ' + (myDoc.visited.includes(arg) ? DISTRICTS[arg].n : '미지의 지역') + '(으)로 이동' };
+      const mp = movePlan(arg);
+      return { min: mp.min, veh: mp.veh, label: (mp.veh ? VEHICLES[mp.veh].ic : '🚶') + ' ' + (myDoc.visited.includes(arg) ? DISTRICTS[arg].n : '미지의 지역') + '(으)로 이동' };
     }
     if (type === 'hunt') return { min: A.min, label: '🔪 ' + arg + '(으)로 사냥' };
     if (type === 'med') return ITEMS[arg] ? { min: A.min, label: ITEMS[arg].ic + ' ' + ITEMS[arg].n + ' 사용' } : null;
@@ -3487,7 +3550,7 @@ const FIREBASE_CONFIG = {
     const plan = actionPlan(type, arg);
     if (!plan) return;
     const now = Date.now();
-    myDoc.busy = { type, arg, label: plan.label, min: plan.min, start: now, until: now + plan.min * 60000 };
+    myDoc.busy = { type, arg, label: plan.label, min: plan.min, start: now, until: now + plan.min * 60000, veh: plan.veh || null };
     if (type === 'explore') myDoc.spot = Number(String(arg).split(':')[0]);
     renderStatus();
     await saveDoc();
@@ -3520,7 +3583,7 @@ const FIREBASE_CONFIG = {
         else if (t === 'rest') doRest();
         else if (t === 'sleep') doSleep();
         else if (t === 'explore') { if (myDoc.loc && SPOTS[myDoc.loc] && String(b.arg).includes(':')) doExplore(b.arg); else addLog('어디를 뒤질지 몰라 그냥 돌아 나왔다.'); }
-        else if (t === 'move') doMove(b.arg);
+        else if (t === 'move') doMove(b.arg, b.veh);
         else if (t === 'raid') { if (RAID_ENABLED) await doRaid(b.arg); else addLog('누군가를 덮치려다 마음을 접었다.'); }
         else if (t === 'med') { if (canUseMed(b.arg)) useMed(b.arg); }
         else if (t === 'craft') doCraft(b.arg);
@@ -4008,7 +4071,7 @@ const FIREBASE_CONFIG = {
     planks:      { n:'나무판자', ic:'🪵', cat:'tool', wt:2, desc:'쉘터 건설 재료' },
     nails:       { n:'못', ic:'📌', cat:'tool', wt:.05, desc:'쉘터 건설 재료' },
     scrap:       { n:'고철', ic:'⚙️', cat:'tool', wt:1, desc:'쉘터 건설 재료' },
-    fuel:        { n:'휘발유 통', ic:'⛽', cat:'tool', wt:1, desc:'차·보트·발전기 연료 (이벤트용)' },
+    fuel:        { n:'휘발유 통', ic:'⛽', cat:'tool', wt:1, desc:'탈것 연료 +5 · 보트·발전기에도 쓴다' },
     pack:        { n:'등산 배낭', ic:'🎒', cat:'tool', wt:1, desc:'들고 있으면 가방 +10kg' },
     vitamins:    { n:'비타민', ic:'💛', cat:'med', wt:0.05, hp:3, fat:-3, desc:'체력 +3' }
   };
@@ -4023,7 +4086,7 @@ const FIREBASE_CONFIG = {
   // 무게: 기본 15kg, 등산 배낭이 있으면 25kg
   const WEAPON_WT = { '각목':1.5, '식칼':0.3, '야구방망이':1, '쇠파이프':1.5, '낫':0.8, '손도끼':1, '활':1, '도끼':2, '권총':1 };
   const WEAPON_DUR = { '각목':12, '식칼':15, '야구방망이':20, '쇠파이프':30, '낫':20, '손도끼':25, '활':30, '도끼':30, '권총':40 };
-  function carryMax() { return inv('pack') > 0 ? 25 : 15; }
+  function carryMax() { const v = myDoc && vehHere(); return (inv('pack') > 0 ? 25 : 15) + (v && VEHICLES[v.id].carry || 0); }
   function carryWeight() {
     const v = invOf(myDoc);
     let w = Object.keys(v).reduce((t, k) => t + (ITEMS[k] ? (ITEMS[k].wt || 0) * Math.max(0, +v[k] || 0) : 0), 0);
@@ -4374,7 +4437,7 @@ const FIREBASE_CONFIG = {
 </div>
 <script>
 (function(){
-  var BUILD_ID = '20261018025831';
+  var BUILD_ID = '20261018030327';
   function check(){
     fetch('version.txt?t=' + Date.now(), { cache: 'no-store' }).then(function(r){ return r.ok ? r.text() : ''; }).then(function(v){
       v = (v || '').trim();
