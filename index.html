@@ -547,12 +547,14 @@
     .char-side button.primary, .char-side button.secondary { padding: 8px 10px; }
     .char-side .avatar.lg, .char-side .avatar-lg { width: 84px; height: 84px; font-size: 32px; }
   }
+  .newbie-badge { font: 600 12px var(--font-mono); color: var(--ok); border: 1px solid var(--ok); border-radius: 999px; padding: 3px 10px; white-space: nowrap; margin-right: 6px; }
+  @media (max-width: 520px) { .newbie-badge { font-size: 10px; padding: 2px 6px; } }
 </style>
 </head>
 <body>
 <header class="top">
   <h1><span class="hazard" aria-hidden="true">☣</span>최후의 무전</h1>
-  <div class="who-wrap"><button class="theme-btn" id="themeBtn" type="button" aria-label="다크/라이트 모드 전환"></button><button class="who-btn" id="whoBtn" type="button" aria-expanded="false" aria-controls="statusPop" hidden><span class="avatar sm" id="whoAvatar"></span><span class="who" id="whoLabel"></span><span class="who-hp" id="whoHp"></span><span class="who-caret" aria-hidden="true">▾</span></button></div>
+  <div class="who-wrap"><span class="newbie-badge" id="newbieLine" hidden></span><button class="theme-btn" id="themeBtn" type="button" aria-label="다크/라이트 모드 전환"></button><button class="who-btn" id="whoBtn" type="button" aria-expanded="false" aria-controls="statusPop" hidden><span class="avatar sm" id="whoAvatar"></span><span class="who" id="whoLabel"></span><span class="who-hp" id="whoHp"></span><span class="who-caret" aria-hidden="true">▾</span></button></div>
 </header>
 
 <div class="wrap">
@@ -593,10 +595,10 @@
   <div id="gameArea" style="display:none;">
 
     <nav class="tabs" role="tablist">
-      <button class="tab active" role="tab" aria-selected="true" data-tab="play" id="tabBtnPlay">⚔️ 생존</button>
+      <button class="tab active" role="tab" aria-selected="true" data-tab="play" id="tabBtnPlay">📻 생존</button>
+      <button class="tab" role="tab" aria-selected="false" data-tab="journal" id="tabBtnJournal">📔 일지</button>
       <button class="tab" role="tab" aria-selected="false" data-tab="board" id="tabBtnBoard">📋 생존자</button>
       <button class="tab" role="tab" aria-selected="false" data-tab="shelter" id="tabBtnShelter">🏚️ 쉘터</button>
-      <button class="tab" role="tab" aria-selected="false" data-tab="journal" id="tabBtnJournal">📔 일지</button>
       <button class="tab" role="tab" aria-selected="false" data-tab="char" id="tabBtnChar">👤 캐릭터</button>
       <button class="tab" role="tab" aria-selected="false" data-tab="admin" id="tabBtnAdmin" hidden>🛠 관리</button>
     </nav>
@@ -637,7 +639,6 @@
       <div class="owned" id="weaponOwned"></div>
       <div class="loc-line" id="locLine"></div>
       <div class="veh-line" id="vehLine"></div>
-      <div class="loc-line" id="newbieLine" hidden></div>
       <div class="owned" id="exploreInfo"></div>
       </div>
     </div>
@@ -1249,7 +1250,7 @@ const FIREBASE_CONFIG = {
     renderVehicle();
     const nl = newbieLeft();
     $('newbieLine').hidden = !nl || dead;
-    if (nl) $('newbieLine').innerHTML = '🛡️ <b>신참 보호 중</b> · ' + (nl >= 864e5 ? Math.ceil(nl / 864e5) + '일' : Math.ceil(nl / 36e5) + '시간') + ' 남음 · 그동안은 체력이 0이 돼도 죽지 않아요';
+    if (nl) { $('newbieLine').textContent = '🛡️ 신참 보호 · ' + (nl >= 864e5 ? Math.ceil(nl / 864e5) + '일' : Math.ceil(nl / 36e5) + '시간') + ' 남음'; $('newbieLine').title = '캐릭터를 만든 뒤 14일 동안은 체력이 0이 돼도 죽지 않아요'; }
     const here = DISTRICTS[myDoc.loc];
     if (here) {
       $('locLine').innerHTML = '📍 현재 위치: <b>' + here.n + '</b> · 다른 지역으로 가려면 지도에서 이웃 지역을 누르세요';
@@ -4538,7 +4539,7 @@ const FIREBASE_CONFIG = {
 </div>
 <script>
 (function(){
-  var BUILD_ID = '20261018041421';
+  var BUILD_ID = '20261018041710';
   function check(){
     fetch('version.txt?t=' + Date.now(), { cache: 'no-store' }).then(function(r){ return r.ok ? r.text() : ''; }).then(function(v){
       v = (v || '').trim();
