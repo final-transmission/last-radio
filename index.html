@@ -240,6 +240,7 @@
   .map-info p { font-size: 14px; line-height: 1.55; margin: 8px 0 0; }
   .map-info .facts { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
   .map-info .act { margin-top: 14px; }
+  .map-info .act:empty { display: none; }
   .memo-list { display: flex; flex-direction: column; gap: 10px; }
   .memo { background: var(--m-paper); color: var(--m-ink); border-radius: 2px; padding: 10px 12px 8px; box-shadow: 0 2px 6px rgba(0,0,0,.25); position: relative; transform: rotate(var(--tilt, 0deg)); }
   .memo::before { content: ""; position: absolute; top: -5px; left: 50%; width: 34px; height: 10px; margin-left: -17px; background: rgba(209,190,140,.75); transform: rotate(-3deg); }
@@ -1863,11 +1864,8 @@ const FIREBASE_CONFIG = {
       if (nm) h += `<p class="muted" style="margin-top:10px">📌 ${isCur ? '이곳에 메모 ' + nm + '장이 붙어 있다. 메모 카드에서 읽을 수 있다.' : '메모 ' + nm + '장이 붙어 있다. 직접 가야 읽을 수 있다.'}</p>`;
       h += `<p class="muted" style="margin-top:10px">${here.length ? '👥 이 지역의 생존자: ' + here.join(', ') : '👥 이 지역에 다른 생존자는 보이지 않는다.'}</p>`;
     }
-    if (known) h += mapView === 'city'
-      ? `<button class="secondary" id="zoomBtn" type="button" style="margin-top:12px">🔍 ${D.n} 자세히 보기</button>`
-      : `<button class="secondary" id="zoomBtn" type="button" style="margin-top:12px">🗺️ LA 전체 지도로</button>`;
     h += '<div class="act">';
-    if (isCur) h += `<div class="loc-line" style="margin:0"><b>📍 지금 이곳에 있어요.</b> 「조사할 구역 고르기」에서 건물을 골라 뒤질 수 있어요.</div>`;
+    if (isCur) h += '';
     else if (adj) h += `<button class="primary" id="moveBtn" type="button"${dead || myDoc.busy ? ' disabled' : ''}>${movePlan(id).veh ? VEHICLES[movePlan(id).veh].ic + ' ' : ''}${known ? '이곳으로 이동' : '미지의 지역으로 이동'} · ${movePlan(id).min}분</button>` + (myDoc.busy && !dead ? '<div class="muted">다른 행동을 하는 중이에요.</div>' : '');
     else h += `<div class="muted" style="margin:0">현재 위치에서 바로 갈 수 없어요. 이웃한 지역을 거쳐 가세요.</div>`;
     h += '</div>';
@@ -4491,7 +4489,7 @@ const FIREBASE_CONFIG = {
 </div>
 <script>
 (function(){
-  var BUILD_ID = '20261018033758';
+  var BUILD_ID = '20261018033958';
   function check(){
     fetch('version.txt?t=' + Date.now(), { cache: 'no-store' }).then(function(r){ return r.ok ? r.text() : ''; }).then(function(v){
       v = (v || '').trim();
