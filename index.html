@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-NzWzSr/JJIt0kS48PXCsqUjn9/ALxUaH31f7sTmbH+s=' 'sha256-XBhYyYOXmyHU+rUeBJm1vZW172xgTyzDLX1SllyaCU8=' 'sha256-SG4VBGFPJEJ6FaCX2YZ3GsCL1yfa6R9n09b5mdNhbcQ=' 'sha256-Q995ikDwEI3t8owjvwOk42XZCDZhzCVTqiw/L5SI8Ss='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self' https://*.googleapis.com https://*.firebaseapp.com https://*.firebaseio.com wss://*.firebaseio.com; frame-src https://*.firebaseapp.com; object-src 'none'; base-uri 'self'; form-action 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-NzWzSr/JJIt0kS48PXCsqUjn9/ALxUaH31f7sTmbH+s=' 'sha256-XBhYyYOXmyHU+rUeBJm1vZW172xgTyzDLX1SllyaCU8=' 'sha256-QilBNDI8rK8jG2Q6+glySA9PiQ01ee/80r6NM75k3cw=' 'sha256-MYCNeUNGsBI6DbaeFBzbIknMtzyoi0JKtsEJRwEZwo0='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self' https://*.googleapis.com https://*.firebaseapp.com https://*.firebaseio.com wss://*.firebaseio.com; frame-src https://*.firebaseapp.com; object-src 'none'; base-uri 'self'; form-action 'self'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <style id="antiClickjack">html{display:none !important}</style>
 <script>if (window.self === window.top) { var ack = document.getElementById('antiClickjack'); ack.parentNode.removeChild(ack); } else { try { window.top.location = window.self.location.href; } catch (e) {} }</script>
@@ -4929,6 +4929,14 @@ const FIREBASE_CONFIG = {
       }, () => {});
       unsub = db.collection('survivors').onSnapshot((snap) => {
         latestDocs = (snap && snap.docs) ? snap.docs.map(d => d.data()).filter(Boolean) : [];
+        // 관리자가 내 캐릭터를 고쳤으면(부활·쉘터 빼기) 내 화면이 들고 있던 옛 상태로 덮어쓰지 않고 그 내용을 받아들인다
+        const mine = latestDocs.find(d => isMe(d));
+        if (mine && myDoc && +mine.adminTs > (+myDoc.adminTs || 0)) {
+          const keepLog = myDoc.log;
+          myDoc = Object.assign(JSON.parse(JSON.stringify(mine)), { log: keepLog, key: myKey });
+          addLog(mine.status === 'alive' && mine.hp >= 100 ? '🛠 관리자의 손길로 다시 일어섰다.' : '🛠 관리자가 내 상태를 바로잡았다.');
+          saveDoc();
+        }
         renderBoard(latestDocs);
         renderStatus();
       });
@@ -5027,7 +5035,7 @@ const FIREBASE_CONFIG = {
             delete t.log; delete t.avatar;
             if (act === 'revive') Object.assign(t, { status: 'alive', hp: 100, sat: 80, hyd: 80, fat: 15, infection: 0, infectionPart: null, turned: false, injuries: [], epitaph: null, busy: null });
             else t.party = '';
-            t.updatedAt = Date.now();
+            t.updatedAt = t.adminTs = Date.now();
             await db.doc('survivors/' + k).set(t);
             if (act === 'revive') await appendLogTo(k, { day: t.day, text: '🛠 관리자의 손길로 다시 일어섰다.', ts: Date.now() });
           }
@@ -5243,6 +5251,7 @@ const FIREBASE_CONFIG = {
   // 업데이트할 때마다 맨 위에 추가한다
   const PATCH_NOTES = [
     { d:'10.18', items:[
+      '🛠 버그 수정: 관리자가 부활·회복시켜도 그 사람의 열려 있던 화면이 옛 상태로 덮어쓰던 문제',
       '🔒 보안 강화: 남의 캐릭터·쉘터·공지 등을 고칠 수 없도록 서버 규칙을 좁혔어요. 쉘터·교환은 동시에 눌러도 꼬이지 않게 처리해요',
       '🩹 버그 수정: 새로 만든 캐릭터가 1일차부터 지난 날들을 한꺼번에 겪어 상처투성이로 시작하던 문제',
       '🧪 실험용 백신: 감염을 완전히 없애고 현실 5시간 동안 물려도 감염되지 않아요. 병동·약품 진열대·무기고, 방호복 좀비, 보급 투하, 치료 임무, 검역 검문소에서 드물게 얻어요',
@@ -5799,7 +5808,7 @@ const FIREBASE_CONFIG = {
 </div>
 <script>
 (function(){
-  var BUILD_ID = '20261018074341';
+  var BUILD_ID = '20261018074904';
   function check(){
     fetch('version.txt?t=' + Date.now(), { cache: 'no-store' }).then(function(r){ return r.ok ? r.text() : ''; }).then(function(v){
       v = (v || '').trim();
