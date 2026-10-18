@@ -13,7 +13,7 @@ LA 좀비 아포칼립스 생존 웹게임. GitHub Pages(https://final-transmiss
 python3 tools/build_firebase.py src/game.html index.html
 git add -A && git commit -m "..." && git push origin main
 ```
-푸시 후 1~2분 뒤 GitHub Pages에 반영된다. 같은 원본으로 claude.ai 아티팩트(https://claude.ai/artifact/VAfyFZvbWHwJxMn3UGZbMF)도 갱신할 수 있다.
+푸시 후 1~2분 뒤 GitHub Pages에 반영된다. claude.ai 아티팩트는 더 이상 갱신하지 않는다.
 
 ## 보안
 - `firestore.rules`: 내 캐릭터(`uid-` + 인증 uid)만 고치고, 관리자(akdma0528)는 예외. 바꾸면 사용자가 콘솔에 다시 붙여 넣어야 한다.
