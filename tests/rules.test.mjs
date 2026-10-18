@@ -88,6 +88,10 @@ await ok('admin notice', addDoc(collection(ADM, 'notices'), { title: 'x', body: 
 await ok('world state', setDoc(doc(A, 'world/state'), { v: 1, tick: 5, r: { dtla: { z: 70 } } }));
 await no('world extra key', setDoc(doc(A, 'world/state'), { v: 1, tick: 5, r: {}, hack: 1 }));
 await no('world other doc', setDoc(doc(A, 'world/other'), { v: 1, tick: 5, r: {} }));
+await ok('world frontier open', setDoc(doc(A, 'world/state'), { v: 1, tick: 5, r: {}, f: { open: 1, names: ['a'], ts: 1 } }));
+await no('world frontier close', setDoc(doc(A, 'world/state'), { v: 1, tick: 6, r: {}, f: { open: 0, names: [], ts: 1 } }));
+await no('world frontier drop', setDoc(doc(A, 'world/state'), { v: 1, tick: 6, r: {} }));
+await no('world frontier too far', setDoc(doc(A, 'world/state'), { v: 1, tick: 6, r: {}, f: { open: 9, names: [], ts: 1 } }));
 const ev = { kind: 'noise', loc: 'dtla', a: 15, day: 5, ts: now, cid: 'abc', by: 'uid-alice' };
 const e1 = await assertSucceeds(addDoc(collection(A, 'regionEvents'), ev)).catch(e => { bad.push('OK regionEvent ' + e.message); return null; }); if (e1) pass++; else fail++;
 await no('region a=100', addDoc(collection(A, 'regionEvents'), Object.assign({}, ev, { a: 100 })));

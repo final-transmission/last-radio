@@ -109,7 +109,10 @@ service cloud.firestore {
     // ---------- 지역 상태 (모든 접속자가 하루 정산을 나눠 맡는다) ----------
     match /world/{id} {
       allow read: if signedIn();
-      allow write: if signedIn() && id == 'state' && d().keys().hasOnly(['v', 'tick', 'r']) && d().tick is number && d().r is map;
+      // f: LA 밖으로 열린 길 단계 (0~5). 한 번 열린 길은 다시 닫히지 않는다
+      allow write: if signedIn() && id == 'state' && d().keys().hasOnly(['v', 'tick', 'r', 'f']) && d().tick is number && d().r is map
+        && (!('f' in d()) || (d().f is map && d().f.open is int && d().f.open >= 0 && d().f.open <= 5))
+        && (resource == null || !('f' in resource.data) || ('f' in d() && d().f.open >= resource.data.f.open));
     }
     match /regionEvents/{id} {
       allow read: if signedIn();

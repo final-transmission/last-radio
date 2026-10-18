@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-NzWzSr/JJIt0kS48PXCsqUjn9/ALxUaH31f7sTmbH+s=' 'sha256-XBhYyYOXmyHU+rUeBJm1vZW172xgTyzDLX1SllyaCU8=' 'sha256-681WFhuasTyb3enkEp+jUQpOUy+vl2qn38i8uCjhKCM=' 'sha256-A0Lqf/yJn3IGcttY4MVWiB/7MiY5jzqz1fP8m1Peo2o='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self' https://*.googleapis.com https://*.firebaseapp.com https://*.firebaseio.com wss://*.firebaseio.com; frame-src https://*.firebaseapp.com; object-src 'none'; base-uri 'self'; form-action 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-NzWzSr/JJIt0kS48PXCsqUjn9/ALxUaH31f7sTmbH+s=' 'sha256-XBhYyYOXmyHU+rUeBJm1vZW172xgTyzDLX1SllyaCU8=' 'sha256-x4eTYOeRj3Dqu4Y1S0e7OgliwWmZ8FOWVi2JQro3E/s=' 'sha256-ZguWDple6c779fg13sx7tKAlapHCOIm2NMarpYf5PiE='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self' https://*.googleapis.com https://*.firebaseapp.com https://*.firebaseio.com wss://*.firebaseio.com; frame-src https://*.firebaseapp.com; object-src 'none'; base-uri 'self'; form-action 'self'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <style id="antiClickjack">html{display:none !important}</style>
 <script>if (window.self === window.top) { var ack = document.getElementById('antiClickjack'); ack.parentNode.removeChild(ack); } else { try { window.top.location = window.self.location.href; } catch (e) {} }</script>
@@ -606,6 +606,9 @@
   .reg-log { margin-top: 6px; color: var(--text-dim); font-size: 11.5px; line-height: 1.6; }
   .reg-log span { font: 600 10px var(--font-mono); margin-right: 4px; }
   .m-route.blocked { stroke: #c0281e; stroke-dasharray: 3 3; }
+  .m-gate-dot { fill: #3f7fc4; stroke: #f7efd6; stroke-width: 1.5; }
+  .m-gate-dot.shut { fill: #8b8f9c; }
+  .m-gate .m-glyph { font-size: 8px; }
   .m-block, .m-env { font-size: 10px; }
   #mapSvg .m-fold, #mapSvg .m-fold-hi, #mapSvg .m-note, #mapSvg .m-stain, #mapSvg .m-sub, #mapSvg .m-title, #mapSvg .m-fog, #mapSvg .m-env, #mapSvg .m-block { pointer-events: none; }
   .bag-row .bag-drop { margin-left: 6px; padding: 6px 8px; font-size: 11px; color: var(--text-dim); }
@@ -669,12 +672,13 @@
       <h2>📻 오늘의 무전 <span class="rec">● 수신 중</span><span class="wx" id="wxBadge"></span></h2>
       <div class="radio-text" id="radioText">수신 중...</div>
       <div class="gev-line" id="gevLine" hidden></div>
+      <div class="gev-line" id="frontierLine" hidden></div>
     </div>
 
     <div id="tabMap">
       <div class="card" id="mapCard">
-        <h2>로스앤젤레스 <span style="font-family:var(--font-mono); font-size:12px; color:var(--text-dim);" id="mapCount"></span></h2>
-        <div class="pol-row" style="margin:0 0 10px"><button class="secondary" id="mapViewCity" type="button" aria-pressed="true">🗺️ LA 전체</button><button class="secondary" id="mapViewLocal" type="button" aria-pressed="false">🔍 지역 확대</button></div>
+        <h2><span id="mapTitle">로스앤젤레스</span> <span style="font-family:var(--font-mono); font-size:12px; color:var(--text-dim);" id="mapCount"></span></h2>
+        <div class="pol-row" style="margin:0 0 10px"><button class="secondary" id="mapViewCity" type="button" aria-pressed="true">🗺️ 전체 지도</button><button class="secondary" id="mapViewLocal" type="button" aria-pressed="false">🔍 지역 확대</button></div>
         <div class="map-wrap">
           <svg class="map-svg" id="mapSvg" viewBox="0 0 360 320" role="group" aria-label="로스앤젤레스 지도"></svg>
           <div class="card map-info" id="mapInfo" hidden></div>
@@ -936,6 +940,7 @@
           <details><summary>🩸 부상과 감염</summary><p>워커와 싸우면 부위별로 타박상·할큄·열상·물림을 입어요. 물리면 감염이 시작되고, 머리·목을 물리면 더 빨리 퍼져요. 감염이 100%가 되면 워커가 돼요. 항생제·혼합 허브로 감염을, 붕대·소독약·봉합 키트로 상처를 치료해요. 아주 드물게 나오는 🧪 실험용 백신은 감염을 완전히 없애고 게임 10일(현실 5시간) 동안 물려도 감염되지 않게 해 줘요. 병동·약품 진열대·무기고, 방호복 좀비, 보급 투하, 치료 임무, 검역 검문소에서 얻을 수 있어요. 캐릭터 탭의 신체 검진표에서 상태를 볼 수 있어요.</p></details>
           <details><summary>🎒 아이템과 제작</summary><p>배낭은 기본 15kg, 등산 배낭이 있으면 25kg까지 들 수 있어요. 신선식품은 하루마다 조금씩 상해요. 좀비와 마주치면 「장착 무기」로 싸워요. 좋은 무기일수록 덜 다치고 더 잘 쓰러뜨리며, 가장 많이 쓴 무기가 선호 무기로 기록돼요. 무기는 쓸수록 닳고, 배낭 아래 「무기 수리」에서 고철·못·천 조각으로 고칠 수 있어요. 총(권총·산탄총·사냥용 소총)은 각자 맞는 탄(권총 탄약·산탄·소총탄)이 필요하고 총소리가 좀비를 불러요. 탄이 없으면 개머리로 내려쳐요. 활·석궁은 탄 없이 쏠 수 있어요. 라이터·성냥이 있으면 고기를 굽고 빗물을 끓일 수 있고, 천 조각으로 붕대를 만들 수 있어요.</p></details>
           <details><summary>📻 무전기와 소통</summary><p>무전기는 전체 채널과 숫자 채널(100.1처럼 소수점 가능)이 있어요. 멀리 있는 사람의 무전일수록 잡음이 섞여요. 가끔 미확인 구조 신호가 잡히기도 해요. 「같은 곳」은 같은 건물에 있는 생존자끼리 얼굴을 보며 대화하는 곳이고, 물물교환도 할 수 있어요. 지역에 종이와 필기구로 메모를 남길 수도 있어요.</p></details>
+          <details><summary>🗽 LA 밖으로</summary><p>처음엔 LA 밖으로 나가는 길이 막혀 있어요. 누군가 LA의 모든 지역을 탐사하면 뉴욕 생존자 쉘터의 전체 무전이 잡히고, 모두에게 15번 고속도로 너머 모하비 사막으로 가는 길이 열려요.</p><p>길은 모하비 사막 → 라스베이거스 → 덴버 → 시카고 → 뉴욕 순서로 이어지고, 지금 열린 마지막 지방의 모든 지역을 누군가 탐사할 때마다 다음 길이 열려요. 지도 가장자리의 ➜ 표시가 다른 지방으로 가는 출구예요(🔒는 아직 막힌 길). 지방 사이 이동은 60분이 걸리고, 탈것은 연료를 세 배로 써요.</p><p>사막(모하비·라스베이거스)에서는 갈증이, 추운 곳(덴버·시카고)에서는 배고픔이 빨리 와요. 뉴욕 루스벨트섬 쉘터에 도착하면 생존자 탭에 🗽가 남아요.</p></details>
           <details><summary>🧳 떠돌이 상인</summary><p>가끔 떠돌이 상인이 한 지역에 하루 동안 머물러요. 오늘의 무전에서 어디 있는지 알려줘요. 그 지역에 가면 행동 카드에 상인이 나타나고, 정해진 값으로 물건을 바꿀 수 있어요(한 가지당 하루 2번). 탄약·약품·백신처럼 귀한 물건을 구할 기회예요.</p></details>
           <details><summary>📻 무전 임무</summary><p>무전기에 구조 요청이 잡히면 「📍 응답하기」 버튼이 붙어요. 응답하면 그 지역이 지도에 📻로 표시되고, 게임 6일(현실 3시간) 안에 그 지역의 아무 지점이나 조사하면 임무 이벤트가 열려요. 구조, 치료, 물 교환, 남겨진 물자… 그리고 가끔은 함정도 있어요.</p></details>
           <details><summary>🌆 지역 상태</summary><p>모든 생존자가 같은 LA를 공유하고, 지역은 시간이 지나며 변해요. 지도에서 지역을 누르면 기본 위험도와 지금 위험도, 좀비 밀도, 물자 상태, 환경 상태, 최근 사건이 보여요.</p><p>🔊 총·차·경보 같은 소음은 그 지역에 좀비를 끌어들여요. 좀비 밀도가 70을 넘는 군집은 이웃 지역으로 옮겨 가기도 해요. 좀비를 쓰러뜨리면 밀도가 조금 줄어요.</p><p>📦 많이 털린 지역은 음식·음료가 덜 나와요. 시간이 지나거나 보급 투하·물자 임무로 회복돼요.</p><p>🔥 산불(이동·조사 위험, 일부 지점 폐쇄) · 🌊 침수(지하·주차장 폐쇄, 피로) · ⚡ 정전(어둡고 냉장고 음식이 상함, 고철·휘발유로 직접 복구) · 🚧 도로 봉쇄(그 길로 못 감, 장애물을 치워야 함) · ☣️ 군사 검역(감염되면 못 들어감) · 🏴 대규모 약탈 · 🏕️ 생존자 점령(거래 가능). 상태에 따라 나오는 이벤트도 달라져요.</p></details>
@@ -1212,10 +1217,10 @@ const FIREBASE_CONFIG = {
     '그리피스 천문대에서 조명 신호가 확인됐습니다. 구조 신호인지 여부는 불명입니다.'
   ];
   function renderRadio() {
-    const day = worldDay(), w = weatherOf(day), hz = hordeOf(day);
+    const day = worldDay(), w = weatherOf(day), myRg = rgOf(myDoc && myDoc.loc), hz = hordeOf(day, myRg);
     const idx = hashStr('radio-day-' + day) % RADIO_LINES.length;
     const wxLine = { clear:'오늘은 맑겠습니다.', cloudy:'하루 종일 흐리겠습니다.', rain:'비가 내리겠습니다. 빗물을 받아두십시오.', fog:'짙은 안개가 끼겠습니다. 이동을 자제하십시오.', heat:'폭염 경보입니다. 물을 넉넉히 챙기고 한낮 활동을 줄이십시오.' }[w.id];
-    const mc = merchantOf(day), mcLine = mc ? ' 떠돌이 상인이 오늘 ' + DISTRICTS[mc.loc].n + ' 일대에서 물물교환을 받는다는 소식입니다.' : '';
+    const mc = merchantOf(day, myRg), mcLine = mc ? ' 떠돌이 상인이 오늘 ' + DISTRICTS[mc.loc].n + ' 일대에서 물물교환을 받는다는 소식입니다.' : '';
     $('radioText').textContent = hz ? '⚠ 긴급 경보. ' + DISTRICTS[hz].n + ' 방면으로 대규모 무리가 이동 중입니다. 오늘 하루 그 지역을 피하십시오. ' + wxLine + mcLine : RADIO_LINES[idx] + ' ' + wxLine + mcLine;
     $('wxBadge').textContent = w.ic + ' ' + w.n;
     $('wxBadge').title = w.note || '';
@@ -1420,6 +1425,8 @@ const FIREBASE_CONFIG = {
     renderComp();
     renderSkills();
     renderMerchant();
+    renderFrontier();
+    frontierCheck();
     const nl = newbieLeft();
     $('newbieLine').hidden = !nl || dead;
     if (nl) { $('newbieLine').textContent = '🛡️ 신참 보호 · ' + (nl >= 864e5 ? Math.ceil(nl / 864e5) + '일' : Math.ceil(nl / 36e5) + '시간') + ' 남음'; $('newbieLine').title = '캐릭터를 만든 뒤 14일 동안은 체력이 0이 돼도 죽지 않아요'; }
@@ -1547,7 +1554,7 @@ const FIREBASE_CONFIG = {
       const D = DISTRICTS[d.loc];
       return `<div class="pol${isMe(d) ? ' me' : ''}" style="--tilt:${tilt(d)}">${polPhoto(d)}
         <div class="cap">${escapeHtml(d.name)}</div>
-        <div class="tag">LAST SEEN ${D && (isMe(d) || (myDoc.visited || []).includes(d.loc)) ? escapeHtml(D.n) : '???'}<br>생존 ${survDays(d)}일 · 처치 ${+d.zombieKills || 0}${d.party ? '<br>🏚️ ' + escapeHtml(d.party) : ''}</div>
+        <div class="tag">LAST SEEN ${D && (isMe(d) || (myDoc.visited || []).includes(d.loc)) ? escapeHtml(D.n) : '???'}<br>생존 ${survDays(d)}일 · 처치 ${+d.zombieKills || 0}${d.ny ? '<br>🗽 뉴욕 쉘터 도착' : ''}${d.party ? '<br>🏚️ ' + escapeHtml(d.party) : ''}</div>
         ${polBio(d)}</div>`;
     };
     const deadPol = d => `<div class="pol dead" style="--tilt:${tilt(d)}">${polPhoto(d)}
@@ -1605,9 +1612,9 @@ const FIREBASE_CONFIG = {
   }
 
   function applyDailyDecay() {
-    const wx = weatherOf(myDoc.day);
-    myDoc.sat = clamp(myDoc.sat - rint(8,14));
-    myDoc.hyd = clamp(myDoc.hyd - Math.round(rint(10,16) * (wx.hyd || 1)));
+    const wx = weatherOf(myDoc.day), C = REGIONS[rgOf(myDoc.loc)];
+    myDoc.sat = clamp(myDoc.sat - Math.round(rint(8,14) * (C.cold ? 1.2 : 1)));
+    myDoc.hyd = clamp(myDoc.hyd - Math.round(rint(10,16) * (wx.hyd || 1) * (C.hot ? 1.3 : 1)));
     myDoc.fat = clamp(myDoc.fat + Math.round(rint(6,12) * (wx.fat || 1)));
 
     autoConsume('food'); autoConsume('food');
@@ -1666,10 +1673,12 @@ const FIREBASE_CONFIG = {
     return WEATHERS[0];
   }
   // 하루에 30% 확률로 한 지역에 대규모 무리가 몰려온다
-  function hordeOf(day) {
-    if (hashStr('horde-' + day) % 100 >= 30) return null;
-    const keys = Object.keys(DISTRICTS);
-    return keys[hashStr('horde-at-' + day) % keys.length];
+  function hordeOf(day, rg) {
+    rg = rg || 'la';
+    const pre = rg === 'la' ? '' : rg + '-';
+    if (hashStr('horde-' + pre + day) % 100 >= 30) return null;
+    const keys = regionKeys(rg);
+    return keys[hashStr('horde-at-' + pre + day) % keys.length];
   }
   // 떠돌이 상인: 하루에 40% 확률로 한 지역에 나타난다. 물건 4가지를 정해진 값에 바꿔 주고, 한 사람이 한 가지를 하루 2번까지 바꿀 수 있다
   const MERCHANT_OFFERS = [
@@ -1682,18 +1691,20 @@ const FIREBASE_CONFIG = {
   const MERCHANT_MAX = 2;
   // 글자 하나만 다른 키도 고르게 흩어지도록 섞는다
   function mixHash(s) { let h = hashStr(s); h = Math.imul(h ^ (h >>> 16), 0x45d9f3b); h = Math.imul(h ^ (h >>> 13), 0x45d9f3b); return (h ^ (h >>> 16)) >>> 0; }
-  function merchantOf(day) {
-    if (mixHash('merchant-' + day) % 100 >= 40) return null;
-    const keys = Object.keys(DISTRICTS);
-    let i = mixHash('merchant-at-' + day) % keys.length;
-    if (keys[i] === hordeOf(day)) i = (i + 1) % keys.length;
+  function merchantOf(day, rg) {
+    rg = rg || 'la';
+    const pre = rg === 'la' ? '' : rg + '-';
+    if (mixHash('merchant-' + pre + day) % 100 >= 40) return null;
+    const keys = regionKeys(rg);
+    let i = mixHash('merchant-at-' + pre + day) % keys.length;
+    if (keys[i] === hordeOf(day, rg)) i = (i + 1) % keys.length;
     const idx = [];
     for (let n = 0; idx.length < 4 && n < 50; n++) { const k = mixHash('merchant-offer-' + day + '-' + n) % MERCHANT_OFFERS.length; if (!idx.includes(k)) idx.push(k); }
     return { loc: keys[i], offers: idx };
   }
   function merchantUsed(k) { const m = myDoc.merch; return m && m.day === worldDay() ? +(m.n || {})[k] || 0 : 0; }
   function renderMerchant() {
-    const box = $('merchantBox'), mc = merchantOf(worldDay());
+    const box = $('merchantBox'), mc = merchantOf(worldDay(), rgOf(myDoc.loc));
     if (!box) return;
     box.hidden = !mc || mc.loc !== myDoc.loc || myDoc.status === 'dead';
     if (box.hidden) return;
@@ -1707,7 +1718,7 @@ const FIREBASE_CONFIG = {
   document.addEventListener('click', async (e) => {
     const b = e.target.closest('button[data-mtrade]');
     if (!b || b.disabled || !myDoc || myDoc.busy || myDoc.status === 'dead') return;
-    const k = +b.dataset.mtrade, mc = merchantOf(worldDay()), O = MERCHANT_OFFERS[k];
+    const k = +b.dataset.mtrade, mc = merchantOf(worldDay(), rgOf(myDoc.loc)), O = MERCHANT_OFFERS[k];
     if (!O || !mc || mc.loc !== myDoc.loc || !mc.offers.includes(k) || merchantUsed(k) >= MERCHANT_MAX) return;
     if (!Object.keys(O.give).every(id => inv(id) >= O.give[id])) return;
     const wt = o => Object.keys(o).reduce((t, id) => t + (ITEMS[id].wt || 0) * o[id], 0), net = wt(O.get) - wt(O.give);
@@ -1727,7 +1738,7 @@ const FIREBASE_CONFIG = {
     const w = weatherOf(worldDay());
     if (w.id === 'fog') m *= kind === 'move' ? 1.5 : 1.15;
     if (w.zomb && kind !== 'move') m *= w.zomb;
-    if (hordeOf(worldDay()) === loc) m *= 1.8;
+    if (hordeOf(worldDay(), rgOf(loc)) === loc) m *= 1.8;
     const gv = gevActive(worldDay());
     if (gv && gv.type === 'siege' && gv.loc === loc) m *= 1.5;
     m *= regionMult(loc, kind);
@@ -1738,9 +1749,11 @@ const FIREBASE_CONFIG = {
     if (isNight()) t.push('밤이라 더 위험해요');
     const wx = weatherOf(worldDay());
     if (wx.note) t.push(wx.ic + ' ' + wx.note);
-    const mc = merchantOf(worldDay());
+    const mc = merchantOf(worldDay(), rgOf(loc)), C = REGIONS[rgOf(loc)];
     if (mc && mc.loc === loc) t.push('🧳 떠돌이 상인이 와 있어요');
-    if (hordeOf(worldDay()) === loc) t.push('☠ 오늘 이 지역에 무리가 몰려왔어요');
+    if (hordeOf(worldDay(), rgOf(loc)) === loc) t.push('☠ 오늘 이 지역에 무리가 몰려왔어요');
+    if (C.hot) t.push('🏜️ 사막의 열기 때문에 갈증이 빨리 와요');
+    if (C.cold) t.push('❄️ 추위 때문에 배가 빨리 고파요');
     const rc = regionCondText(loc);
     if (rc) t.push(rc);
     return t.join(' · ');
@@ -1763,7 +1776,7 @@ const FIREBASE_CONFIG = {
 
   // 그날 무리가 몰려온 지역에 있었다면 하루가 끝날 때 습격당할 수 있다
   function hordeHit(quiet) {
-    if (hordeOf(myDoc.day) !== myDoc.loc || Math.random() >= 0.5) return;
+    if (hordeOf(myDoc.day, rgOf(myDoc.loc)) !== myDoc.loc || Math.random() >= 0.5) return;
     let dmg = rint(10, 20);
     const inside = typeof myDoc.spot === 'number';
     if (inside) dmg = Math.round(dmg * 0.5);
@@ -2046,14 +2059,92 @@ const FIREBASE_CONFIG = {
     vernon:       { n:'버논', en:'Vernon', x:298, y:202, danger:0.30, weapons:['쇠파이프','손도끼','도끼'], food:[0,1], water:[0,1], med:0.05, desc:'공장과 창고만 있는 산업 지대. 공구와 철물이 넘쳐난다.' },
     longbeach:    { n:'롱비치', en:'Long Beach', x:300, y:282, danger:0.35, weapons:['쇠파이프','손도끼','권총'], food:[1,3], water:[2,4], med:0.20, desc:'컨테이너가 쌓인 항구. 배를 타고 떠나려던 사람들의 흔적.' }
   };
+  // ---------- LA 밖: 뉴욕 쉘터까지 가는 길 (모하비 사막 → 라스베이거스 → 덴버 → 시카고 → 뉴욕) ----------
+  // 누군가 한 지방의 모든 지역을 탐사하면 다음 지방으로 가는 길이 모두에게 열린다 (world/state의 f.open)
+  const REGIONS = {
+    la:      { n:'로스앤젤레스', en:'LOS ANGELES', sub:'City of Angels', tx:9, ty:288, note:[205,268,-7,'다운타운은 피해라 -M'] },
+    mojave:  { n:'모하비 사막', en:'MOJAVE', sub:'Interstate 15', tx:9, ty:34, hot:true, note:[205,262,-6,'물 없이 건너지 마라 -M'] },
+    vegas:   { n:'라스베이거스', en:'LAS VEGAS', sub:'Sin City', tx:9, ty:34, hot:true, note:[22,222,-5,'카지노는 함정이다 -M'] },
+    denver:  { n:'덴버', en:'DENVER', sub:'Mile High City', tx:9, ty:288, cold:true, note:[215,282,-6,'고개는 밤에 넘지 마라 -M'] },
+    chicago: { n:'시카고', en:'CHICAGO', sub:'The Windy City', tx:9, ty:288, cold:true, note:[40,200,-6,'호숫가는 바람이 세다 -M'] },
+    ny:      { n:'뉴욕', en:'NEW YORK', sub:'The Big Apple', tx:9, ty:34, note:[255,70,-6,'거의 다 왔다 -M'] }
+  };
+  const REGION_ORDER = ['la', 'mojave', 'vegas', 'denver', 'chicago', 'ny'];
+  const NY_HAVEN = 'rooseveltisland';
+  Object.entries({
+    mojave: {
+      cajon:      { n:'카혼 패스', en:'Cajon Pass', x:45, y:250, danger:0.25, weapons:['쇠파이프','도끼'], food:[0,2], water:[0,1], med:0.10, desc:'LA를 빠져나가는 마지막 고갯길. 15번 고속도로 위에 피난 차량이 끝없이 멈춰 서 있다.' },
+      victorville:{ n:'빅터빌', en:'Victorville', x:100, y:190, danger:0.30, weapons:['야구방망이','식칼'], food:[1,3], water:[0,2], med:0.30, desc:'사막 한가운데의 위성 도시. 마트와 병원이 남아 있지만 물은 귀하다.' },
+      barstow:    { n:'바스토', en:'Barstow', x:175, y:140, danger:0.30, weapons:['쇠파이프','렌치'], food:[1,2], water:[0,2], med:0.15, desc:'루트 66과 철길이 만나는 사막 교차로. 화물 열차가 선로 위에서 녹슬고 있다.' },
+      fortirwin:  { n:'포트 어윈 기지', en:'Fort Irwin', x:190, y:50, danger:0.45, weapons:['권총','산탄총','사냥용 소총'], food:[1,3], water:[1,2], med:0.40, desc:'사막 훈련 기지. 철수 명령이 내려진 뒤 남겨진 무기와 군인 좀비가 있다.' },
+      baker:      { n:'베이커', en:'Baker', x:270, y:120, danger:0.20, weapons:['렌치','쇠지렛대'], food:[0,2], water:[0,1], med:0.10, desc:'세계에서 가장 큰 온도계가 아직도 섭씨 49도를 가리킨다. 가게 몇 곳뿐인 휴게 마을.' },
+      primm:      { n:'프림', en:'Primm', x:320, y:205, danger:0.35, weapons:['식칼','골프채'], food:[1,3], water:[1,2], med:0.15, desc:'네바다 주 경계의 카지노 마을. 롤러코스터가 멈춘 채 바람에 삐걱거린다.' }
+    },
+    vegas: {
+      southstrip: { n:'스트립 남쪽', en:'South Strip', x:160, y:215, danger:0.45, weapons:['골프채','식칼'], food:[2,4], water:[1,3], med:0.20, desc:'피라미드와 성 모양 카지노 호텔들. 마지막 날 밤의 손님들이 아직 로비를 헤맨다.' },
+      airport:    { n:'해리 리드 공항', en:'Harry Reid Airport', x:230, y:255, danger:0.40, weapons:['권총','식칼'], food:[1,3], water:[1,3], med:0.25, desc:'활주로 끝에 전세기들이 멈춰 있다. 떠나지 못한 사람들의 짐이 수하물 벨트에 쌓여 있다.' },
+      northstrip: { n:'스트립 북쪽', en:'North Strip', x:165, y:150, danger:0.50, weapons:['쇠파이프','권총'], food:[2,5], water:[1,3], med:0.30, desc:'분수쇼가 멈춘 호수 앞 대형 카지노들. 먹을 건 넘치지만 사람이던 것들도 넘친다.' },
+      fremont:    { n:'프리몬트 스트리트', en:'Fremont Street', x:185, y:75, danger:0.40, weapons:['권총','산탄총'], food:[1,3], water:[0,2], med:0.20, desc:'올드 다운타운. 천장 전광판이 가끔 혼자 켜져 거리를 붉게 물들인다.' },
+      nellis:     { n:'넬리스 공군기지', en:'Nellis AFB', x:285, y:55, danger:0.50, weapons:['권총','산탄총','사냥용 소총'], food:[1,3], water:[1,3], med:0.45, desc:'격납고 문이 열린 채 전투기가 서 있다. 북쪽 15번 고속도로가 로키산맥으로 이어진다.' },
+      henderson:  { n:'헨더슨', en:'Henderson', x:270, y:190, danger:0.25, weapons:['야구방망이','골프채'], food:[1,3], water:[1,2], med:0.20, desc:'조용한 교외 주택가. 수영장마다 초록색 물이 고여 있다.' },
+      hooverdam:  { n:'후버 댐', en:'Hoover Dam', x:315, y:280, danger:0.30, weapons:['렌치','쇠지렛대'], food:[0,1], water:[2,4], med:0.10, desc:'미드 호수를 막은 거대한 댐. 발전기 일부가 아직 돌아가고 있다.' },
+      redrock:    { n:'레드록 캐니언', en:'Red Rock Canyon', x:55, y:140, danger:0.15, weapons:['활','도끼','마체테'], food:[0,2], water:[0,2], med:0.10, desc:'붉은 바위 협곡과 서머린 주택가. 도시에서 떨어져 비교적 조용하다.' }
+    },
+    denver: {
+      eisenhower: { n:'아이젠하워 터널', en:'Eisenhower Tunnel', x:40, y:150, danger:0.30, weapons:['삽','쇠지렛대'], food:[0,2], water:[1,2], med:0.10, desc:'해발 3,400m 로키산맥을 뚫은 터널. 안쪽은 어둡고, 눈 덮인 차들이 입구를 막고 있다.' },
+      boulder:    { n:'볼더', en:'Boulder', x:130, y:55, danger:0.20, weapons:['야구방망이','활'], food:[1,3], water:[1,3], med:0.20, desc:'산자락의 대학 도시. 학생들이 세운 바리케이드가 캠퍼스를 둘러싸고 있다.' },
+      redrocks:   { n:'레드록스 원형극장', en:'Red Rocks', x:110, y:225, danger:0.20, weapons:['도끼','마체테'], food:[0,2], water:[0,2], med:0.10, desc:'붉은 바위 사이의 야외 공연장. 마지막 공연의 무대 장비가 그대로 남아 있다.' },
+      dendt:      { n:'덴버 다운타운', en:'Downtown Denver', x:195, y:145, danger:0.45, weapons:['권총','쇠파이프'], food:[1,3], water:[1,2], med:0.30, desc:'유니언 역과 16번가 몰. 고층 빌딩 창문마다 구조 요청 글씨가 붙어 있다.' },
+      aurora:     { n:'오로라', en:'Aurora', x:275, y:185, danger:0.40, weapons:['식칼','야구방망이'], food:[1,3], water:[1,2], med:0.65, desc:'대형 의료 캠퍼스가 있는 동쪽 도시. 의약품이 많지만 병원 주변은 지옥이다.' },
+      dia:        { n:'덴버 국제공항', en:'Denver Airport', x:305, y:70, danger:0.45, weapons:['권총','식칼'], food:[1,4], water:[1,3], med:0.25, desc:'하얀 천막 지붕의 공항. 동쪽으로 끝없는 대평원과 고속도로가 이어진다.' }
+    },
+    chicago: {
+      ohare:      { n:'오헤어 공항', en:"O'Hare", x:50, y:80, danger:0.45, weapons:['권총','식칼'], food:[1,4], water:[1,3], med:0.25, desc:'미국에서 가장 붐비던 공항. 지금은 활주로 위로 갈까마귀만 오간다.' },
+      lakeview:   { n:'레이크뷰', en:'Lakeview', x:185, y:60, danger:0.30, weapons:['야구방망이','식칼'], food:[1,3], water:[1,2], med:0.20, desc:'담쟁이로 덮인 오래된 야구장 주변 동네. 경기장이 대피소로 쓰였다.' },
+      loop:       { n:'루프', en:'The Loop', x:205, y:160, danger:0.50, weapons:['권총','쇠파이프'], food:[0,2], water:[0,2], med:0.25, desc:'고가 철도가 빌딩 숲을 감싸 도는 도심. 꼭대기 전망대에서 신호를 보내는 사람이 있다.' },
+      navypier:   { n:'네이비 피어', en:'Navy Pier', x:270, y:130, danger:0.30, weapons:['쇠파이프','경찰봉'], food:[1,3], water:[1,3], med:0.20, desc:'미시간 호로 뻗은 부두. 멈춘 대관람차 아래 보트들이 묶여 있다.' },
+      southside:  { n:'사우스사이드', en:'South Side', x:200, y:245, danger:0.35, weapons:['야구방망이','쇠파이프'], food:[1,2], water:[1,2], med:0.50, desc:'대학 병원과 주택가. 이웃끼리 지키는 구역이 몇 군데 있다.' },
+      gary:       { n:'게리 제철소', en:'Gary', x:300, y:290, danger:0.35, weapons:['쇠파이프','렌치','망치'], food:[0,1], water:[0,1], med:0.05, desc:'호숫가의 거대한 제철소. 꺼진 용광로 사이로 동쪽 고속도로가 뻗어 있다.' }
+    },
+    ny: {
+      newark:     { n:'뉴어크', en:'Newark', x:40, y:210, danger:0.40, weapons:['권총','쇠파이프'], food:[1,3], water:[1,3], med:0.25, desc:'공항과 항만 컨테이너 터미널. 허드슨 강 건너 맨해튼의 실루엣이 보인다.' },
+      jerseycity: { n:'저지시티', en:'Jersey City', x:95, y:255, danger:0.30, weapons:['야구방망이','식칼'], food:[1,3], water:[1,2], med:0.20, desc:'강변 주택가. 강 건너로 가는 지하 터널 입구가 있다.' },
+      lowermanhattan: { n:'로어 맨해튼', en:'Lower Manhattan', x:170, y:262, danger:0.50, weapons:['권총','쇠파이프','경찰봉'], food:[0,2], water:[0,2], med:0.25, desc:'월스트리트와 NYPD 본부. 좁은 거리마다 바리케이드와 시체가 쌓여 있다.' },
+      midtown:    { n:'미드타운', en:'Midtown', x:185, y:165, danger:0.55, weapons:['권총','식칼'], food:[1,4], water:[1,2], med:0.30, desc:'타임스스퀘어의 전광판은 꺼졌다. 가장 많은 사람이 있던 곳이고, 지금도 그렇다.' },
+      centralpark:{ n:'센트럴 파크', en:'Central Park', x:200, y:100, danger:0.30, weapons:['낫','삽','활'], food:[1,2], water:[1,3], med:0.15, desc:'도시 한가운데 숲. 누군가 잔디밭에 텃밭을 일궈 두었다.' },
+      harlem:     { n:'할렘', en:'Harlem', x:215, y:35, danger:0.40, weapons:['야구방망이','쇠파이프'], food:[1,3], water:[1,2], med:0.20, desc:'교회 종탑마다 망을 보는 사람이 있다. 거리는 주민들이 지킨다.' },
+      brooklyn:   { n:'브루클린', en:'Brooklyn', x:290, y:250, danger:0.40, weapons:['야구방망이','식칼'], food:[1,3], water:[1,2], med:0.25, desc:'다리 너머 넓은 주택가. 옥상마다 물탱크와 빨랫줄이 보인다.' },
+      rooseveltisland: { n:'루스벨트섬 쉘터', en:'Roosevelt Island', x:250, y:150, danger:0.05, weapons:['경찰봉'], food:[2,4], water:[2,4], med:0.40, desc:'이스트 강 한가운데 섬. 다리를 끊고 세운 뉴욕 생존자 쉘터. 무전이 부르던 바로 그곳이다.' }
+    }
+  }).forEach(([rg, list]) => Object.keys(list).forEach(k => { DISTRICTS[k] = Object.assign(list[k], { rg }); }));
+  function rgOf(id) { return (DISTRICTS[id] && DISTRICTS[id].rg) || 'la'; }
+  const REGION_KEYS = {};
+  function regionKeys(rg) { return REGION_KEYS[rg] || (REGION_KEYS[rg] = Object.keys(DISTRICTS).filter(k => rgOf(k) === rg)); }
+  // 지방과 지방을 잇는 길: pa는 a쪽 지도에서, pb는 b쪽 지도에서 출구 표시 위치
+  const GATES = [
+    { a:'pasadena', b:'cajon', road:'15번 고속도로', pa:[348,16], pb:[14,300] },
+    { a:'primm', b:'southstrip', road:'15번 고속도로', pa:[350,262], pb:[150,306] },
+    { a:'nellis', b:'eisenhower', road:'15·70번 고속도로', pa:[350,16], pb:[14,112] },
+    { a:'dia', b:'ohare', road:'76·80번 고속도로', pa:[350,28], pb:[14,40] },
+    { a:'gary', b:'newark', road:'80·90번 고속도로', pa:[352,262], pb:[14,160] }
+  ];
+  function gateOf(a, b) { return GATES.find(G => (G.a === a && G.b === b) || (G.a === b && G.b === a)) || null; }
+  function frontier() { return regState && regState.f ? Math.max(0, Math.min(REGION_ORDER.length - 1, +regState.f.open || 0)) : 0; }
+  function regionOpen(rg) { return REGION_ORDER.indexOf(rg) <= frontier(); }
+
   const EDGES = [
     ['malibu','santamonica'],['santamonica','venice'],['santamonica','westwood'],['venice','culver'],['venice','lax'],
     ['westwood','beverlyhills'],['westwood','culver'],['beverlyhills','weho'],['beverlyhills','koreatown'],['beverlyhills','culver'],
     ['weho','hollywood'],['weho','koreatown'],['hollywood','griffith'],['hollywood','silverlake'],['hollywood','koreatown'],['hollywood','burbank'],
     ['griffith','burbank'],['griffith','glendale'],['griffith','silverlake'],['burbank','glendale'],['glendale','pasadena'],['glendale','silverlake'],
     ['pasadena','boyle'],['silverlake','dtla'],['koreatown','dtla'],['koreatown','southla'],['culver','inglewood'],['inglewood','lax'],['inglewood','southla'],
-    ['dtla','boyle'],['dtla','southla'],['dtla','vernon'],['boyle','vernon'],['southla','vernon'],['southla','longbeach'],['vernon','longbeach'],['lax','longbeach']
-  ];
+    ['dtla','boyle'],['dtla','southla'],['dtla','vernon'],['boyle','vernon'],['southla','vernon'],['southla','longbeach'],['vernon','longbeach'],['lax','longbeach'],
+    ['cajon','victorville'],['victorville','barstow'],['barstow','fortirwin'],['barstow','baker'],['fortirwin','baker'],['baker','primm'],
+    ['southstrip','airport'],['southstrip','northstrip'],['southstrip','henderson'],['southstrip','redrock'],['airport','henderson'],['northstrip','fremont'],['northstrip','redrock'],['fremont','nellis'],['nellis','henderson'],['henderson','hooverdam'],
+    ['eisenhower','boulder'],['eisenhower','redrocks'],['boulder','dendt'],['boulder','dia'],['redrocks','dendt'],['dendt','aurora'],['dendt','dia'],['aurora','dia'],
+    ['ohare','lakeview'],['ohare','loop'],['lakeview','loop'],['lakeview','navypier'],['loop','navypier'],['loop','southside'],['southside','gary'],
+    ['newark','jerseycity'],['jerseycity','lowermanhattan'],['jerseycity','midtown'],['lowermanhattan','midtown'],['lowermanhattan','brooklyn'],['midtown','centralpark'],['centralpark','harlem'],['midtown','rooseveltisland'],['rooseveltisland','brooklyn']
+  ].concat(GATES.map(G => [G.a, G.b]));
   const ADJ = {};
   EDGES.forEach(([a, b]) => { (ADJ[a] = ADJ[a] || []).push(b); (ADJ[b] = ADJ[b] || []).push(a); });
   const COAST = 'M0,110 L35,115 L60,140 L70,165 L80,192 L100,232 L125,264 L190,290 L260,306 L300,320';
@@ -2071,7 +2162,7 @@ const FIREBASE_CONFIG = {
   ];
   function ensureLocation() {
     if (!DISTRICTS[myDoc.loc]) {
-      const pool = Object.keys(DISTRICTS).filter(k => DISTRICTS[k].danger < 0.4);
+      const pool = regionKeys('la').filter(k => DISTRICTS[k].danger < 0.4);
       myDoc.loc = pick(pool);
       myDoc.visited = [myDoc.loc];
       addLog(fmt(pick(BIRTH_TEXT), DISTRICTS[myDoc.loc].n, ''));
@@ -2098,13 +2189,22 @@ const FIREBASE_CONFIG = {
     beach:    { n:'해변', c:'#2f9e9a', g:'≈' },
     industry: { n:'공업 지대', c:'#9a6a3a', g:'⚙︎' },
     transit:  { n:'공항·항구', c:'#3f7fc4', g:'✈︎' },
-    stadium:  { n:'경기장', c:'#5a6fb0', g:'◎' }
+    stadium:  { n:'경기장', c:'#5a6fb0', g:'◎' },
+    desert:   { n:'사막', c:'#c9973a', g:'☼' },
+    military: { n:'군 기지', c:'#5b6b3a', g:'✪' },
+    casino:   { n:'카지노', c:'#c23b6e', g:'♦' },
+    haven:    { n:'생존자 쉘터', c:'#2f8f5a', g:'✦' }
   };
   const KIND_OF = {
     malibu:'park', santamonica:'beach', venice:'beach', westwood:'medical', beverlyhills:'home', weho:'medical',
     hollywood:'fun', griffith:'park', burbank:'industry', glendale:'market', pasadena:'home', silverlake:'home',
     koreatown:'market', dtla:'police', boyle:'medical', culver:'fun', inglewood:'stadium', lax:'transit',
-    southla:'home', vernon:'industry', longbeach:'transit'
+    southla:'home', vernon:'industry', longbeach:'transit',
+    cajon:'desert', victorville:'home', barstow:'transit', fortirwin:'military', baker:'desert', primm:'casino',
+    southstrip:'casino', airport:'transit', northstrip:'casino', fremont:'fun', nellis:'military', henderson:'home', hooverdam:'industry', redrock:'park',
+    eisenhower:'park', boulder:'home', redrocks:'park', dendt:'police', aurora:'medical', dia:'transit',
+    ohare:'transit', lakeview:'stadium', loop:'police', navypier:'beach', southside:'medical', gary:'industry',
+    newark:'transit', jerseycity:'home', lowermanhattan:'police', midtown:'fun', centralpark:'park', harlem:'home', brooklyn:'home', rooseveltisland:'haven'
   };
   const PORT_GLYPH = { longbeach:'⚓︎' };
 
@@ -2125,6 +2225,44 @@ const FIREBASE_CONFIG = {
   ];
 
   let mapStatic = null;
+  const mapStaticRg = {};
+  // LA 밖 지방의 지형: 사막·호수·산·강을 간단히 그린다
+  function regionTerrain(rg) {
+    const mtn = (x, y, w, hh) => `<path d="M${x - w},${y} L${x},${y - hh} L${x + w},${y} Z" fill="#b9ab88" stroke="#8f8160" stroke-width=".8"/>`;
+    const fwy = (d) => `<path class="m-fwy-case" d="${d}"/><path class="m-fwy" d="${d}"/>`;
+    const shield = (n, x, y) => { const w = n.length > 2 ? 15 : 11; return `<g class="m-shield"><rect x="${x - w / 2}" y="${y - 5}" width="${w}" height="10" rx="2.5"/><text x="${x}" y="${y}">${n}</text></g>`; };
+    let h = '';
+    if (rg === 'mojave') {
+      h += `<rect width="360" height="320" fill="#e6d29a" opacity=".6"/>`;
+      [[150,60,22,26],[178,30,18,22],[232,70,20,24],[60,140,24,22],[300,150,18,20],[250,250,26,24]].forEach(a => h += mtn(...a));
+      ['M20,110 Q50,100 80,112','M200,200 Q230,190 260,204','M90,290 Q130,280 170,292','M300,90 Q320,82 345,92'].forEach(d => h += `<path d="${d}" fill="none" stroke="#c9b06e" stroke-width="1.5"/>`);
+      h += fwy('M0,305 Q30,270 45,250 Q75,215 100,190 Q140,155 175,140 Q225,122 270,120 Q300,150 320,205 Q338,240 360,262') + shield('15', 140, 158);
+      h += `<path d="M0,190 Q60,170 100,190 Q140,170 175,140" fill="none" stroke="#8a6d3b" stroke-width="1.2" stroke-dasharray="4 2"/><text class="m-river-lbl" x="20" y="182">ROUTE 66</text>`;
+    } else if (rg === 'vegas') {
+      h += `<rect width="360" height="320" fill="#e9d8a8" opacity=".5"/>`;
+      [[40,110,22,26],[70,90,18,22],[30,170,20,20]].forEach(a => h += mtn(...a));
+      h += `<path class="m-water" d="M338,320 Q340,292 352,276 Q358,266 360,250 L360,320 Z"/><text class="m-sea" x="352" y="312" text-anchor="end" style="font-size:7px">LAKE MEAD</text>`;
+      h += fwy('M120,320 Q138,240 148,180 Q158,110 200,60 Q260,22 360,12') + shield('15', 140, 250);
+      h += `<path d="M162,320 L160,215 L165,150 L185,75 L192,0" fill="none" stroke="#c23b6e" stroke-width="2.4" opacity=".7"/><text class="m-river-lbl" transform="translate(178,120) rotate(-75)">THE STRIP</text>`;
+    } else if (rg === 'denver') {
+      for (let i = 0; i < 6; i++) h += mtn(14 + (i % 2) * 22, 50 + i * 48, 20, 30);
+      h += fwy('M0,150 Q60,150 120,148 Q190,146 230,160 Q300,178 360,182') + fwy('M180,0 Q190,80 195,145 Q200,230 210,320') + shield('70', 92, 149) + shield('25', 186, 60);
+      h += `<path class="m-river" d="M260,320 Q230,250 205,175 Q192,110 232,62 Q262,30 300,0"/><text class="m-river-lbl" transform="translate(238,250) rotate(-68)">SOUTH PLATTE</text>`;
+    } else if (rg === 'chicago') {
+      h += `<path class="m-water" d="M300,0 L360,0 L360,268 Q330,266 316,252 Q300,222 298,182 Q296,142 290,112 Q292,60 300,0 Z"/><path class="m-coast" d="M300,0 Q292,60 290,112 Q296,142 298,182 Q300,222 316,252 Q330,266 360,268"/>`;
+      h += `<text class="m-sea" transform="translate(338,150) rotate(90)" text-anchor="middle">LAKE MICHIGAN</text>`;
+      h += `<path class="m-river" d="M290,150 Q250,156 222,150 Q200,140 180,120 Q150,100 110,92"/><text class="m-river-lbl" x="110" y="110">CHICAGO RIVER</text>`;
+      h += fwy('M0,82 Q60,84 120,100 Q180,130 205,160 Q222,200 250,258 Q280,288 360,300') + shield('90', 118, 98);
+    } else if (rg === 'ny') {
+      h += `<path class="m-water" d="M104,0 L130,0 Q140,100 146,180 Q150,250 152,320 L122,320 Q120,250 117,180 Q110,100 104,0 Z"/>`;
+      h += `<path class="m-water" d="M242,0 L264,0 Q258,80 263,150 Q258,220 252,320 L222,320 Q234,220 238,150 Q236,80 242,0 Z"/>`;
+      h += `<path class="m-water" d="M0,302 Q100,290 180,300 Q260,310 360,294 L360,320 L0,320 Z"/>`;
+      h += `<path class="m-park" d="M186,68 L212,66 L218,130 L192,132 Z"/>`;
+      h += `<text class="m-sea" transform="translate(126,120) rotate(85)" text-anchor="middle" style="font-size:7px">HUDSON</text><text class="m-sea" transform="translate(252,60) rotate(88)" text-anchor="middle" style="font-size:7px">EAST RIVER</text>`;
+      h += `<text class="m-sea" x="300" y="314" text-anchor="middle" style="font-size:7px">ATLANTIC</text>`;
+    }
+    return h;
+  }
   function mapStaticDefs() {
     return `<defs>
       <pattern id="mFogHatch" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
@@ -2134,7 +2272,8 @@ const FIREBASE_CONFIG = {
       <radialGradient id="mVignette" cx="50%" cy="50%" r="75%"><stop offset="70%" stop-color="#000" stop-opacity="0"/><stop offset="100%" stop-color="#3a2a10" stop-opacity=".22"/></radialGradient>
     </defs>`;
   }
-  function mapStaticLayer() {
+  function mapStaticLayer(rg) {
+    if (rg && rg !== 'la') return mapStaticRg[rg] || (mapStaticRg[rg] = mapStaticDefs() + `<rect class="m-land" width="360" height="320"/>` + regionTerrain(rg));
     if (mapStatic) return mapStatic;
     let h = mapStaticDefs();
     h += `<rect class="m-land" width="360" height="320"/>`;
@@ -2150,14 +2289,15 @@ const FIREBASE_CONFIG = {
     return h;
   }
 
-  function mapDecorLayer() {
+  function mapDecorLayer(rg) {
+    const G = REGIONS[rg || 'la'], N = G.note;
     return `<line class="m-fold" x1="180" y1="0" x2="180" y2="320"/><line class="m-fold-hi" x1="181.2" y1="0" x2="181.2" y2="320"/>
       <line class="m-fold" x1="0" y1="160" x2="360" y2="160"/><line class="m-fold-hi" x1="0" y1="161.2" x2="360" y2="161.2"/>
       <circle class="m-stain" cx="334" cy="98" r="22" stroke-width="5"/><path class="m-stain" d="M318,82 A22,22 0 0 1 352,86" stroke-width="2.5"/>
-      <text class="m-title sh" x="11" y="290">LOS ANGELES</text>
-      <text class="m-title fg" x="9" y="288">LOS ANGELES</text>
-      <text class="m-sub" x="40" y="308">City of Angels</text>
-      <text class="m-note" transform="translate(205,268) rotate(-7)">다운타운은 피해라 -M</text>
+      <text class="m-title sh" x="${G.tx + 2}" y="${G.ty + 2}">${G.en}</text>
+      <text class="m-title fg" x="${G.tx}" y="${G.ty}">${G.en}</text>
+      <text class="m-sub" x="${G.tx + 31}" y="${G.ty + 20}">${G.sub}</text>
+      <text class="m-note" transform="translate(${N[0]},${N[1]}) rotate(${N[2]})">${N[3]}</text>
       <rect width="360" height="320" fill="url(#mVignette)" pointer-events="none"/>`;
   }
 
@@ -2170,25 +2310,39 @@ const FIREBASE_CONFIG = {
       renderMapInfo(new Set(myDoc.visited));
       return;
     }
-    const vis = new Set(myDoc.visited), fr = new Set();
-    myDoc.visited.forEach(id => (ADJ[id] || []).forEach(n => { if (!vis.has(n)) fr.add(n); }));
+    const RG = rgOf(myDoc.loc), inR = id => rgOf(id) === RG, rkeys = regionKeys(RG);
+    const vis = new Set(myDoc.visited.filter(inR)), fr = new Set();
+    vis.forEach(id => (ADJ[id] || []).forEach(n => { if (!vis.has(n) && inR(n)) fr.add(n); }));
     const counts = {};
     latestDocs.forEach(d => { if (!isMe(d) && d.status !== 'dead' && DISTRICTS[d.loc]) counts[d.loc] = (counts[d.loc] || 0) + 1; });
+    $('mapTitle').textContent = REGIONS[RG].n;
+    $('mapSvg').setAttribute('aria-label', REGIONS[RG].n + ' 지도');
 
-    let h = mapStaticLayer();
+    let h = mapStaticLayer(RG);
     // 안 가본 곳은 빗금 친 종이로 가린다
     h += `<mask id="mFogMask"><rect width="360" height="320" fill="#fff"/>`;
     vis.forEach(id => { const D = DISTRICTS[id]; h += `<circle cx="${D.x}" cy="${D.y}" r="46" fill="url(#mFogHole)"/>`; });
     h += `</mask><rect class="m-fog" width="360" height="320" mask="url(#mFogMask)" opacity=".92"/>`;
 
     EDGES.forEach(([a, b]) => {
-      if (!vis.has(a) && !vis.has(b)) return;
+      if ((!vis.has(a) && !vis.has(b)) || !inR(a) || !inR(b)) return;
       const A = DISTRICTS[a], B = DISTRICTS[b];
       const bl = vis.has(a) && vis.has(b) && roadBlocked(a, b);
       h += `<line class="m-route${vis.has(a) && vis.has(b) ? '' : ' unk'}${bl ? ' blocked' : ''}" x1="${A.x}" y1="${A.y}" x2="${B.x}" y2="${B.y}"/>`;
       if (bl) h += `<text class="m-block" x="${(A.x + B.x) / 2}" y="${(A.y + B.y) / 2 + 3}" text-anchor="middle">🚧</text>`;
     });
-    Object.keys(DISTRICTS).forEach(id => {
+    // 다른 지방으로 가는 출구: 열렸으면 ➜, 아직 막혔으면 🔒
+    GATES.forEach(G => {
+      const here = inR(G.a) ? G.a : inR(G.b) ? G.b : null;
+      if (!here || !vis.has(here)) return;
+      const other = here === G.a ? G.b : G.a, [mx, my] = here === G.a ? G.pa : G.pb, D = DISTRICTS[here];
+      const open = regionOpen(rgOf(other)), O = REGIONS[rgOf(other)], right = mx > 180;
+      h += `<line class="m-route${open ? '' : ' blocked'}" x1="${D.x}" y1="${D.y}" x2="${mx}" y2="${my}"/>`;
+      h += `<g class="map-node m-gate${mapSel === other ? ' sel' : ''}" data-id="${other}" tabindex="0" role="button" aria-label="${open ? O.n + '(으)로 가는 길' : G.road + ' 봉쇄'}">`;
+      h += `<circle class="m-gate-dot${open ? '' : ' shut'}" cx="${mx}" cy="${my}" r="7"/><text class="m-glyph" x="${mx}" y="${my + 0.5}">${open ? '➜' : '✕'}</text>`;
+      h += `<text class="m-lbl" x="${mx + (right ? -10 : 10)}" y="${my + (my > 300 ? -6 : my < 20 ? 12 : 3)}" text-anchor="${right ? 'end' : 'start'}">${open ? '→ ' + O.n : '🔒 ' + G.road}</text></g>`;
+    });
+    rkeys.forEach(id => {
       const known = vis.has(id);
       if (!known && !fr.has(id)) return;
       const D = DISTRICTS[id], K = KINDS[KIND_OF[id]];
@@ -2205,7 +2359,7 @@ const FIREBASE_CONFIG = {
         h += `<text class="m-lbl" x="${lx}" y="${ly}" text-anchor="${D.la || 'middle'}">${D.n}</text>`;
         const nm = memos.filter(m => m.loc === id).length;
         if (nm) h += `<g class="m-pin" transform="translate(${D.x - 17},${D.y - 17}) rotate(-10)"><rect width="8" height="9" rx=".5"/><line x1="1.5" y1="3" x2="6.5" y2="3"/><line x1="1.5" y1="5" x2="6.5" y2="5"/><line x1="1.5" y1="7" x2="5" y2="7"/></g>`;
-        if (hordeOf(worldDay()) === id) h += `<text x="${D.x - 12}" y="${D.y + 4}" text-anchor="end" class="m-horde">☠</text>`;
+        if (hordeOf(worldDay(), RG) === id) h += `<text x="${D.x - 12}" y="${D.y + 4}" text-anchor="end" class="m-horde">☠</text>`;
         const gv = gevActive(worldDay());
         if (gv && gv.loc === id) h += `<text x="${D.x + 12}" y="${D.y - 8}" class="m-horde">${gv.type === 'drop' ? '🪂' : '🧟'}</text>`;
         const ri = regionMapIcons(id);
@@ -2218,10 +2372,10 @@ const FIREBASE_CONFIG = {
       }
       h += `</g>`;
     });
-    h += mapDecorLayer();
+    h += mapDecorLayer(RG);
     $('mapSvg').innerHTML = h;
-    $('mapCount').textContent = '지역 ' + vis.size + '/' + Object.keys(DISTRICTS).length + ' · 구역 ' + Object.keys(DISTRICTS).reduce((t, l) => t + (SPOTS[l] || []).filter((_, i) => buildingSearched(l, i)).length, 0) + '/' + SPOT_TOTAL;
-    renderMapInfo(vis);
+    $('mapCount').textContent = '지역 ' + vis.size + '/' + rkeys.length + ' · 구역 ' + rkeys.reduce((t, l) => t + (SPOTS[l] || []).filter((_, i) => buildingSearched(l, i)).length, 0) + '/' + spotTotal(RG);
+    renderMapInfo(new Set(myDoc.visited));
   }
 
   function renderMapInfo(vis) {
@@ -2233,7 +2387,7 @@ const FIREBASE_CONFIG = {
     if (known) {
       const here = latestDocs.filter(d => !isMe(d) && d.status !== 'dead' && d.loc === id).map(d => escapeHtml(d.name));
       h += `<div class="facts"><span class="pill">기본 위험도 ${dangerWord(D.danger)} · ${Math.round(D.danger * 100)}%</span><span class="pill">지금 위험도 ${Math.round(currentDanger(id) * 100)}%</span>`;
-      h += `<span class="pill">조사 구역 ${(SPOTS[id] || []).length}곳</span>${hordeOf(worldDay()) === id ? '<span class="pill" style="color:var(--danger)">☠ 오늘 무리 출몰</span>' : ''}</div>`;
+      h += `<span class="pill">조사 구역 ${(SPOTS[id] || []).length}곳</span>${hordeOf(worldDay(), rgOf(id)) === id ? '<span class="pill" style="color:var(--danger)">☠ 오늘 무리 출몰</span>' : ''}</div>`;
       h += `<div class="facts">` + (SPOTS[id] || []).map(([t, n], i) => `<span class="pill" title="${SPOT_TYPES[t].n}">${SPOT_TYPES[t].ic} ${n}${buildingSearched(id, i) ? ' ✓' : ''}</span>`).join('') + `</div>`;
       h += regionInfoHtml(id);
       const nm = memos.filter(m => m.loc === id).length;
@@ -2243,6 +2397,7 @@ const FIREBASE_CONFIG = {
     h += '<div class="act">';
     const busyOff = dead || myDoc.busy;
     if (isCur) { if (reg(id).env.blackout) h += `<button class="secondary" id="fixBlackoutBtn" type="button"${busyOff || inv('scrap') < 1 || inv('fuel') < 1 ? ' disabled' : ''}>🔧 배전반 복구 · 20분 (고철 ${inv('scrap')}/1 · 휘발유 ${inv('fuel')}/1)</button>`; }
+    else if (adj && !regionOpen(rgOf(id))) { const pi = REGION_ORDER.indexOf(rgOf(id)) - 1; h += `<div class="muted" style="margin:0">🔒 ${gateOf(myDoc.loc, id).road}는 봉쇄선으로 막혀 있어요. 누군가 ${REGIONS[REGION_ORDER[pi]].n}의 모든 지역을 탐사하면 모두에게 길이 열려요.</div>`; }
     else if (adj && roadBlocked(myDoc.loc, id)) h += `<div class="muted" style="margin:0 0 8px">🚧 이 길은 막혀 있어요. 장애물을 치우거나 다른 길로 돌아가세요.</div><button class="secondary" id="clearRoadBtn" type="button"${busyOff ? ' disabled' : ''}>🚧 장애물 치우기 · 20분</button>`;
     else if (adj && reg(id).env.quarantine && myDoc.infection > 0) h += `<div class="muted" style="margin:0">☣️ 군사 검역 중이에요. 감염 징후가 있으면 검문소를 통과할 수 없어요. 먼저 감염을 치료하세요.</div>`;
     else if (adj) h += `<button class="primary" id="moveBtn" type="button"${dead || myDoc.busy ? ' disabled' : ''}>${movePlan(id).veh ? VEHICLES[movePlan(id).veh].ic + ' ' : ''}${known ? '이곳으로 이동' : '미지의 지역으로 이동'} · ${movePlan(id).min}분</button>` + (myDoc.busy && !dead ? '<div class="muted">다른 행동을 하는 중이에요.</div>' : '');
@@ -2274,9 +2429,15 @@ const FIREBASE_CONFIG = {
     glendale:['Colorado St','Brand Blvd'], pasadena:['Colorado Blvd','Lake Ave'], silverlake:['Sunset Blvd','Silver Lake Blvd'],
     koreatown:['Wilshire Blvd','Western Ave'], dtla:['5th St','Grand Ave'], boyle:['Cesar Chavez Ave','Soto St'],
     culver:['Venice Blvd','Overland Ave'], inglewood:['Century Blvd','Prairie Ave'], lax:['Century Blvd','Sepulveda Blvd'],
-    southla:['Florence Ave','Central Ave'], vernon:['Slauson Ave','Alameda St'], longbeach:['Ocean Blvd','Pine Ave']
+    southla:['Florence Ave','Central Ave'], vernon:['Slauson Ave','Alameda St'], longbeach:['Ocean Blvd','Pine Ave'],
+    cajon:['I-15','Cajon Blvd'], victorville:['Bear Valley Rd','7th St'], barstow:['Main St','Route 66'], fortirwin:['Inner Loop Rd','Barstow Rd'], baker:['Baker Blvd','Kelbaker Rd'], primm:['Primm Blvd','I-15'],
+    southstrip:['Las Vegas Blvd','Tropicana Ave'], airport:['Paradise Rd','Russell Rd'], northstrip:['Las Vegas Blvd','Flamingo Rd'], fremont:['Fremont St','Main St'], nellis:['Las Vegas Blvd N','Craig Rd'], henderson:['Sunset Rd','Green Valley Pkwy'], hooverdam:['US-93','Lakeshore Rd'], redrock:['Charleston Blvd','Red Rock Rd'],
+    eisenhower:['I-70','Loveland Pass'], boulder:['Pearl St','Broadway'], redrocks:['Red Rocks Park Rd','CO-93'], dendt:['16th St','Colfax Ave'], aurora:['Colfax Ave','Peoria St'], dia:['Peña Blvd','I-70'],
+    ohare:["O'Hare Way",'I-190'], lakeview:['Clark St','Addison St'], loop:['State St','Wacker Dr'], navypier:['Grand Ave','Lake Shore Dr'], southside:['Halsted St','63rd St'], gary:['Broadway','US-12'],
+    newark:['Broad St','McCarter Hwy'], jerseycity:['Grove St','Newark Ave'], lowermanhattan:['Broadway','Wall St'], midtown:['42nd St','7th Ave'], centralpark:['Central Park W','5th Ave'], harlem:['125th St','Lenox Ave'], brooklyn:['Atlantic Ave','Flatbush Ave'], rooseveltisland:['Main St','Roosevelt Island Br']
   };
-  const COASTAL = ['malibu', 'santamonica', 'venice', 'longbeach'];
+  const COASTAL = ['malibu', 'santamonica', 'venice', 'longbeach', 'hooverdam', 'navypier', 'jerseycity', 'lowermanhattan', 'rooseveltisland'];
+  const SEA_NAME = { la:'PACIFIC', vegas:'LAKE MEAD', chicago:'LAKE MICHIGAN', ny:'HUDSON' };
   const SPOT_COLOR = {
     hospital:'#d9443f', pharmacy:'#d9443f', police:'#6f63c9', gunshop:'#6f63c9', market:'#e48a32', gas:'#e48a32',
     burger:'#b9529f', pizza:'#b9529f', taco:'#b9529f', diner:'#b9529f', cafe:'#b9529f',
@@ -2309,7 +2470,7 @@ const FIREBASE_CONFIG = {
     roadsV.forEach(x => { h += `<path class="m-fwy-case" d="M${x},0 L${x},270"/><path class="m-fwy" d="M${x},0 L${x},270"/>`; });
     h += `<text class="m-road-lbl" x="300" y="${roadsH[0] + 2.5}" text-anchor="middle">${st[0]}</text>`;
     h += `<text class="m-road-lbl" transform="translate(${roadsV[1] + 2.5},40) rotate(90)" text-anchor="middle">${st[1]}</text>`;
-    if (coastal) h += `<text class="m-sea" x="22" y="160" transform="rotate(-90 22 160)" text-anchor="middle">PACIFIC</text>`;
+    if (coastal) h += `<text class="m-sea" x="22" y="160" transform="rotate(-90 22 160)" text-anchor="middle">${id === 'rooseveltisland' || id === 'lowermanhattan' ? 'EAST RIVER' : SEA_NAME[rgOf(id)] || 'WATER'}</text>`;
     // 조사 구역 건물
     spots.forEach(([t, n], i) => {
       const [x, y] = slots[i], T = SPOT_TYPES[t];
@@ -2389,13 +2550,22 @@ const FIREBASE_CONFIG = {
     '도로 위에 아이의 신발 한 짝이 놓여 있었다. 주변에는 발자국이 없었다.',
     '멀리서 자동차 경적이 한 번 울렸다. 잠시 후, 도시 전체가 신음으로 대답했다.'
   ];
+  const HIGHWAY_TEXT = [
+    '버려진 차들 사이로 끝없는 고속도로가 이어졌다. 휴게소 간판들은 하나같이 불이 꺼져 있었다.',
+    '밤새 걸었다. 지평선 너머로 도시의 불빛 대신 별만 가득했다.',
+    '고가도로 위에서 군 수송 트럭 행렬이 멈춘 채 녹슬고 있었다. 짐칸은 비어 있었다.',
+    '도로변 광고판에 누군가 페인트로 적어 두었다. "동쪽으로. 뉴욕은 아직 살아 있다."',
+    '주 경계 검문소는 비어 있었다. 차단기만 바람에 덜컹거렸다.'
+  ];
   function doMove(id, veh) {
     const from = DISTRICTS[myDoc.loc], to = DISTRICTS[id];
     if (!to || !(ADJ[myDoc.loc] || []).includes(id)) return;
     const first = !myDoc.visited.includes(id);
     const v = veh && vehHere() && vehHere().id === veh ? vehHere() : null, V = v && VEHICLES[v.id];
-    let text = from.n + '에서 ' + to.n + '(으)로 ' + (V ? josa(V.n, '을', '를') + ' 타고 ' : '') + '이동했다. ';
-    if (V) { v.fuel = Math.max(0, v.fuel - V.use); v.loc = id; if (V.tank) text += '(연료 ' + v.fuel + '/' + V.tank + ') '; }
+    const G = gateOf(myDoc.loc, id);
+    let text = from.n + '에서 ' + to.n + '(으)로 ' + (V ? josa(V.n, '을', '를') + ' 타고 ' : '') + (G ? G.road + '를 따라 먼 길을 ' : '') + '이동했다. ';
+    if (G) text += pick(HIGHWAY_TEXT) + ' ';
+    if (V) { v.fuel = Math.max(0, v.fuel - V.use * (G ? 3 : 1)); v.loc = id; if (V.tank) text += '(연료 ' + v.fuel + '/' + V.tank + ') '; }
     if (Math.random() < Math.min(0.85, to.danger * 0.5 * dangerMult(id, 'move') * (V ? V.noise : 1))) {
       text += pick(TRAVEL_ENCOUNTER) + ' ' + zombieFight([id], [5, 14]) + ' ';
     }
@@ -2409,10 +2579,16 @@ const FIREBASE_CONFIG = {
     if (RE.wildfire) { myDoc.fat = clamp(myDoc.fat + 5); text += '연기가 자욱해 숨쉬기 힘들다. (피로 +5)' + (ch(0.3) ? (d => { myDoc.hp = clamp(myDoc.hp - d); return ' 불티에 데었다. (체력 -' + d + ')'; })(rint(3, 8)) : '') + ' '; }
     if (RE.flooded) { myDoc.fat = clamp(myDoc.fat + 6); text += '허리까지 차오른 물을 헤치고 건넜다. (피로 +6) '; }
     if (reg(id).z >= 70) text += '🧟 거리마다 좀비가 우글거린다. 군집이 몰려 있다. ';
+    if (G) text += '🛣️ ' + REGIONS[rgOf(id)].n + '에 들어섰다. ';
     if (first) { myDoc.visited.push(id); text += '처음 와보는 곳이다. ' + to.desc + ' (새 지역 발견)'; }
     else text += pick(['익숙한 거리지만 방심은 금물이다.', '지난번보다 워커가 늘어난 것 같다.', '다시 돌아왔다. 달라진 건 없어 보인다.']);
     const left = memos.filter(m => m.loc === id).length;
     if (left) text += ' 벽에 누군가 남긴 메모가 ' + left + '장 붙어 있다.';
+    if (id === NY_HAVEN && !myDoc.ny) {
+      myDoc.ny = myDoc.day;
+      text += ' 🗽 다리 위 검문소에서 무장한 사람들이 총구를 내렸다. "살아서 왔군. 환영한다." 무전으로만 듣던 뉴욕 생존자 쉘터에 마침내 도착했다. (생존자 탭에 🗽 기록)';
+      notify('🗽 뉴욕 쉘터 도착', '무전이 부르던 곳에 마침내 도착했다.');
+    }
     addLog(text);
     mapSel = id;
   }
@@ -2573,7 +2749,7 @@ const FIREBASE_CONFIG = {
     { who:'항만 노동자', t:'{d}의 컨테이너에 물자가 남아 있다. 크레인 전원이 끊기기 전에 가져가라.', m:'supply' },
     { who:'전직 소방관', t:'{d}의 건물에 사람이 갇혔다. 불은 꺼졌지만 계단이 무너져서 혼자서는 못 들어간다.', m:'rescue' }
   ];
-  const DISTRICT_KEYS = Object.keys(DISTRICTS);
+  const DISTRICT_KEYS = regionKeys('la');
   function npcAt(k) {
     const h = hashStr('npc-slot-' + k);
     if (h % 100 >= 25) return null;
@@ -2598,7 +2774,7 @@ const FIREBASE_CONFIG = {
   function npcLine(m) {
     return `<div class="rd-ln npc${chatFresh.has(m.key) ? ' fresh' : ''}">
       <div class="hd"><span>◀ RX</span><span>${hhmm(m.ts)}</span><span class="tag">미확인</span><span class="cs">${escapeHtml(m.author)}</span><span aria-label="신호 세기 ${m.bars}">${BAR[m.bars]}</span></div>
-      <div class="tx">${escapeHtml(garble(m.text, m.noise, m.key))} <span class="over">— 지지직...</span></div>${m.m && myDoc && myDoc.status !== 'dead' && Date.now() - m.ts < 3 * 3600e3 ? ((myDoc.misDone || []).includes(m.key) ? '<div class="rd-ans on">✔ 해결함</div>' : myDoc.mission && myDoc.mission.key === m.key ? '<div class="rd-ans on">📍 응답함 · ' + DISTRICTS[m.dk].n + '</div>' : `<button type="button" class="rd-ans" data-mis="${m.key}">📍 응답하기 · ${DISTRICTS[m.dk].n}</button>`) : ''}</div>`;
+      <div class="tx">${escapeHtml(garble(m.text, m.noise, m.key))} <span class="over">— 지지직...</span></div>${m.m && myDoc && myDoc.status !== 'dead' && rgOf(myDoc.loc) === rgOf(m.dk) && Date.now() - m.ts < 3 * 3600e3 ? ((myDoc.misDone || []).includes(m.key) ? '<div class="rd-ans on">✔ 해결함</div>' : myDoc.mission && myDoc.mission.key === m.key ? '<div class="rd-ans on">📍 응답함 · ' + DISTRICTS[m.dk].n + '</div>' : `<button type="button" class="rd-ans" data-mis="${m.key}">📍 응답하기 · ${DISTRICTS[m.dk].n}</button>`) : ''}</div>`;
   }
   let npcLastTs = 0;
   function checkNpc() {
@@ -3465,7 +3641,44 @@ const FIREBASE_CONFIG = {
     vernon:       [['warehouse','육가공 공장 냉동창고'],['hardware','공업용 자재 창고'],['gas','트럭 휴게소 주유소'],['office','공장 관리 사무실']],
     longbeach:    [['warehouse','롱비치 항 컨테이너 야적장'],['terminal','퀸 메리호 선착장'],['fire','롱비치 소방서'],['pizza','파인 애비뉴 피자집'],['motel','항구 모텔'],['lifeguard','롱비치 해안경비 초소']]
   };
+  Object.assign(SPOTS, {
+    cajon:       [['gas','카혼 정상 트럭 휴게소'],['cabin','산불 감시 초소'],['motel','15번 고속도로 모텔'],['warehouse','철도 화물 기지']],
+    victorville: [['market','빅터빌 대형 마트'],['hospital','데저트 밸리 병원'],['school','빅터빌 고등학교'],['house','사막 주택 단지'],['police','빅터빌 보안관 지소']],
+    barstow:     [['terminal','바스토 기차역'],['diner','루트 66 다이너'],['gas','바스토 트럭 정류장'],['motel','루트 66 모텔'],['hardware','철도 정비 공구 창고']],
+    fortirwin:   [['police','기지 헌병대'],['gunshop','기지 무기고'],['hospital','기지 의무대'],['warehouse','군 보급 창고'],['shelter','사막 훈련장 야영지']],
+    baker:       [['gas','거대 온도계 주유소'],['diner','외계인 육포 가게'],['motel','베이커 모텔'],['cabin','사막 순찰 초소']],
+    primm:       [['motel','국경 카지노 호텔'],['market','아웃렛 몰'],['gas','주 경계 주유소'],['diner','카지노 뷔페']],
+    southstrip:  [['motel','피라미드 카지노 호텔'],['diner','카지노 뷔페 홀'],['studio','쇼 공연장'],['warehouse','카지노 지하 물류창고'],['pharmacy','스트립 약국']],
+    airport:     [['terminal','해리 리드 공항 터미널'],['warehouse','항공 화물 창고'],['gas','렌터카 센터 주유소'],['police','공항 경찰대']],
+    northstrip:  [['motel','분수쇼 카지노 호텔'],['market','쇼핑몰 푸드코트'],['hospital','선라이즈 병원'],['diner','카지노 스테이크하우스'],['office','컨벤션 센터']],
+    fremont:     [['motel','올드 다운타운 카지노'],['police','라스베이거스 경찰청'],['gunshop','사격장 겸 총포상'],['pharmacy','프리몬트 약국'],['terminal','버스 터미널']],
+    nellis:      [['police','기지 헌병대'],['gunshop','탄약고'],['hospital','기지 병원'],['warehouse','격납고'],['shelter','긴급 대피 캠프']],
+    henderson:   [['house','교외 주택'],['school','헨더슨 고등학교'],['market','동네 마트'],['church','헨더슨 교회'],['fire','헨더슨 소방서']],
+    hooverdam:   [['office','발전소 통제실'],['warehouse','터빈 정비 창고'],['cabin','댐 경비 초소'],['park','미드 호수 호숫가']],
+    redrock:     [['cabin','협곡 레인저 초소'],['park','붉은 바위 탐방로'],['house','서머린 주택가'],['gas','협곡 입구 주유소']],
+    eisenhower:  [['office','터널 관제소'],['gas','고갯길 주유소'],['cabin','스키 리조트 산장'],['warehouse','제설 장비 창고']],
+    boulder:     [['school','콜로라도 대학교'],['market','펄 스트리트 마트'],['cabin','플랫아이언 등산로 초소'],['library','대학 도서관'],['pharmacy','볼더 약국']],
+    redrocks:    [['park','원형극장 계단석'],['studio','야외 공연장 무대'],['cabin','공원 관리소'],['gas','산길 주유소']],
+    dendt:       [['police','덴버 경찰청'],['office','16번가 오피스 타워'],['terminal','유니언 역'],['library','덴버 중앙도서관'],['diner','다운타운 다이너'],['hospital','덴버 헬스 메디컬 센터']],
+    aurora:      [['hospital','오로라 의료 캠퍼스'],['house','오로라 주택가'],['market','콜팩스 마트'],['school','오로라 고등학교'],['church','오로라 교회']],
+    dia:         [['terminal','덴버 공항 터미널'],['warehouse','항공 화물 창고'],['motel','공항 호텔'],['gas','공항 주유소']],
+    ohare:       [['terminal','오헤어 공항 터미널'],['warehouse','항공 화물 창고'],['motel','공항 호텔'],['gas','공항 주유소'],['police','공항 경찰대']],
+    lakeview:    [['shelter','야구장 대피소'],['diner','스포츠 바'],['house','레이크뷰 주택가'],['pizza','딥디시 피자집'],['church','레이크뷰 교회']],
+    loop:        [['office','스카이데크 고층 빌딩'],['police','시카고 경찰 본부'],['terminal','유니언 역'],['library','해럴드 워싱턴 도서관'],['market','도심 마트']],
+    navypier:    [['lifeguard','호숫가 해안경비 초소'],['diner','부두 식당가'],['studio','대관람차 공연장'],['warehouse','부두 창고']],
+    southside:   [['hospital','대학 병원'],['school','사우스사이드 고등학교'],['church','침례 교회'],['house','사우스사이드 주택가'],['burger','햄버거 가게']],
+    gary:        [['warehouse','제철소 원료 창고'],['hardware','제철소 공구실'],['gas','트럭 휴게소'],['office','제철소 관리동']],
+    newark:      [['terminal','뉴어크 공항'],['warehouse','항만 컨테이너 터미널'],['gas','턴파이크 주유소'],['motel','공항 모텔']],
+    jerseycity:  [['house','강변 주택'],['market','저지시티 마트'],['school','저지시티 고등학교'],['pharmacy','그로브 스트리트 약국']],
+    lowermanhattan: [['office','월스트리트 빌딩'],['police','NYPD 본부'],['terminal','지하철 환승역'],['fire','래더 10 소방서'],['pharmacy','브로드웨이 약국']],
+    midtown:     [['office','엠파이어 스테이트 빌딩'],['terminal','그랜드 센트럴 터미널'],['market','타임스스퀘어 마트'],['hospital','벨뷰 병원'],['diner','델리 식당']],
+    centralpark: [['park','셰익스피어 정원'],['cabin','공원 관리 사무소'],['library','자연사 박물관'],['cafe','보트하우스 카페']],
+    harlem:      [['church','할렘 침례 교회'],['school','할렘 고등학교'],['diner','소울푸드 식당'],['house','브라운스톤 주택가']],
+    brooklyn:    [['house','브라운스톤 주택'],['pizza','브루클린 피자집'],['market','애틀랜틱 마트'],['hospital','브루클린 병원'],['church','브루클린 성당']],
+    rooseveltisland: [['shelter','뉴욕 생존자 쉘터'],['market','쉘터 배급소'],['hospital','섬 병원 의무동'],['office','쉘터 무전실']]
+  });
   const SPOT_TOTAL = Object.values(SPOTS).reduce((t, a) => t + a.length, 0);
+  function spotTotal(rg) { return regionKeys(rg).reduce((t, l) => t + (SPOTS[l] || []).length, 0); }
   const DEPLETE_DAYS = 5;
   function spotKey(loc, i) { return loc + ':' + i; }
   function spotDanger(loc, i) { const T = SPOT_TYPES[SPOTS[loc][i][0]]; return Math.max(0.05, Math.min(0.7, DISTRICTS[loc].danger + T.dmod)); }
@@ -3546,8 +3759,8 @@ const FIREBASE_CONFIG = {
       return `<button type="button" class="spot${i === selSpot ? ' sel' : ''} ${st.cls}" data-spot="${i}" aria-pressed="${i === selSpot}"${off ? ' disabled' : ''}>
         <span class="sic">${T.ic}</span><span class="snm">${n}${mySpot() === i ? ' 📍' : ''}<small>${T.n} · 지점 ${pointsOf(t).length}곳 · 위험 ${Math.round(dg * 100)}%</small></span><small class="spill">${st.label}</small></button>`;
     }).join('');
-    const done = Object.keys(DISTRICTS).reduce((t, l) => t + (SPOTS[l] || []).filter((_, i) => buildingSearched(l, i)).length, 0);
-    $('spotCount').textContent = '조사한 구역 ' + done + ' / ' + SPOT_TOTAL;
+    const RG = rgOf(myDoc.loc), done = regionKeys(RG).reduce((t, l) => t + (SPOTS[l] || []).filter((_, i) => buildingSearched(l, i)).length, 0);
+    $('spotCount').textContent = '조사한 구역 ' + done + ' / ' + spotTotal(RG);
     renderPoints();
   }
   function renderPoints() {
@@ -3581,7 +3794,7 @@ const FIREBASE_CONFIG = {
   function evLoot(pool, n) { const g = rollLoot(pool, n); const t = lootText(g); return t ? ' (' + t + ')' : ' (가방이 꽉 차 아무것도 챙기지 못했다)'; }
   function evReveal() {
     const vis = new Set(myDoc.visited), cand = [];
-    myDoc.visited.forEach(id => (ADJ[id] || []).forEach(n => { if (!vis.has(n) && !cand.includes(n)) cand.push(n); }));
+    myDoc.visited.forEach(id => (ADJ[id] || []).forEach(n => { if (!vis.has(n) && !cand.includes(n) && rgOf(n) === rgOf(myDoc.loc)) cand.push(n); }));
     if (!cand.length) return '';
     const id = pick(cand); myDoc.visited.push(id);
     return ' 지도에 ' + DISTRICTS[id].n + ' 위치를 표시했다. (새 지역 발견)';
@@ -4157,7 +4370,7 @@ const FIREBASE_CONFIG = {
   const GEV_SLOT = 12, GEV_START = 4, GEV_LEN = 2;
   function gevOf(day) {
     const slot = Math.floor((day - 1) / GEV_SLOT), start = slot * GEV_SLOT + 1 + GEV_START;
-    const keys = Object.keys(DISTRICTS);
+    const keys = regionKeys('la');
     return { slot, start, end: start + GEV_LEN - 1, type: hashStr('gev-t-' + slot) % 2 ? 'siege' : 'drop', loc: keys[hashStr('gev-d-' + slot) % keys.length] };
   }
   function gevActive(day) { const g = gevOf(day); return day >= g.start && day <= g.end ? g : null; }
@@ -4291,6 +4504,8 @@ const FIREBASE_CONFIG = {
   function envTotal(st) { return REG_IDS.reduce((t, id) => t + Object.keys(st.r[id].env).filter(k => k !== 'ash').length, 0); }
   function regDayStep(st, d) {
     const R = rngOf('region-' + d), pickR = arr => arr[Math.floor(R() * arr.length)];
+    // 아직 길이 열리지 않은 지방은 사건·군집 이동 없이 그대로 둔다
+    const lvOpen = (st.f && +st.f.open) || 0, live = id => REGION_ORDER.indexOf(rgOf(id)) <= lvOpen;
     // 1) 만료
     REG_IDS.forEach(id => {
       const r = st.r[id];
@@ -4317,9 +4532,9 @@ const FIREBASE_CONFIG = {
     });
     // 3) 군집 이동: 밀도 70 이상, 하루 최대 2번, 같은 날 받은 곳은 다시 출발하지 않는다
     let moves = 0; const recv = new Set();
-    REG_IDS.filter(id => st.r[id].z >= 70).sort((a, b) => st.r[b].z - st.r[a].z).forEach(id => {
+    REG_IDS.filter(id => st.r[id].z >= 70 && live(id)).sort((a, b) => st.r[b].z - st.r[a].z).forEach(id => {
       if (moves >= 2 || recv.has(id) || R() >= 0.4) return;
-      const nb = (ADJ[id] || []).filter(n => !stBlocked(st, id, n) && !recv.has(n));
+      const nb = (ADJ[id] || []).filter(n => !stBlocked(st, id, n) && !recv.has(n) && live(n));
       if (!nb.length) return;
       const to = pickR(nb), amt = Math.round(st.r[id].z * (0.10 + R() * 0.10));
       st.r[id].z = clampR(st.r[id].z - amt); st.r[to].z = clampR(st.r[to].z + amt); st.r[to].influx = d;
@@ -4330,7 +4545,7 @@ const FIREBASE_CONFIG = {
     // 4) 산불 확산: 실제 이웃 지역으로만, 동시에 최대 3곳
     REG_IDS.filter(id => st.r[id].env.wildfire).forEach(id => {
       if (envCount(st, 'wildfire') >= 3 || envTotal(st) >= 6 || R() >= 0.15) return;
-      const nb = (ADJ[id] || []).filter(n => FIRE_OK.includes(n) && !st.r[n].env.wildfire && !st.r[n].env.ash);
+      const nb = (ADJ[id] || []).filter(n => FIRE_OK.includes(n) && live(n) && !st.r[n].env.wildfire && !st.r[n].env.ash);
       if (!nb.length) return;
       const n = pickR(nb);
       st.r[n].env.wildfire = { s: d, until: d + 4 + Math.floor(R() * 4) };
@@ -4338,12 +4553,12 @@ const FIREBASE_CONFIG = {
     });
     // 5) 새 사건: 하루 하나까지, 활성 상태는 전체 6개까지
     if (envTotal(st) < 6) {
-      const x = R(), free = k => REG_IDS.filter(id => !st.r[id].env[k]);
+      const x = R(), free = k => REG_IDS.filter(id => live(id) && !st.r[id].env[k]);
       if (x < 0.05 && envCount(st, 'wildfire') < 2) {
-        const c = FIRE_OK.filter(id => !st.r[id].env.wildfire && !st.r[id].env.ash);
+        const c = FIRE_OK.filter(id => live(id) && !st.r[id].env.wildfire && !st.r[id].env.ash);
         if (c.length) { const id = pickR(c); st.r[id].env.wildfire = { s: d, until: d + 6 + Math.floor(R() * 5) }; regLog(st.r[id], d, '🔥 마른 덤불에 불이 붙었다. 산불이 번지고 있다'); }
       } else if (x < 0.09 && envCount(st, 'flooded') < 2) {
-        const c = FLOOD_OK.filter(id => !st.r[id].env.flooded);
+        const c = FLOOD_OK.filter(id => live(id) && !st.r[id].env.flooded);
         if (c.length) { const id = pickR(c); st.r[id].env.flooded = { s: d, until: d + 4 + Math.floor(R() * 5) }; regLog(st.r[id], d, '🌊 수로가 넘쳐 거리가 물에 잠겼다'); }
       } else if (x < 0.12 && envCount(st, 'blackout') < 2) {
         const c = free('blackout');
@@ -4351,13 +4566,13 @@ const FIREBASE_CONFIG = {
       } else if (x < 0.15 && envCount(st, 'roadblocked') < 2) {
         const open = (a, b) => (ADJ[a] || []).filter(n => n !== b && !stBlocked(st, a, n)).length >= 2;
         const pairs = [];
-        EDGES.forEach(([a, b]) => { if (!stBlocked(st, a, b) && open(a, b) && open(b, a)) { if (!st.r[a].env.roadblocked) pairs.push([a, b]); else if (!st.r[b].env.roadblocked) pairs.push([b, a]); } });
+        EDGES.forEach(([a, b]) => { if (live(a) && live(b) && !gateOf(a, b) && !stBlocked(st, a, b) && open(a, b) && open(b, a)) { if (!st.r[a].env.roadblocked) pairs.push([a, b]); else if (!st.r[b].env.roadblocked) pairs.push([b, a]); } });
         if (pairs.length) { const [a, b] = pickR(pairs); st.r[a].env.roadblocked = { s: d, to: b }; regLog(st.r[a], d, '🚧 ' + DISTRICTS[b].n + '(으)로 가는 길이 차량 잔해로 막혔다'); regLog(st.r[b], d, '🚧 ' + DISTRICTS[a].n + '(으)로 가는 길이 막혔다는 소식이 들린다'); }
       } else if (x < 0.17 && envCount(st, 'quarantine') < 1) {
-        const c = QUAR_OK.filter(id => !st.r[id].env.quarantine);
+        const c = QUAR_OK.filter(id => live(id) && !st.r[id].env.quarantine);
         if (c.length) { const id = pickR(c); st.r[id].env.quarantine = { s: d, until: d + 8 + Math.floor(R() * 9) }; regLog(st.r[id], d, '☣️ 군이 들어와 검역 통제선을 쳤다'); }
       } else if (x < 0.21 && envCount(st, 'occupied') < 2) {
-        const c = REG_IDS.filter(id => !st.r[id].env.occupied && st.r[id].z < 55);
+        const c = REG_IDS.filter(id => live(id) && id !== NY_HAVEN && !st.r[id].env.occupied && st.r[id].z < 55);
         if (c.length) { const id = pickR(c); st.r[id].env.occupied = { s: d, until: d + 10 + Math.floor(R() * 11) }; st.r[id].dep = clampR(st.r[id].dep - 10); regLog(st.r[id], d, '🏕️ 생존자 집단이 자리를 잡았다. 가져온 물자가 조금 풀렸다'); }
       }
     }
@@ -4395,6 +4610,46 @@ const FIREBASE_CONFIG = {
       regState = st; regTouch();
     } catch (e) {}
     finally { regTicking = false; if (myDoc) renderStatus(); }
+  }
+  // ----- 길 열기: 지금 열린 마지막 지방의 모든 지역을 처음 탐사한 사람이 다음 지방으로 가는 길을 연다 -----
+  const FRONTIER_NEWS = [
+    '',
+    '📡 전체 무전: "…여기는 뉴욕 생존자 쉘터. 루스벨트섬에 쉘터가 있다. 살아 있다면 동쪽으로, 이곳으로 와라." — {n}님이 LA 전역을 탐사해 15번 고속도로 너머 모하비 사막으로 가는 길을 찾았다.',
+    '📡 전체 무전: {n}님이 모하비 사막을 모두 둘러봤다. 프림 너머 라스베이거스로 가는 길이 열렸다. 뉴욕 쉘터의 신호가 조금 더 또렷해졌다.',
+    '📡 전체 무전: {n}님이 라스베이거스를 모두 둘러봤다. 로키산맥을 넘어 덴버로 가는 길이 열렸다.',
+    '📡 전체 무전: {n}님이 덴버를 모두 둘러봤다. 대평원을 가로질러 시카고로 가는 길이 열렸다.',
+    '📡 전체 무전: {n}님이 시카고를 모두 둘러봤다. 마지막 길, 뉴욕으로 가는 길이 열렸다. "기다리고 있다. 서둘러라."'
+  ];
+  function frontierNews(lv) { const ns = (regState && regState.f && regState.f.names) || []; return FRONTIER_NEWS[lv].replace('{n}', ns[lv - 1] || '누군가'); }
+  function renderFrontier() {
+    const f = frontier(), el = $('frontierLine');
+    el.hidden = !f;
+    if (f) el.textContent = '🗽 뉴욕 쉘터 신호 수신 중 · 열린 길: ' + REGION_ORDER.slice(0, f + 1).map(r => REGIONS[r].n).join(' → ');
+  }
+  let frWriting = false, frTried = 0;
+  async function frontierCheck() {
+    if (!db || !myDoc || !regState || !docReady || myDoc.status === 'dead') return;
+    const f = frontier();
+    if (f > (+myDoc.frSeen || 0)) {
+      myDoc.frSeen = f;
+      addLog(frontierNews(f));
+      notify('📡 전체 무전', frontierNews(f).slice(0, 120));
+      saveDoc();
+    }
+    if (f >= REGION_ORDER.length - 1 || frWriting || Date.now() - frTried < 30000) return;
+    if (!regionKeys(REGION_ORDER[f]).every(id => myDoc.visited.includes(id))) return;
+    frWriting = true; frTried = Date.now();
+    try {
+      let next = null;
+      const ok = await txUpdate('world/state', st => {
+        if (!st || ((st.f && +st.f.open) || 0) !== f) return false;
+        const names = (st.f && Array.isArray(st.f.names) ? st.f.names : []).slice(0, f).concat(String(myName).slice(0, 24));
+        st.f = next = { open: f + 1, names, ts: Date.now() };
+        return st;
+      });
+      if (ok && next && regState) { regState.f = next; regTouch(); renderStatus(); }
+    } catch (e) {}
+    frWriting = false;
   }
   function regSubscribe() {
     if (!db) return;
@@ -4784,6 +5039,7 @@ const FIREBASE_CONFIG = {
   function travelMinutes(a, b) {
     const A = DISTRICTS[a], B = DISTRICTS[b];
     if (!A || !B) return 10;
+    if (rgOf(a) !== rgOf(b)) return 60;
     const d = Math.hypot(A.x - B.x, A.y - B.y);
     return d < 35 ? 5 : d < 60 ? 10 : 30;
   }
@@ -4797,6 +5053,7 @@ const FIREBASE_CONFIG = {
     if (type === 'move') {
       if (!DISTRICTS[arg] || !(ADJ[myDoc.loc] || []).includes(arg)) return null;
       if (roadBlocked(myDoc.loc, arg) || (reg(arg).env.quarantine && myDoc.infection > 0)) return null;
+      if (rgOf(arg) !== rgOf(myDoc.loc) && !regionOpen(rgOf(arg))) return null;
       const mp = movePlan(arg);
       return { min: mp.min, veh: mp.veh, label: (mp.veh ? VEHICLES[mp.veh].ic : '🚶') + ' ' + (myDoc.visited.includes(arg) ? DISTRICTS[arg].n : '미지의 지역') + '(으)로 이동' };
     }
@@ -4835,9 +5092,9 @@ const FIREBASE_CONFIG = {
 
   // 움직인 시간만큼 배고프고 목마르고 지친다 (10분 기준)
   function activityCost(min, restful) {
-    const k = min / 10, wx = weatherOf(worldDay());
-    myDoc.sat = clamp(myDoc.sat - Math.round(3 * k));
-    myDoc.hyd = clamp(myDoc.hyd - Math.round(4 * k * (wx.hyd || 1)));
+    const k = min / 10, wx = weatherOf(worldDay()), C = REGIONS[rgOf(myDoc.loc)];
+    myDoc.sat = clamp(myDoc.sat - Math.round(3 * k * (C.cold ? 1.2 : 1)));
+    myDoc.hyd = clamp(myDoc.hyd - Math.round(4 * k * (wx.hyd || 1) * (C.hot ? 1.3 : 1)));
     if (!restful) myDoc.fat = clamp(myDoc.fat + Math.round(4 * k * (wx.fat || 1)));
     autoConsume('food');
     autoConsume('drink');
@@ -5402,6 +5659,7 @@ const FIREBASE_CONFIG = {
   // 업데이트할 때마다 맨 위에 추가한다
   const PATCH_NOTES = [
     { d:'10.18', items:[
+      '🗽 LA 밖으로: 누군가 LA의 모든 지역을 탐사하면 뉴욕 쉘터의 전체 무전과 함께 모하비 사막으로 가는 길이 열려요. 라스베이거스·덴버·시카고를 거쳐 뉴욕까지 (지방 5곳, 지역 34곳 추가)',
       '🔧 무기 수리: 배낭 아래 「무기 수리」에서 고철·못·천 조각으로 닳은 무기를 고쳐요 (정비 기술이 오를수록 더 많이)',
       '🧳 떠돌이 상인: 가끔 한 지역에 하루 머물며 탄약·약품·백신 등을 정해진 값에 바꿔 줘요. 위치는 오늘의 무전에서',
       '🏚️ 쉘터 시설: 빗물 수집기·텃밭 3단계 강화, 약초 화단 추가. 날씨에 따라 수확이 달라져요',
@@ -5988,7 +6246,7 @@ const FIREBASE_CONFIG = {
 </div>
 <script>
 (function(){
-  var BUILD_ID = '20261018083324';
+  var BUILD_ID = '20261018084909';
   function check(){
     fetch('version.txt?t=' + Date.now(), { cache: 'no-store' }).then(function(r){ return r.ok ? r.text() : ''; }).then(function(v){
       v = (v || '').trim();
