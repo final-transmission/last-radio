@@ -488,6 +488,16 @@
   .log-entry .txt { font-family: var(--font-mono); font-size: 13.5px; line-height: 1.6; }
   .survivor .name { font-family: var(--font-display); font-weight: 400; font-size: 16px; letter-spacing: .5px; }
   .survivor.tomb .name { text-decoration: line-through; text-decoration-color: var(--danger); }
+  /* 행동 버튼: 목록형으로 촘촘하게 */
+  .action-grid { grid-template-columns: 1fr; gap: 6px; }
+  .action-grid button.action, .action-grid button.action.rest, .action-grid button.action.raid, .action-grid button.action.explore {
+    flex-direction: row; justify-content: flex-start; align-items: center; gap: 10px; padding: 8px 12px; min-height: 0;
+    background: var(--bg-elevated); color: var(--text); border: 1px solid var(--border); border-radius: 8px; text-align: left; font-size: 14px; font-weight: 600; }
+  .action-grid button.action:hover:not(:disabled) { border-color: var(--accent); }
+  .action-grid button.action .ic { font-size: 15px; width: 20px; text-align: center; }
+  .action-grid button.action small { margin-left: auto; padding: 2px 10px; border: 1px solid var(--border); border-radius: 999px; font: 600 11px var(--font-mono); letter-spacing: 0; opacity: .85; }
+  .action-grid #sleepBtn { grid-column: auto; }
+  .weapon-row select { padding: 6px 10px; font-size: 13px; }
 </style>
 <header class="top">
   <h1><span class="hazard" aria-hidden="true">☣</span>최후의 무전</h1>
