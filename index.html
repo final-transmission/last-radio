@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://apis.google.com 'sha256-NzWzSr/JJIt0kS48PXCsqUjn9/ALxUaH31f7sTmbH+s=' 'sha256-XBhYyYOXmyHU+rUeBJm1vZW172xgTyzDLX1SllyaCU8=' 'sha256-GP4hwp+Hc5V3uqOyE5zeY7JuKeg8F7bJLYjlQCkRtok=' 'sha256-jtA8xomP8J6qOaTJTImEgL7cfgc6hASa/Sgb3ASpr+o='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://www.google.com; connect-src 'self' https://*.googleapis.com https://*.firebaseapp.com https://*.firebaseio.com wss://*.firebaseio.com; frame-src https://*.firebaseapp.com; object-src 'none'; base-uri 'self'; form-action 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://apis.google.com 'sha256-NzWzSr/JJIt0kS48PXCsqUjn9/ALxUaH31f7sTmbH+s=' 'sha256-XBhYyYOXmyHU+rUeBJm1vZW172xgTyzDLX1SllyaCU8=' 'sha256-jmUkuG7QPfAPlpwmtkmYVPmGKKUMcDpm7awYmDn78YI=' 'sha256-oek2IHxyXphrLWNSlTuyWWWfluKgcKHKJamZRRPbTm8='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://www.google.com; connect-src 'self' https://*.googleapis.com https://*.firebaseapp.com https://*.firebaseio.com wss://*.firebaseio.com; frame-src https://*.firebaseapp.com; object-src 'none'; base-uri 'self'; form-action 'self'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <style id="antiClickjack">html{display:none !important}</style>
 <script>if (window.self === window.top) { var ack = document.getElementById('antiClickjack'); ack.parentNode.removeChild(ack); } else { try { window.top.location = window.self.location.href; } catch (e) {} }</script>
@@ -2561,6 +2561,15 @@ const FIREBASE_CONFIG = {
     '도로변 광고판에 누군가 페인트로 적어 두었다. "동쪽으로. 뉴욕은 아직 살아 있다."',
     '주 경계 검문소는 비어 있었다. 차단기만 바람에 덜컹거렸다.'
   ];
+  // 지방 사이 구간별 이동 문장 (앞으로 나아갈 때만, 70% 확률)
+  const HIGHWAY_SEG = {
+    'la>mojave': ['패서디나를 지나자마자 사막의 열기가 숨통을 조여왔다. 길가에 버려진 차량들이 묘비처럼 늘어서 있었다.', '15번 고속도로가 끝이 보이지 않는 모래평원으로 이어졌다. 뜨거운 바람만이 유일한 동행이었다.'],
+    'mojave>vegas': ['황량한 사막 끝, 아지랑이 너머로 빛을 잃은 거대한 네온 도시가 환영처럼 피어올랐다.', '프림의 녹슨 롤러코스터 아래를 지나자 멀리 카지노 타워들이 거대한 유령처럼 모습을 드러냈다.'],
+    'vegas>denver': ['로키산맥 입구로 접어들자마자 매서운 산바람이 불어닥쳤다. 고도가 높아질수록 숨쉬기가 버거워졌다.', '넬리스 기지를 뒤로하고 뻗은 고속도로는 눈 덮인 거대한 산맥 속으로 빨려 들어가듯 이어졌다.'],
+    'denver>chicago': ['산악 지대를 벗어나자 사방이 평원인 76번 도로가 지평선 끝까지 곧게 뻗어 있었다.', '덴버 공항을 뒤로하고 달리는 대평원에는 구름 대신 떠돌이 워커들의 그림자만 낮게 깔렸다.'],
+    'chicago>ny': ['거대한 호수와 공업 단지를 지나 동쪽으로 향하는 90번 고속도로 위로 긴장감이 맴돌았다.', '게리 제철소의 꺼진 용광로를 뒤로하고 마침내 대서양 연안을 향해 발걸음을 재촉했다.']
+  };
+  function highwayLine(from, to) { const seg = HIGHWAY_SEG[rgOf(from) + '>' + rgOf(to)]; return seg && ch(.7) ? pick(seg) : pick(HIGHWAY_TEXT); }
   function doMove(id, veh) {
     const from = DISTRICTS[myDoc.loc], to = DISTRICTS[id];
     if (!to || !(ADJ[myDoc.loc] || []).includes(id)) return;
@@ -2568,7 +2577,7 @@ const FIREBASE_CONFIG = {
     const v = veh && vehHere() && vehHere().id === veh ? vehHere() : null, V = v && VEHICLES[v.id];
     const G = gateOf(myDoc.loc, id);
     let text = from.n + '에서 ' + to.n + '(으)로 ' + (V ? josa(V.n, '을', '를') + ' 타고 ' : '') + (G ? G.road + '를 따라 먼 길을 ' : '') + '이동했다. ';
-    if (G) text += pick(HIGHWAY_TEXT) + ' ';
+    if (G) text += highwayLine(myDoc.loc, id) + ' ';
     if (V) { v.fuel = Math.max(0, v.fuel - V.use * (G ? 3 : 1)); v.loc = id; if (V.tank) text += '(연료 ' + v.fuel + '/' + V.tank + ') '; }
     if (Math.random() < Math.min(0.85, to.danger * 0.5 * dangerMult(id, 'move') * (V ? V.noise : 1))) {
       text += pick(TRAVEL_ENCOUNTER) + ' ' + zombieFight([id], [5, 14]) + ' ';
@@ -4100,6 +4109,37 @@ const FIREBASE_CONFIG = {
     return ' (감염 +' + n + '%)';
   }
   function evXp(k, n) { gainSkill(k, n); return ''; }
+  function evHyd(n) { myDoc.hyd = clamp(myDoc.hyd + n); return ' (수분 ' + (n > 0 ? '+' : '') + n + ')'; }
+  // ---------- LA 밖 지방 전용 이벤트 (rg: 그 지방에서만 나온다) ----------
+  EVENTS.push(
+    { id:'mojave_desert_well', rg:'mojave', w:2, where:['baker','cajon'], run: () => '🪣 말라버린 우물가 바닥에서 우연히 밀봉된 생수병을 발견했다. 가뭄 속에서 건진 단비 같은 물이었다.' + evLoot(['water'], 1) + evHyd(15) },
+    { id:'vegas_showgirl_dressing', rg:'vegas', w:1, where:['southstrip','northstrip','studio'], run: () => '💄 화려한 무대 뒤 분장실은 엉망진창이었지만, 구석 서랍에서 쓸만한 응급 의료품이 남아 있었다.' + evLoot(['bandage','disinfectant'], 1) + evFat(-5) },
+    { id:'denver_university_barricade', rg:'denver', w:2, where:['boulder','school'], run: () => '🎒 학생들이 친 바리케이드 틈새에서 버려진 책가방과 비상식량을 발견했다. 서둘러 챙겨 자리를 떴다.' + evLoot(['crackers','chocolate'], 1) + evFat(5) },
+    { id:'chicago_subway_flood', rg:'chicago', w:1, where:['loop','terminal'], run: () => '🚇 침수된 지하철 승강장 계단을 내려가다 워커 한 마리가 낚싯줄처럼 발목을 잡았다. 간신히 뿌리치고 도망쳤다.' + evKills(1) + evHurt(10, 10, 'scratch') + evFat(15) },
+    { id:'ny_wall_graffiti', rg:'ny', w:2, where:['midtown','lowermanhattan','office'], run: () => '🖍️ 고층 빌딩 유리창에 적힌 생존자들의 생사 확인 낙서를 보며 지금 뉴욕의 참혹한 실상을 실감했다.' + evFat(-10) + evXp('scav', 5) },
+    { id:'mojave_highway_car', rg:'mojave', w:2, where:['cajon','victorville','gas'], title:'🚗 멈춰 선 피난민 차량', text:'15번 고속도로 한가운데 문이 열린 채 방치된 승용차 트렁크에서 희미한 금속 소리가 들린다.',
+      opts:[['open','트렁크를 조심스럽게 열어본다'],['pass','무시하고 지나친다']],
+      resolve: k => k === 'pass' ? '괜히 위험을 무릅쓰지 않고 지나쳤다. 잠시 그늘에서 숨을 돌렸다.' + evFat(-5)
+        : ch(.5) ? '트렁크 안에는 피난민이 챙기다 만 짐이 그대로 있었다.' + evLoot(['soup','ammo'], 1)
+        : '트렁크를 여는 순간 안에 있던 워커가 몸을 일으켰다. 뚜껑을 내리치며 겨우 물러났다.' + evFat(10) + evHurt(5, 5, 'bruise') },
+    { id:'vegas_casino_vault', rg:'vegas', w:1, where:['southstrip','warehouse'], title:'🎰 카지노 지하 금고', text:'카지노 지하 물류창고 구석에 두꺼운 철문이 반쯤 열린 채 안쪽의 물품들을 드러내고 있다.',
+      opts:[['deep','안쪽 깊숙이 뒤진다'],['quick','입구 쪽 상자만 챙긴다']],
+      resolve: k => k === 'quick' ? '입구 쪽 상자만 재빨리 챙겨 나왔다.' + evLoot(['crackers','bandage'], 1)
+        : ch(.6) ? '어둠 속을 더듬어 귀빈용 창고를 찾아냈다. 나오다 철제 선반에 부딪혔다.' + evLoot(['energy','whiskey'], 1) + evHurt(5, 5, 'bruise')
+        : '안쪽에 갇혀 있던 경비원들이 일제히 고개를 들었다. 피투성이가 되어 빠져나왔다.' + evHurt(15, 15, 'wound') + evFat(20) },
+    { id:'denver_snow_storm', rg:'denver', w:2, where:['eisenhower','aurora','cabin'], title:'❄️ 몰아치는 눈보라', text:'갑자기 매서운 눈보라가 몰아쳐 앞이 보이지 않는다. 근처에 몸을 피할 만한 작은 창고가 보인다.',
+      opts:[['hide','창고 안으로 몸을 피한다'],['push','계속 길을 재촉한다']],
+      resolve: k => k === 'hide' ? '창고 안에서 눈보라가 잦아들 때까지 몸을 녹였다. 쓸 만한 것도 하나 챙겼다.' + evLoot(['planks','cloth'], 1) + evFat(-10)
+        : '고개를 숙이고 눈보라를 뚫었다. 얼어붙은 길에 몇 번이나 미끄러졌다.' + evHurt(10, 10, 'bruise') + evHyd(-10) + evFat(20) },
+    { id:'chicago_stadium_tent', rg:'chicago', w:1, where:['lakeview','shelter'], title:'⛺ 야구장 대피소 텐트', text:'대피소로 쓰였던 야구장 관중석 아래, 손대지 않은 텐트 하나가 바람에 흔들리고 있다.',
+      opts:[['search','텐트 안을 꼼꼼히 뒤진다'],['grab','비상식량만 집어 든다']],
+      resolve: k => k === 'grab' ? '입구에 놓인 비상식량만 집어 들고 나왔다.' + evLoot(['tuna','crackers'], 1)
+        : '침낭 밑까지 뒤져 구호 물품을 찾아냈다.' + evLoot(['mre','bandage'], 1) + evFat(5) },
+    { id:'ny_subway_tunnel_camp', rg:'ny', w:1, where:['lowermanhattan','terminal'], title:'🚇 지하철 선로의 버려진 캠프', text:'선로 위에 누군가 머물렀던 흔적이 있다. 모닥불 재와 함께 오래된 배낭이 눈에 띈다.',
+      opts:[['open','배낭을 열어 본다'],['back','함정을 경계하며 돌아선다']],
+      resolve: k => k === 'back' ? '주변을 꼼꼼히 살피며 물러났다. 선로에 남은 발자국을 눈여겨봐 두었다.' + evFat(-5) + evXp('scav', 5)
+        : '배낭 안에는 쓸 만한 물건과 함께 피 묻은 붕대가 뒤엉켜 있었다.' + evLoot(['bandage','lighter'], 1) + evInfect(3) }
+  );
   function evAny(n) { return evLose(pick(['food','drink','med','tool']), 1) + (n > 1 ? evLose(pick(['food','drink','med','tool']), n - 1) : ''); }
   EVENTS.push(
     { id:'evac_bus_dead', w:2, where:['terminal','lobby','parking','dtla'], run: () => '🚌 대피 안내가 적힌 버스 안에는 승객들이 그대로 앉아 있었다. 안전벨트를 맨 채 죽은 사람들 사이로 무언가 움직였다.' +
@@ -4791,7 +4831,7 @@ const FIREBASE_CONFIG = {
     const tags = [P.id, SPOTS[loc][i][0], loc];
     let ev = myDoc.evChain && ch(.6) && EVENTS.find(e => e.id === myDoc.evChain);
     if (!ev) {
-      const pool = EVENTS.filter(e => !e.mission && e.id !== myDoc.evLast && (!e.cond || e.cond(loc)) && (!e.where || e.where.some(t => tags.includes(t))));
+      const pool = EVENTS.filter(e => !e.mission && e.id !== myDoc.evLast && (!e.rg || e.rg === rgOf(loc)) && (!e.cond || e.cond(loc)) && (!e.where || e.where.some(t => tags.includes(t))));
       // 지역 이름으로만 걸린 이벤트는 그 지역 모든 지점에서 나오므로 가중치 절반
       const wt = e => e.where && !e.where.some(t => t === tags[0] || t === tags[1]) ? e.w / 2 : e.w;
       let r = Math.random() * pool.reduce((t, e) => t + wt(e), 0); ev = pool[0];
@@ -5681,6 +5721,7 @@ const FIREBASE_CONFIG = {
   // 업데이트할 때마다 맨 위에 추가한다
   const PATCH_NOTES = [
     { d:'10.18', items:[
+      '🗺️ LA 밖 지방 전용 이벤트 10종과 구간별 이동 장면 추가',
       '😴 피로 회복량 증가: 잠자기 -75~90(밤엔 -85~100), 휴식 -20~28',
       '🗺️ 지도의 현재 위치 표시를 초록색으로 바꿨어요 (위험 지역 빨간 테두리와 구분)',
       '📦 쉘터 창고: 목록에서 물건을 골라 넣고 꺼내요. 창고에 든 물건은 아래에 한눈에 보여요',
@@ -6277,7 +6318,7 @@ const FIREBASE_CONFIG = {
 </div>
 <script>
 (function(){
-  var BUILD_ID = '20261018113502';
+  var BUILD_ID = '20261018114124';
   function check(){
     fetch('version.txt?t=' + Date.now(), { cache: 'no-store' }).then(function(r){ return r.ok ? r.text() : ''; }).then(function(v){
       v = (v || '').trim();
