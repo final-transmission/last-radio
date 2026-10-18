@@ -2194,6 +2194,8 @@
     }
   };
   Object.entries(REGION_MORE).forEach(([rg, list]) => Object.keys(list).forEach(k => { DISTRICTS[k] = Object.assign(list[k], { rg, weapons: [], food: [1,2], water: [1,2], med: 0.15 }); }));
+  // 내가 가 보지 않은 지역 이름은 남의 위치를 보여줄 때 ???로 가린다
+  function knownName(loc) { const D = DISTRICTS[loc]; if (!D) return null; return myDoc && (loc === myDoc.loc || (myDoc.visited || []).includes(loc)) ? D.n : '???'; }
   function rgOf(id) { return (DISTRICTS[id] && DISTRICTS[id].rg) || 'la'; }
   const REGION_KEYS = {};
   function regionKeys(rg) { return REGION_KEYS[rg] || (REGION_KEYS[rg] = Object.keys(DISTRICTS).filter(k => rgOf(k) === rg)); }
@@ -3038,7 +3040,7 @@
       const d = docByMsg(m) || { name: author };
       const sig = me ? { bars: 4, noise: 0 } : signal(hops(myDoc && myDoc.loc, m.loc));
       const text = garble(String(m.text).slice(0, 200), sig.noise, (m.ts || 0) + author);
-      const place = DISTRICTS[m.loc] ? '@' + DISTRICTS[m.loc].n : '@위치 불명';
+      const place = DISTRICTS[m.loc] ? '@' + knownName(m.loc) : '@위치 불명';
       const key = m.ts + '|' + author;
       return `<div class="rd-ln${me ? ' me' : ''}${d.status === 'dead' ? ' dead' : ''}${chatFresh.has(key) ? ' fresh' : ''}">
         <div class="hd"><span>${me ? '▶ TX' : '◀ RX'}</span><span>${hhmm(m.ts)}</span><span class="cs">${escapeHtml(author)}</span><span>${escapeHtml(place)}</span><span aria-label="신호 세기 ${sig.bars}">${BAR[sig.bars]}</span></div>
@@ -3308,7 +3310,7 @@
         const D = DISTRICTS[d.loc], dead = d.status === 'dead', me = isMe(d);
         const role = (shelterDoc && shelterDoc.founderKey ? shelterDoc.founderKey === keyOf(d) : founder === d.name) ? ' · 👑 대장' : '';
         const kick = founderMe && !me ? `<button class="secondary" type="button" data-kick="${escapeHtml(keyOf(d))}">내보내기</button>` : '';
-        return `<div class="sh-mem${dead ? ' gone' : ''}">${avatarHtml(d)}<div class="info"><b>${escapeHtml(d.name)}${me ? ' (나)' : ''}</b><small>${dead ? '🪦 사망 · 생존 ' + survDays(d) + '일' : '📍 ' + (D ? D.n : '위치 불명') + ' · ♥' + Math.max(0, +d.hp || 0) + ' · 생존 ' + survDays(d) + '일'}${role}</small></div>${kick}</div>`;
+        return `<div class="sh-mem${dead ? ' gone' : ''}">${avatarHtml(d)}<div class="info"><b>${escapeHtml(d.name)}${me ? ' (나)' : ''}</b><small>${dead ? '🪦 사망 · 생존 ' + survDays(d) + '일' : '📍 ' + (D ? knownName(d.loc) : '위치 불명') + ' · ♥' + Math.max(0, +d.hp || 0) + ' · 생존 ' + survDays(d) + '일'}${role}</small></div>${kick}</div>`;
       }).join('');
     }
     renderPolicy();
@@ -3349,7 +3351,7 @@
     const invited = shelterDoc && Array.isArray(shelterDoc.invited) ? shelterDoc.invited.slice(0, 50) : [];
     function inviteOptions(inv) {
       const cand = latestDocs.filter(d => d.status !== 'dead' && !isMe(d) && d.party !== myDoc.party && !inv.includes(keyOf(d)));
-      return '<option value="">초대할 생존자 고르기</option>' + cand.map(d => `<option value="${escapeHtml(keyOf(d))}">${escapeHtml(d.name)} · 생존 ${survDays(d)}일${DISTRICTS[d.loc] ? ' · ' + DISTRICTS[d.loc].n : ''}</option>`).join('');
+      return '<option value="">초대할 생존자 고르기</option>' + cand.map(d => `<option value="${escapeHtml(keyOf(d))}">${escapeHtml(d.name)} · 생존 ${survDays(d)}일${DISTRICTS[d.loc] ? ' · ' + knownName(d.loc) : ''}</option>`).join('');
     }
     if (!isFounder()) {
       box.innerHTML = `<div class="section-lbl" style="margin-top:14px">가입 방식</div><div class="muted" style="margin:0">${pol === 'invite' ? '🔒 초대받은 사람만 들어올 수 있어요.' : '🔓 이름을 아는 사람은 누구나 들어올 수 있어요.'}</div>`;
@@ -3609,7 +3611,7 @@
     const members = shelterMembers().sort((a, b) => (isMe(a) ? -1 : isMe(b) ? 1 : 0));
     $('shelterHere').innerHTML = members.map(d => {
       const D = DISTRICTS[d.loc], dead = d.status === 'dead';
-      return `<div class="who-face${isMe(d) ? ' me' : ''}${dead ? ' gone' : ''}">${avatarHtml(d)}<span>${isMe(d) ? '나' : escapeHtml(d.name)}</span><small>${dead ? '🪦 사망' : D ? '📍' + D.n : ''}</small></div>`;
+      return `<div class="who-face${isMe(d) ? ' me' : ''}${dead ? ' gone' : ''}">${avatarHtml(d)}<span>${isMe(d) ? '나' : escapeHtml(d.name)}</span><small>${dead ? '🪦 사망' : D ? '📍' + knownName(d.loc) : ''}</small></div>`;
     }).join('');
     const log = $('shelterLog');
     const nearBottom = log.scrollHeight - log.scrollTop - log.clientHeight < 60;
@@ -5921,6 +5923,7 @@
   // 업데이트할 때마다 맨 위에 추가한다
   const PATCH_NOTES = [
     { d:'10.18', items:[
+      '❓ 무전·쉘터 동료·초대 목록에서 내가 가 보지 않은 지역 이름은 ???로 보여요',
       '🪦 같은 캐릭터로 다시 시작하면 예전에 밝힌 지도가 그대로 남아요',
       '🩸 물릴 확률을 절반으로 낮췄어요 (좀비와 마주칠 때 약 22% → 11%)',
       '🗺️ LA 밖 지방 확장: 지방마다 LA처럼 21곳 (지역 71곳 추가)',
