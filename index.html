@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://apis.google.com 'sha256-NzWzSr/JJIt0kS48PXCsqUjn9/ALxUaH31f7sTmbH+s=' 'sha256-XBhYyYOXmyHU+rUeBJm1vZW172xgTyzDLX1SllyaCU8=' 'sha256-FxsymfJO2lS/NTZ5iEUfp7jO4CIZGzRUi3W72sfgXHo=' 'sha256-a6rmolIe8/Kj26a3pu4u9o2l1j2fsyKYXmjytlljgxk='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://www.google.com; connect-src 'self' https://*.googleapis.com https://*.firebaseapp.com https://*.firebaseio.com wss://*.firebaseio.com; frame-src https://*.firebaseapp.com; object-src 'none'; base-uri 'self'; form-action 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://apis.google.com 'sha256-NzWzSr/JJIt0kS48PXCsqUjn9/ALxUaH31f7sTmbH+s=' 'sha256-XBhYyYOXmyHU+rUeBJm1vZW172xgTyzDLX1SllyaCU8=' 'sha256-/1LnoOQNfP2w4D8RusTP+sJ6mKTeN9WLyNBuC6bihXg=' 'sha256-Ywjybb2yJ83NtnGCpHyHDn+I6nbKbdmG/8eZUR3BP7U='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://www.google.com; connect-src 'self' https://*.googleapis.com https://*.firebaseapp.com https://*.firebaseio.com wss://*.firebaseio.com; frame-src https://*.firebaseapp.com; object-src 'none'; base-uri 'self'; form-action 'self'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <style id="antiClickjack">html{display:none !important}</style>
 <script>if (window.self === window.top) { var ack = document.getElementById('antiClickjack'); ack.parentNode.removeChild(ack); } else { try { window.top.location = window.self.location.href; } catch (e) {} }</script>
@@ -217,7 +217,7 @@
   .m-glyph.unk { fill: var(--m-ink-dim); font-size: 9px; }
   .map-node.sel .m-blk, .map-node:focus-visible .m-blk { stroke: var(--m-ink); stroke-width: 2; stroke-dasharray: none; }
   .m-lbl { fill: var(--m-ink); font: 500 9.5px var(--font); paint-order: stroke; stroke: var(--m-land); stroke-width: 3px; stroke-linejoin: round; pointer-events: none; }
-  .m-cur { fill: none; stroke: #c0281e; stroke-width: 2; }
+  .m-cur { fill: none; stroke: #1f9d4a; stroke-width: 2.4; }
   @media (prefers-reduced-motion: no-preference) { .m-cur { animation: curPulse 1.6s ease-in-out infinite; } }
   @keyframes curPulse { 50% { stroke-opacity: .15; } }
   .m-badge { fill: var(--m-ink); }
@@ -2419,7 +2419,7 @@ const FIREBASE_CONFIG = {
   (function initLegend() {
     let h = Object.keys(KINDS).map(k => `<span><i style="background:${KINDS[k].c}">${KINDS[k].g}</i>${KINDS[k].n}</span>`).join('');
     h += '<span><i style="border:2px solid #d08a1e"></i>위험 보통</span><span><i style="border:2px solid #c0281e"></i>위험 높음</span>';
-    h += '<span><i style="border:2px solid #c0281e; border-radius:4px"></i>현재 위치</span><span><i style="background:#3b3226; border-radius:50%">2</i>다른 생존자</span>';
+    h += '<span><i style="border:2px solid #1f9d4a; border-radius:4px"></i>현재 위치</span><span><i style="background:#3b3226; border-radius:50%">2</i>다른 생존자</span>';
     h += '<span><i style="background:#d9ccaa; color:#6b5c3c; border:1px dashed #6b5c3c">?</i>미확인</span>';
     h += '<span><i style="background:#f7efd6; color:#2c3f93; border:1px solid #7a6b4f">≡</i>남겨진 메모</span>';
     $('mapLegend').innerHTML = h;
@@ -2500,7 +2500,7 @@ const FIREBASE_CONFIG = {
     if (isCur) {
       const ms = mySpot();
       const [x, y] = ms == null ? [roadsV[0], roadsH[0]] : [slots[ms][0] - 30, slots[ms][1] - 18];
-      h += `<g class="m-me"><path d="M${x},${y} l-7,-14 a8,8 0 1 1 14,0 z" fill="#c0281e" stroke="#f7efd6" stroke-width="1.5"/><circle cx="${x}" cy="${y - 17}" r="3" fill="#f7efd6"/></g>`;
+      h += `<g class="m-me"><path d="M${x},${y} l-7,-14 a8,8 0 1 1 14,0 z" fill="#1f9d4a" stroke="#f7efd6" stroke-width="1.5"/><circle cx="${x}" cy="${y - 17}" r="3" fill="#f7efd6"/></g>`;
     }
     // 제목 띠
     h += `<rect x="0" y="272" width="360" height="48" fill="#f7efd6" opacity=".92"/><line x1="0" y1="272" x2="360" y2="272" stroke="#c9b88a"/>`;
@@ -5681,6 +5681,7 @@ const FIREBASE_CONFIG = {
   // 업데이트할 때마다 맨 위에 추가한다
   const PATCH_NOTES = [
     { d:'10.18', items:[
+      '🗺️ 지도의 현재 위치 표시를 초록색으로 바꿨어요 (위험 지역 빨간 테두리와 구분)',
       '📦 쉘터 창고: 목록에서 물건을 골라 넣고 꺼내요. 창고에 든 물건은 아래에 한눈에 보여요',
       '✏️ 필기구(종이·노트·연필·볼펜)를 찾을 확률이 올라갔어요',
       '📌 메모: 한 장 남길 때마다 종이(또는 노트 1쪽)와 볼펜(또는 연필)이 1개씩 없어져요',
@@ -6275,7 +6276,7 @@ const FIREBASE_CONFIG = {
 </div>
 <script>
 (function(){
-  var BUILD_ID = '20261018091828';
+  var BUILD_ID = '20261018105412';
   function check(){
     fetch('version.txt?t=' + Date.now(), { cache: 'no-store' }).then(function(r){ return r.ok ? r.text() : ''; }).then(function(v){
       v = (v || '').trim();
