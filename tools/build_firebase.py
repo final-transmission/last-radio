@@ -149,8 +149,9 @@ hashes = []
 for m in re.finditer(r'<script>(.*?)</script>', s, re.S):
     hashes.append("'sha256-" + base64.b64encode(hashlib.sha256(m.group(1).encode('utf-8')).digest()).decode() + "'")
 local = ' http://127.0.0.1:* ws://127.0.0.1:*' if EMU else ''
-csp = ("default-src 'self'; script-src 'self' " + ' '.join(hashes) + "; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; "
-       "font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob:; "
+# apis.google.com: Firebase 인증이 로그인 유지용으로 불러오는 스크립트, www.google.com: Firestore 연결 확인용 이미지
+csp = ("default-src 'self'; script-src 'self' https://apis.google.com " + ' '.join(hashes) + "; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; "
+       "font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://www.google.com; "
        "connect-src 'self' https://*.googleapis.com https://*.firebaseapp.com https://*.firebaseio.com wss://*.firebaseio.com" + local + "; "
        "frame-src https://*.firebaseapp.com; object-src 'none'; base-uri 'self'; form-action 'self'")
 R('__CSP__', '<meta http-equiv="Content-Security-Policy" content="' + csp + '">')
