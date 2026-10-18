@@ -925,7 +925,7 @@
           <details><summary>🏚️ 조사와 이벤트</summary><p>「조사할 구역 고르기」에서 건물을 고르고, 그 안의 지점(주방·창고·사물함…)을 하나씩 뒤져요. 지점마다 나오는 물자와 위험도가 달라요. 뒤진 곳은 5일 동안 거의 비어 있어요.</p><p>조사 중엔 가끔 돌발 이벤트가 생겨요. 선택지가 나오면 고르기 전까지 다른 행동을 할 수 없어요. 어떤 이벤트는 다음 이벤트로 이어지기도 해요.</p></details>
           <details><summary>🚗 탈것</summary><p>주차장·차고·주유소·터미널 등에서 자전거, 오토바이, 승용차, 스포츠카, 트럭, 버스를 발견할 수 있어요. 시동은 30% 확률로만 걸려요. 자전거 말고는 연료가 필요하고, 휘발유 통 1개 = 연료 5예요. 탈것이 같은 지역에 있으면 이동 시간이 20~60%로 줄어요. 트럭·버스는 가방 한도도 늘려줘요.</p></details>
           <details><summary>🍖 배고픔·갈증·피로</summary><p>시간이 지나면 포만감·수분이 줄고 피로가 쌓여요. 배낭의 음식과 물은 필요할 때 알아서 꺼내 먹어요. 피로는 휴식·잠으로 풀어요. 굶주림·갈증·피로만으로는 죽지 않고 체력 1에서 버텨요.</p></details>
-          <details><summary>🩸 부상과 감염</summary><p>워커와 싸우면 부위별로 타박상·할큄·열상·물림을 입어요. 물리면 감염이 시작되고, 머리·목을 물리면 더 빨리 퍼져요. 감염이 100%가 되면 워커가 돼요. 항생제·혼합 허브로 감염을, 붕대·소독약·봉합 키트로 상처를 치료해요. 캐릭터 탭의 신체 검진표에서 상태를 볼 수 있어요.</p></details>
+          <details><summary>🩸 부상과 감염</summary><p>워커와 싸우면 부위별로 타박상·할큄·열상·물림을 입어요. 물리면 감염이 시작되고, 머리·목을 물리면 더 빨리 퍼져요. 감염이 100%가 되면 워커가 돼요. 항생제·혼합 허브로 감염을, 붕대·소독약·봉합 키트로 상처를 치료해요. 아주 드물게 나오는 🧪 실험용 백신은 감염을 완전히 없애고 게임 10일(현실 5시간) 동안 물려도 감염되지 않게 해 줘요. 병동·약품 진열대·무기고, 방호복 좀비, 보급 투하, 치료 임무, 검역 검문소에서 얻을 수 있어요. 캐릭터 탭의 신체 검진표에서 상태를 볼 수 있어요.</p></details>
           <details><summary>🎒 아이템과 제작</summary><p>배낭은 기본 15kg, 등산 배낭이 있으면 25kg까지 들 수 있어요. 신선식품은 하루마다 조금씩 상해요. 무기는 쓸수록 닳고, 권총은 탄약이 필요해요. 라이터·성냥이 있으면 고기를 굽고 빗물을 끓일 수 있고, 천 조각으로 붕대를 만들 수 있어요.</p></details>
           <details><summary>📻 무전기와 소통</summary><p>무전기는 전체 채널과 숫자 채널(100.1처럼 소수점 가능)이 있어요. 멀리 있는 사람의 무전일수록 잡음이 섞여요. 가끔 미확인 구조 신호가 잡히기도 해요. 「같은 곳」은 같은 건물에 있는 생존자끼리 얼굴을 보며 대화하는 곳이고, 물물교환도 할 수 있어요. 지역에 종이와 필기구로 메모를 남길 수도 있어요.</p></details>
           <details><summary>📻 무전 임무</summary><p>무전기에 구조 요청이 잡히면 「📍 응답하기」 버튼이 붙어요. 응답하면 그 지역이 지도에 📻로 표시되고, 게임 6일(현실 3시간) 안에 그 지역의 아무 지점이나 조사하면 임무 이벤트가 열려요. 구조, 치료, 물 교환, 남겨진 물자… 그리고 가끔은 함정도 있어요.</p></details>
@@ -1234,7 +1234,8 @@ const FIREBASE_CONFIG = {
     else type = r < 0.15 ? 'bite' : r < 0.6 ? 'scratch' : 'bruise';
     myDoc.injuries.push({ part: part.id, type, day: myDoc.day });
     let note = ' [' + part.n + ' ' + INJ[type].n + ']';
-    if (type === 'bite') {
+    if ((type === 'bite' || type === 'scratch') && immune()) { if (type === 'bite') note += ' 백신 덕분인지 상처가 검게 변하지 않았다.'; }
+    else if (type === 'bite') {
       if (!myDoc.infection) { myDoc.infection = 5; myDoc.infectionPart = part.id; note += ' 물린 자리 주변이 검게 변하기 시작했다.'; }
       else myDoc.infection = Math.min(99, myDoc.infection + 10);
     } else if (type === 'scratch' && !myDoc.infection && Math.random() < 0.15) {
@@ -1243,6 +1244,8 @@ const FIREBASE_CONFIG = {
     return note;
   }
 
+  // 실험용 백신 면역: 이 날짜까지는 새로 감염되지 않는다
+  function immune() { return !!(myDoc && myDoc.immuneUntil && myDoc.day <= myDoc.immuneUntil); }
   function infStage(v) {
     if (!v) return ['감염 없음', '아직은 깨끗하다.'];
     if (v < 25) return ['1단계 · 잠복기', '상처 주변이 검붉게 변하고 미열이 있다.'];
@@ -1332,7 +1335,7 @@ const FIREBASE_CONFIG = {
     $('infVal').textContent = inf + '%';
     $('infStage').textContent = myDoc.turned ? '전환 완료' : st[0];
     $('infStage').style.color = inf > 0 ? '#a3231a' : '#2c3f93';
-    $('infDesc').textContent = myDoc.turned ? '더 이상 사람이 아니다.' : st[1];
+    $('infDesc').textContent = (myDoc.turned ? '더 이상 사람이 아니다.' : st[1]) + (immune() && !myDoc.turned ? ' 🧪 백신 면역 ' + (myDoc.immuneUntil - myDoc.day + 1) + '일 남음' : '');
     $('injuryList').innerHTML = list.length
       ? list.map(i => `<div class="inj">${num[i.part] ? num[i.part] + '.' : ''} ${escapeHtml((PART_BY_ID[i.part] || {n:'?'}).n)} — ${INJ[i.type].n}<small>Day ${i.day}</small></div>`).join('')
       : '<div class="inj none">특이사항 없음.</div>';
@@ -3713,6 +3716,7 @@ const FIREBASE_CONFIG = {
 
   // ----- 추가 이벤트 v2 (사용자 제공) -----
   function evInfect(n) {
+    if (immune()) return ' (백신 면역으로 감염되지 않음)';
     if (!myDoc.infection) { myDoc.infection = n; myDoc.infectionPart = pickPart().id; }
     else myDoc.infection = Math.min(99, myDoc.infection + n);
     return ' (감염 +' + n + '%)';
@@ -3842,7 +3846,7 @@ const FIREBASE_CONFIG = {
     walker:   { n:'워커', ic:'🧟', w:60, dmg:1 },
     runner:   { n:'러너', ic:'🏃', w:12, dmg:1.4, t:'눈이 번뜩이는 러너가 전력으로 달려들었다.' },
     screamer: { n:'비명꾼', ic:'😱', w:8, dmg:1.1, t:['비명꾼이 찢어지는 소리를 질렀다. 사방에서 신음이 대답했다.', '목이 비정상적으로 부푼 워커가 숨을 들이마시더니 귀를 찢는 비명을 질렀다.', '멀리서 들리던 울음소리가 갑자기 가까워졌다. 다른 워커들이 일제히 같은 방향을 향했다.'], more:['school','shelter','terminal','church','trail','park','cabin','parking'] },
-    hazmat:   { n:'방호복 좀비', ic:'☣️', w:6, dmg:.9, t:'찢어진 방호복을 입은 좀비가 비틀거리며 다가왔다.', drop:['first_aid','antibiotics','disinfectant','bandage'], more:['hospital','pharmacy','ward','medshelf'] },
+    hazmat:   { n:'방호복 좀비', ic:'☣️', w:6, dmg:.9, t:'찢어진 방호복을 입은 좀비가 비틀거리며 다가왔다.', drop:['first_aid','antibiotics','disinfectant','bandage','first_aid','antibiotics','disinfectant','bandage','vaccine'], more:['hospital','pharmacy','ward','medshelf'] },
     soldier:  { n:'군인 좀비', ic:'🪖', w:6, dmg:1.3, t:'방탄조끼를 입은 군인 좀비가 총을 질질 끌며 다가왔다.', drop:['ammo','mre','first_aid'], more:['police','gunshop','shelter','armory','gate','tents'] },
     bloater:  { n:'부푼 시체', ic:'🫃', w:6, dmg:.8, t:'퉁퉁 부푼 시체가 터지며 썩은 가스를 뿜었다.', toxic:true },
     crawler:  { n:'크롤러', ic:'🩸', w:8, dmg:.7, t:'바닥에 납작하게 엎드린 시체가 갑자기 발목을 붙잡았다.', inj:'scratch', more:['basement','parking','restroom','baggage'] },
@@ -3967,7 +3971,7 @@ const FIREBASE_CONFIG = {
         const m = evUse(['first_aid','antibiotics','disinfectant','bandage','suture','painkillers']);
         if (!m) return '줄 의료품이 없었다. 손을 잡아주는 것밖에 할 수 없었다.';
         gainSkill('medic', 3);
-        return ITEMS[m].n + '으로 치료했다. 한참 뒤 숨이 고르게 돌아왔다.' + (ch(.6) ? recruit() : ' "이 은혜는 꼭..." 숨겨둔 물자를 내줬다.' + evLoot(['ammo','mre','water','tuna'], 3));
+        return ITEMS[m].n + '으로 치료했다. 한참 뒤 숨이 고르게 돌아왔다.' + (ch(.6) ? recruit() : ' "이 은혜는 꼭..." 숨겨둔 물자를 내줬다.' + evLoot(['ammo','mre','water','tuna'], 3) + (ch(.25) ? evLoot(['vaccine'], 1) : ''));
       } },
     water:  { title:'📻 목마른 교환꾼', text:'무전으로 물을 찾던 사람이 총알 상자를 들고 서 있다. "물 있어? 바꾸자."', opts:[['trade','물 2개를 건넨다'],['no','거절한다']],
       resolve: k => {
@@ -4017,7 +4021,7 @@ const FIREBASE_CONFIG = {
     const g = gevActive(myDoc.day);
     if (!g || g.type !== 'drop' || g.loc !== myDoc.loc || myDoc.gevClaim === g.slot) return '';
     myDoc.gevClaim = g.slot;
-    return ' 🪂 주황색 낙하산이 걸린 보급 상자를 찾았다!' + evLoot(['mre','mre','water','water','first_aid','antibiotics','ammo','fuel'], 5);
+    return ' 🪂 주황색 낙하산이 걸린 보급 상자를 찾았다!' + evLoot(['mre','mre','water','water','first_aid','antibiotics','ammo','fuel'], 5) + (ch(0.2) ? evLoot(['vaccine'], 1) : '');
   }
   // 대습격: 날이 바뀔 때 그 지역에 있으면 — 혼자면 피해, 동료나 다른 생존자가 있으면 함께 막고 보상
   function gevSiege(away) {
@@ -4328,7 +4332,7 @@ const FIREBASE_CONFIG = {
     { id:'reg_checkpoint', w:4, cond: loc => !!reg(loc).env.quarantine, title:'☣️ 검역 검문소', text:'방독면을 쓴 군인이 총구를 내린 채 다가온다. "검사받고 지나가시오. 체온, 상처, 전부."',
       opts:[['check','검사를 받는다'],['bribe','탄약 3발을 건넨다'],['back','돌아선다']],
       resolve: k => {
-        if (k === 'check') return myDoc.infection > 0 ? '체온계가 삑 울렸다. 군인들이 가방을 빼앗고 통제선 밖으로 밀어냈다.' + evAny(2) + evHurt(4, 10, 'human') : '검사를 통과했다. 배급 상자를 하나 받았다.' + evLoot(['water','mre','crackers'], 2);
+        if (k === 'check') return myDoc.infection > 0 ? '체온계가 삑 울렸다. 군인들이 가방을 빼앗고 통제선 밖으로 밀어냈다.' + evAny(2) + evHurt(4, 10, 'human') : '검사를 통과했다. 배급 상자를 하나 받았다.' + evLoot(['water','mre','crackers'], 2) + (ch(0.1) ? ' 군의관이 상자 하나를 더 밀어 줬다.' + evLoot(['vaccine'], 1) : '');
         if (k === 'bribe') { if (inv('ammo') < 3) return '건넬 탄약이 모자랐다. 군인이 고개를 저었다.'; addItem('ammo', -3); return '탄약을 쥐여 주자 군인이 눈을 돌렸다. 통제선 안쪽 정보를 슬쩍 흘려줬다. (권총 탄약 -3)' + evReveal(); }
         return '괜히 엮이지 않기로 했다.';
       } }
@@ -4472,6 +4476,7 @@ const FIREBASE_CONFIG = {
     const taken = Object.keys(got).filter(k => ITEMS[k] && ['food','drink','med'].includes(ITEMS[k].cat) && k !== 'rotten').reduce((t, k) => t + got[k], 0);
     if (taken) regEvent('dep', loc, Math.min(3, taken));
     addLog(head + (lt ? '쓸 만한 물자를 챙겼다. (' + lt + ')' : depleted ? '며칠 전에 뒤진 곳이라 남은 게 없다.' : '아무것도 없었다. 누군가 먼저 다녀간 모양이다.'));
+    if (!depleted && ['ward','medshelf','armory'].includes(P.id) && ch(0.04)) { const g = gainItem('vaccine', 1); if (g) addLog('🧪 잠긴 냉장 보관함 안에서 「실험용 백신」 앰플을 찾았다! 라벨에는 손글씨로 "효과 미확인"이라고 적혀 있다. (실험용 백신 +1)'); }
     if (!depleted) findStationery(P.st || 0);
   }
 
@@ -5114,6 +5119,7 @@ const FIREBASE_CONFIG = {
   // 업데이트할 때마다 맨 위에 추가한다
   const PATCH_NOTES = [
     { d:'10.18', items:[
+      '🧪 실험용 백신: 감염을 완전히 없애고 현실 5시간 동안 물려도 감염되지 않아요. 병동·약품 진열대·무기고, 방호복 좀비, 보급 투하, 치료 임무, 검역 검문소에서 드물게 얻어요',
       '🧹 3일 지난 무전은 자동으로 지워져요',
       '⚙️ 데이터 절약: 탭을 10분 넘게 안 보면 실시간 연결을 잠시 끊었다가 돌아오면 다시 이어요. 같은 곳 대화·쉘터 채팅은 그 탭을 볼 때만 연결해요',
       '🌆 지역 상태 변화: 지역마다 좀비 밀도·물자 고갈·환경(산불·정전·침수·도로 봉쇄·군사 검역·대규모 약탈·생존자 점령)이 생기고 변해요. 총성은 좀비를 부르고, 군집은 이웃 지역으로 옮겨 가요. 지도에서 지역을 누르면 지금 상태와 최근 사건을 볼 수 있어요',
@@ -5274,6 +5280,7 @@ const FIREBASE_CONFIG = {
     disinfectant:{ n:'소독약', ic:'🧴', cat:'med', wt:0.2, heal:['scratch','wound'], hp:4, desc:'할큄·열상 치료' },
     suture:      { n:'봉합 키트', ic:'🪡', cat:'med', wt:0.1, heal:['wound'], hp:8, desc:'열상 치료' },
     painkillers: { n:'진통제', ic:'💊', cat:'med', wt:0.05, hp:6, fat:-10, desc:'체력 +6, 피로 감소' },
+    vaccine:     { n:'실험용 백신', ic:'🧪', cat:'med', wt:0.1, inf:-100, vaccine:true, desc:'감염을 완전히 없애고 게임 10일(현실 5시간) 동안 물려도 감염되지 않는다. 매우 귀하다' },
     antibiotics: { n:'항생제', ic:'💉', cat:'med', wt:0.05, inf:-20, desc:'감염 진행 늦춤' },
     green_herb:  { n:'녹색 허브', ic:'🌿', cat:'med', wt:0.05, hp:10, desc:'체력 +10' },
     mixed_herb:  { n:'혼합 허브', ic:'☘️', cat:'med', wt:0.05, hp:25, inf:-5, desc:'체력 +25, 감염 조금 늦춤' },
@@ -5420,6 +5427,7 @@ const FIREBASE_CONFIG = {
     const it = ITEMS[id];
     if (!it || it.cat !== 'med' || inv(id) <= 0 || myDoc.status === 'dead') return false;
     const hurt = myDoc.injuries.filter(i => i.type !== 'bite');
+    if (it.vaccine) return true;
     return !!((it.inf && myDoc.infection > 0) || (it.healAll && hurt.length) || (it.heal && hurt.some(i => it.heal.includes(i.type))) || (it.hp && myDoc.hp < 100) || (it.fat && myDoc.fat > 0));
   }
   function useMed(id) {
@@ -5445,6 +5453,7 @@ const FIREBASE_CONFIG = {
       if (myDoc.infection === 0) { myDoc.infectionPart = null; what = josa(it.n, '을', '를') + ' 쓰고 한참을 앓았다. 거짓말처럼 열이 내렸다.'; parts.push('감염 치료'); }
       else { what = josa(it.n, '으로', '로') + ' 열을 겨우 눌렀다. 진행이 조금 늦춰졌을 뿐이다.'; parts.push('감염 ' + myDoc.infection + '%'); }
     }
+    if (it.vaccine) { myDoc.immuneUntil = myDoc.day + 10; myDoc.infection = 0; myDoc.infectionPart = null; myDoc.turned = false; what = '팔뚝에 백신을 놓았다. 화끈한 열이 온몸을 훑고 지나갔다. 혈관의 검은 기운이 빠져나간다.'; parts.length = 0; parts.push('감염 0%', '면역 10일'); }
     const ml = skillLv('medic');
     gainSkill('medic', 2);
     if (ml && myDoc.infection > 0 && it.inf) myDoc.infection = Math.max(0, myDoc.infection - ml);
@@ -5456,7 +5465,7 @@ const FIREBASE_CONFIG = {
   }
   // 신체 상태 카드의 "응급 처치" 버튼: 지금 상태에 가장 맞는 의료품을 고른다
   function bestMed() {
-    const order = myDoc.infection > 0 ? ['antibiotics','mixed_herb'] : [];
+    const order = myDoc.infection >= 60 ? ['vaccine','antibiotics','mixed_herb'] : myDoc.infection > 0 ? ['antibiotics','mixed_herb','vaccine'] : [];
     const hurt = myDoc.injuries.filter(i => i.type !== 'bite').map(i => i.type);
     if (hurt.includes('wound')) order.push('suture','disinfectant');
     if (hurt.length) order.push('bandage','disinfectant','first_aid');
@@ -5664,7 +5673,7 @@ const FIREBASE_CONFIG = {
 </div>
 <script>
 (function(){
-  var BUILD_ID = '20261018055109';
+  var BUILD_ID = '20261018061626';
   function check(){
     fetch('version.txt?t=' + Date.now(), { cache: 'no-store' }).then(function(r){ return r.ok ? r.text() : ''; }).then(function(v){
       v = (v || '').trim();
