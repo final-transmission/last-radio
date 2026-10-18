@@ -1972,6 +1972,9 @@ const FIREBASE_CONFIG = {
     }
     // 만든 시각: 예전 캐릭터는 태어난 게임 날짜로 역산한다
     if (!myDoc.bornAt) myDoc.bornAt = Math.min(Date.now(), WORLD_EPOCH + ((+myDoc.born || worldDay()) - 1) * WORLD_DAY_MS);
+    // 실제 만든 날보다 생존 시작일이 이르면(예전 버그) 만든 날로 맞춘다
+    const bornDay = Math.max(1, Math.floor((myDoc.bornAt - WORLD_EPOCH) / WORLD_DAY_MS) + 1);
+    if ((+myDoc.born || 0) < bornDay) myDoc.born = Math.min(bornDay, myDoc.day);
     if (!Array.isArray(myDoc.visited)) myDoc.visited = [];
     myDoc.visited = myDoc.visited.filter(k => DISTRICTS[k]);
     if (!myDoc.visited.includes(myDoc.loc)) myDoc.visited.push(myDoc.loc);
@@ -5678,7 +5681,7 @@ const FIREBASE_CONFIG = {
 </div>
 <script>
 (function(){
-  var BUILD_ID = '20261018062704';
+  var BUILD_ID = '20261018063226';
   function check(){
     fetch('version.txt?t=' + Date.now(), { cache: 'no-store' }).then(function(r){ return r.ok ? r.text() : ''; }).then(function(v){
       v = (v || '').trim();
