@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://apis.google.com 'sha256-NzWzSr/JJIt0kS48PXCsqUjn9/ALxUaH31f7sTmbH+s=' 'sha256-XBhYyYOXmyHU+rUeBJm1vZW172xgTyzDLX1SllyaCU8=' 'sha256-/1LnoOQNfP2w4D8RusTP+sJ6mKTeN9WLyNBuC6bihXg=' 'sha256-Ywjybb2yJ83NtnGCpHyHDn+I6nbKbdmG/8eZUR3BP7U='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://www.google.com; connect-src 'self' https://*.googleapis.com https://*.firebaseapp.com https://*.firebaseio.com wss://*.firebaseio.com; frame-src https://*.firebaseapp.com; object-src 'none'; base-uri 'self'; form-action 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://apis.google.com 'sha256-NzWzSr/JJIt0kS48PXCsqUjn9/ALxUaH31f7sTmbH+s=' 'sha256-XBhYyYOXmyHU+rUeBJm1vZW172xgTyzDLX1SllyaCU8=' 'sha256-GP4hwp+Hc5V3uqOyE5zeY7JuKeg8F7bJLYjlQCkRtok=' 'sha256-jtA8xomP8J6qOaTJTImEgL7cfgc6hASa/Sgb3ASpr+o='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://www.google.com; connect-src 'self' https://*.googleapis.com https://*.firebaseapp.com https://*.firebaseio.com wss://*.firebaseio.com; frame-src https://*.firebaseapp.com; object-src 'none'; base-uri 'self'; form-action 'self'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <style id="antiClickjack">html{display:none !important}</style>
 <script>if (window.self === window.top) { var ack = document.getElementById('antiClickjack'); ack.parentNode.removeChild(ack); } else { try { window.top.location = window.self.location.href; } catch (e) {} }</script>
@@ -4993,13 +4993,13 @@ const FIREBASE_CONFIG = {
   }
 
   function doRest() {
-    myDoc.fat = clamp(myDoc.fat - rint(12,18));
+    myDoc.fat = clamp(myDoc.fat - rint(20,28));
     myDoc.hp = clamp(myDoc.hp + rint(2,4));
     addLog(pick(['벽에 등을 기대고 잠깐 숨을 골랐다.', '물 한 모금 마시고 신발 끈을 다시 맸다. 조금 나아졌다.', '창밖을 살피며 잠시 눈을 붙였다.']) + ' (피로 감소)');
   }
   function doSleep() {
     const night = isNight();
-    myDoc.fat = clamp(myDoc.fat - rint(50,65) - (night ? 10 : 0));
+    myDoc.fat = clamp(myDoc.fat - rint(75,90) - (night ? 10 : 0));
     myDoc.hp = clamp(myDoc.hp + rint(8,14) + (night ? 3 : 0));
     addLog(pick(REST_TEXTS) + (night ? ' (밤에 푹 잤다. 피로 크게 감소, 체력 회복)' : ' (푹 잤다. 피로 크게 감소, 체력 회복)'));
   }
@@ -5681,6 +5681,7 @@ const FIREBASE_CONFIG = {
   // 업데이트할 때마다 맨 위에 추가한다
   const PATCH_NOTES = [
     { d:'10.18', items:[
+      '😴 피로 회복량 증가: 잠자기 -75~90(밤엔 -85~100), 휴식 -20~28',
       '🗺️ 지도의 현재 위치 표시를 초록색으로 바꿨어요 (위험 지역 빨간 테두리와 구분)',
       '📦 쉘터 창고: 목록에서 물건을 골라 넣고 꺼내요. 창고에 든 물건은 아래에 한눈에 보여요',
       '✏️ 필기구(종이·노트·연필·볼펜)를 찾을 확률이 올라갔어요',
@@ -6276,7 +6277,7 @@ const FIREBASE_CONFIG = {
 </div>
 <script>
 (function(){
-  var BUILD_ID = '20261018105412';
+  var BUILD_ID = '20261018113502';
   function check(){
     fetch('version.txt?t=' + Date.now(), { cache: 'no-store' }).then(function(r){ return r.ok ? r.text() : ''; }).then(function(v){
       v = (v || '').trim();

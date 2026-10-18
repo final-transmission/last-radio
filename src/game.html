@@ -4960,13 +4960,13 @@
   }
 
   function doRest() {
-    myDoc.fat = clamp(myDoc.fat - rint(12,18));
+    myDoc.fat = clamp(myDoc.fat - rint(20,28));
     myDoc.hp = clamp(myDoc.hp + rint(2,4));
     addLog(pick(['벽에 등을 기대고 잠깐 숨을 골랐다.', '물 한 모금 마시고 신발 끈을 다시 맸다. 조금 나아졌다.', '창밖을 살피며 잠시 눈을 붙였다.']) + ' (피로 감소)');
   }
   function doSleep() {
     const night = isNight();
-    myDoc.fat = clamp(myDoc.fat - rint(50,65) - (night ? 10 : 0));
+    myDoc.fat = clamp(myDoc.fat - rint(75,90) - (night ? 10 : 0));
     myDoc.hp = clamp(myDoc.hp + rint(8,14) + (night ? 3 : 0));
     addLog(pick(REST_TEXTS) + (night ? ' (밤에 푹 잤다. 피로 크게 감소, 체력 회복)' : ' (푹 잤다. 피로 크게 감소, 체력 회복)'));
   }
@@ -5631,6 +5631,7 @@
   // 업데이트할 때마다 맨 위에 추가한다
   const PATCH_NOTES = [
     { d:'10.18', items:[
+      '😴 피로 회복량 증가: 잠자기 -75~90(밤엔 -85~100), 휴식 -20~28',
       '🗺️ 지도의 현재 위치 표시를 초록색으로 바꿨어요 (위험 지역 빨간 테두리와 구분)',
       '📦 쉘터 창고: 목록에서 물건을 골라 넣고 꺼내요. 창고에 든 물건은 아래에 한눈에 보여요',
       '✏️ 필기구(종이·노트·연필·볼펜)를 찾을 확률이 올라갔어요',
