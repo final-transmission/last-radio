@@ -593,6 +593,15 @@
   .comp-ic { font-size: 26px; }
   .comp small { color: var(--text-dim); font-size: 11px; }
   .comp button { width: auto; padding: 5px 10px; font-size: 12px; }
+  .reg-box { margin-top: 10px; padding: 8px 10px; border: 1px dashed var(--border); border-radius: 8px; font-size: 12.5px; }
+  .reg-row { display: flex; flex-wrap: wrap; gap: 4px 14px; }
+  .reg-env { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+  .reg-env .pill { cursor: help; }
+  .reg-log { margin-top: 6px; color: var(--text-dim); font-size: 11.5px; line-height: 1.6; }
+  .reg-log span { font: 600 10px var(--font-mono); margin-right: 4px; }
+  .m-route.blocked { stroke: #c0281e; stroke-dasharray: 3 3; }
+  .m-block, .m-env { font-size: 10px; }
+  #mapSvg .m-fold, #mapSvg .m-fold-hi, #mapSvg .m-note, #mapSvg .m-stain, #mapSvg .m-sub, #mapSvg .m-title, #mapSvg .m-fog, #mapSvg .m-env, #mapSvg .m-block { pointer-events: none; }
 </style>
 </head>
 <body>
@@ -920,6 +929,7 @@
           <details><summary>🎒 아이템과 제작</summary><p>배낭은 기본 15kg, 등산 배낭이 있으면 25kg까지 들 수 있어요. 신선식품은 하루마다 조금씩 상해요. 무기는 쓸수록 닳고, 권총은 탄약이 필요해요. 라이터·성냥이 있으면 고기를 굽고 빗물을 끓일 수 있고, 천 조각으로 붕대를 만들 수 있어요.</p></details>
           <details><summary>📻 무전기와 소통</summary><p>무전기는 전체 채널과 숫자 채널(100.1처럼 소수점 가능)이 있어요. 멀리 있는 사람의 무전일수록 잡음이 섞여요. 가끔 미확인 구조 신호가 잡히기도 해요. 「같은 곳」은 같은 건물에 있는 생존자끼리 얼굴을 보며 대화하는 곳이고, 물물교환도 할 수 있어요. 지역에 종이와 필기구로 메모를 남길 수도 있어요.</p></details>
           <details><summary>📻 무전 임무</summary><p>무전기에 구조 요청이 잡히면 「📍 응답하기」 버튼이 붙어요. 응답하면 그 지역이 지도에 📻로 표시되고, 게임 6일(현실 3시간) 안에 그 지역의 아무 지점이나 조사하면 임무 이벤트가 열려요. 구조, 치료, 물 교환, 남겨진 물자… 그리고 가끔은 함정도 있어요.</p></details>
+          <details><summary>🌆 지역 상태</summary><p>모든 생존자가 같은 LA를 공유하고, 지역은 시간이 지나며 변해요. 지도에서 지역을 누르면 기본 위험도와 지금 위험도, 좀비 밀도, 물자 상태, 환경 상태, 최근 사건이 보여요.</p><p>🔊 총·차·경보 같은 소음은 그 지역에 좀비를 끌어들여요. 좀비 밀도가 70을 넘는 군집은 이웃 지역으로 옮겨 가기도 해요. 좀비를 쓰러뜨리면 밀도가 조금 줄어요.</p><p>📦 많이 털린 지역은 음식·음료가 덜 나와요. 시간이 지나거나 보급 투하·물자 임무로 회복돼요.</p><p>🔥 산불(이동·조사 위험, 일부 지점 폐쇄) · 🌊 침수(지하·주차장 폐쇄, 피로) · ⚡ 정전(어둡고 냉장고 음식이 상함, 고철·휘발유로 직접 복구) · 🚧 도로 봉쇄(그 길로 못 감, 장애물을 치워야 함) · ☣️ 군사 검역(감염되면 못 들어감) · 🏴 대규모 약탈 · 🏕️ 생존자 점령(거래 가능). 상태에 따라 나오는 이벤트도 달라져요.</p></details>
           <details><summary>🧟 좀비 종류</summary><p>워커 말고도 러너(빠르고 아프다), 비명꾼(무리를 부른다), 방호복 좀비(의료품을 지님), 군인 좀비(탄약·전투식량을 지님), 부푼 시체(가스), 크롤러(바닥에서 발목을 잡는다), 브루트(덩치가 크고 아프다), 스피터(검은 액체를 뱉는다), 장갑 좀비(잘 안 쓰러진다), 잠복자(구석에 숨어 있다), 익사체(물가에 나온다)가 있어요. 장소마다 자주 나오는 종류가 달라요.</p></details>
           <details><summary>📈 기술</summary><p>수색(조사), 근접전(사냥·몸싸움), 사격(권총), 의술(의료품), 요리(굽기·끓이기), 정비(탈것)가 쓸수록 올라요. 최대 10레벨이고, 다시 시작하면 처음부터예요.</p></details>
           <details><summary>🤝 동료</summary><p>무전 구조 임무나 조사 중 만난 생존자를 도우면 동료가 생길 수 있어요. 간호사·사냥꾼·정비공·경비원·짐꾼·응급 구조사·정찰병·채집 전문가·사격 교관·식물학자, 그리고 개. 동료는 매일 음식을 나눠 먹고 사흘 굶으면 떠나요. 싸움에서 대신 맞기도 하고, 쓰러지면 돌아오지 않아요.</p></details>
@@ -1629,6 +1639,7 @@ const FIREBASE_CONFIG = {
     if (hordeOf(worldDay()) === loc) m *= 1.8;
     const gv = gevActive(worldDay());
     if (gv && gv.type === 'siege' && gv.loc === loc) m *= 1.5;
+    m *= regionMult(loc, kind);
     return m;
   }
   function conditionText(loc) {
@@ -1636,6 +1647,8 @@ const FIREBASE_CONFIG = {
     if (isNight()) t.push('밤이라 더 위험해요');
     if (weatherOf(worldDay()).id === 'fog') t.push('안개 때문에 앞이 잘 안 보여요');
     if (hordeOf(worldDay()) === loc) t.push('☠ 오늘 이 지역에 무리가 몰려왔어요');
+    const rc = regionCondText(loc);
+    if (rc) t.push(rc);
     return t.join(' · ');
   }
 
@@ -2055,7 +2068,9 @@ const FIREBASE_CONFIG = {
     EDGES.forEach(([a, b]) => {
       if (!vis.has(a) && !vis.has(b)) return;
       const A = DISTRICTS[a], B = DISTRICTS[b];
-      h += `<line class="m-route${vis.has(a) && vis.has(b) ? '' : ' unk'}" x1="${A.x}" y1="${A.y}" x2="${B.x}" y2="${B.y}"/>`;
+      const bl = vis.has(a) && vis.has(b) && roadBlocked(a, b);
+      h += `<line class="m-route${vis.has(a) && vis.has(b) ? '' : ' unk'}${bl ? ' blocked' : ''}" x1="${A.x}" y1="${A.y}" x2="${B.x}" y2="${B.y}"/>`;
+      if (bl) h += `<text class="m-block" x="${(A.x + B.x) / 2}" y="${(A.y + B.y) / 2 + 3}" text-anchor="middle">🚧</text>`;
     });
     Object.keys(DISTRICTS).forEach(id => {
       const known = vis.has(id);
@@ -2077,6 +2092,8 @@ const FIREBASE_CONFIG = {
         if (hordeOf(worldDay()) === id) h += `<text x="${D.x - 12}" y="${D.y + 4}" text-anchor="end" class="m-horde">☠</text>`;
         const gv = gevActive(worldDay());
         if (gv && gv.loc === id) h += `<text x="${D.x + 12}" y="${D.y - 8}" class="m-horde">${gv.type === 'drop' ? '🪂' : '🧟'}</text>`;
+        const ri = regionMapIcons(id);
+        if (ri) h += `<text x="${D.x - 12}" y="${D.y - 9}" text-anchor="end" class="m-env">${ri}</text>`;
         if (myMission() && myMission().loc === id) h += `<text x="${D.x + 12}" y="${D.y + 12}" class="m-horde">📻</text>`;
         if (counts[id]) h += `<circle class="m-badge" cx="${D.x + 10}" cy="${D.y - 10}" r="5.5"/><text class="m-badge-t" x="${D.x + 10}" y="${D.y - 10}">${counts[id]}</text>`;
       } else {
@@ -2099,15 +2116,19 @@ const FIREBASE_CONFIG = {
     h += known ? `<h3>${D.n}<small>${D.en.toUpperCase()}</small></h3><p>${D.desc}</p>` : `<h3>미확인 지역</h3><p>가보기 전엔 어떤 곳인지 알 수 없다.</p>`;
     if (known) {
       const here = latestDocs.filter(d => !isMe(d) && d.status !== 'dead' && d.loc === id).map(d => escapeHtml(d.name));
-      h += `<div class="facts"><span class="pill">위험도 ${dangerWord(D.danger)} · ${Math.round(D.danger * 100)}%</span>`;
+      h += `<div class="facts"><span class="pill">기본 위험도 ${dangerWord(D.danger)} · ${Math.round(D.danger * 100)}%</span><span class="pill">지금 위험도 ${Math.round(currentDanger(id) * 100)}%</span>`;
       h += `<span class="pill">조사 구역 ${(SPOTS[id] || []).length}곳</span>${hordeOf(worldDay()) === id ? '<span class="pill" style="color:var(--danger)">☠ 오늘 무리 출몰</span>' : ''}</div>`;
       h += `<div class="facts">` + (SPOTS[id] || []).map(([t, n], i) => `<span class="pill" title="${SPOT_TYPES[t].n}">${SPOT_TYPES[t].ic} ${n}${buildingSearched(id, i) ? ' ✓' : ''}</span>`).join('') + `</div>`;
+      h += regionInfoHtml(id);
       const nm = memos.filter(m => m.loc === id).length;
       if (nm) h += `<p class="muted" style="margin-top:10px">📌 ${isCur ? '이곳에 메모 ' + nm + '장이 붙어 있다. 메모 카드에서 읽을 수 있다.' : '메모 ' + nm + '장이 붙어 있다. 직접 가야 읽을 수 있다.'}</p>`;
       h += `<p class="muted" style="margin-top:10px">${here.length ? '👥 이 지역의 생존자: ' + here.join(', ') : '👥 이 지역에 다른 생존자는 보이지 않는다.'}</p>`;
     }
     h += '<div class="act">';
-    if (isCur) h += '';
+    const busyOff = dead || myDoc.busy;
+    if (isCur) { if (reg(id).env.blackout) h += `<button class="secondary" id="fixBlackoutBtn" type="button"${busyOff || inv('scrap') < 1 || inv('fuel') < 1 ? ' disabled' : ''}>🔧 배전반 복구 · 20분 (고철 ${inv('scrap')}/1 · 휘발유 ${inv('fuel')}/1)</button>`; }
+    else if (adj && roadBlocked(myDoc.loc, id)) h += `<div class="muted" style="margin:0 0 8px">🚧 이 길은 막혀 있어요. 장애물을 치우거나 다른 길로 돌아가세요.</div><button class="secondary" id="clearRoadBtn" type="button"${busyOff ? ' disabled' : ''}>🚧 장애물 치우기 · 20분</button>`;
+    else if (adj && reg(id).env.quarantine && myDoc.infection > 0) h += `<div class="muted" style="margin:0">☣️ 군사 검역 중이에요. 감염 징후가 있으면 검문소를 통과할 수 없어요. 먼저 감염을 치료하세요.</div>`;
     else if (adj) h += `<button class="primary" id="moveBtn" type="button"${dead || myDoc.busy ? ' disabled' : ''}>${movePlan(id).veh ? VEHICLES[movePlan(id).veh].ic + ' ' : ''}${known ? '이곳으로 이동' : '미지의 지역으로 이동'} · ${movePlan(id).min}분</button>` + (myDoc.busy && !dead ? '<div class="muted">다른 행동을 하는 중이에요.</div>' : '');
     else h += `<div class="muted" style="margin:0">현재 위치에서 바로 갈 수 없어요. 이웃한 지역을 거쳐 가세요.</div>`;
     h += '</div>';
@@ -2115,6 +2136,8 @@ const FIREBASE_CONFIG = {
     $('mapInfo').hidden = !mapInfoOpen;
     $('mapInfoClose').addEventListener('click', () => { mapInfoOpen = false; $('mapInfo').hidden = true; });
     if ($('moveBtn')) $('moveBtn').addEventListener('click', () => startAction('move', id));
+    if ($('clearRoadBtn')) $('clearRoadBtn').addEventListener('click', () => startAction('fixenv', 'road:' + id));
+    if ($('fixBlackoutBtn')) $('fixBlackoutBtn').addEventListener('click', () => startAction('fixenv', 'blackout'));
     if ($('zoomBtn')) $('zoomBtn').addEventListener('click', () => mapView === 'city' ? setMapView('local', id) : setMapView('city'));
   }
 
@@ -2266,6 +2289,12 @@ const FIREBASE_CONFIG = {
     myDoc.spot = null;
     selSpot = 0;
     if (mapView === 'local') localId = id;
+    if (V && V.tank) regEvent('noise', id, Math.round(V.noise * 6));
+    const RE = reg(id).env;
+    if (RE.quarantine) text += '검문소에서 체온을 재고 상처를 확인받았다. 통과. ';
+    if (RE.wildfire) { myDoc.fat = clamp(myDoc.fat + 5); text += '연기가 자욱해 숨쉬기 힘들다. (피로 +5)' + (ch(0.3) ? (d => { myDoc.hp = clamp(myDoc.hp - d); return ' 불티에 데었다. (체력 -' + d + ')'; })(rint(3, 8)) : '') + ' '; }
+    if (RE.flooded) { myDoc.fat = clamp(myDoc.fat + 6); text += '허리까지 차오른 물을 헤치고 건넜다. (피로 +6) '; }
+    if (reg(id).z >= 70) text += '🧟 거리마다 좀비가 우글거린다. 군집이 몰려 있다. ';
     if (first) { myDoc.visited.push(id); text += '처음 와보는 곳이다. ' + to.desc + ' (새 지역 발견)'; }
     else text += pick(['익숙한 거리지만 방심은 금물이다.', '지난번보다 워커가 늘어난 것 같다.', '다시 돌아왔다. 달라진 건 없어 보인다.']);
     const left = memos.filter(m => m.loc === id).length;
@@ -3359,7 +3388,8 @@ const FIREBASE_CONFIG = {
     const pts = pointsOf(S[0]);
     $('pointPanel').innerHTML = `<div class="pp-head">${SPOT_TYPES[S[0]].ic} <b>${S[1]}</b> ${inside ? '<span class="pp-in">📍 지금 안에 있음</span>' : '<span class="muted" style="margin:0">지점을 고르면 걸어 들어가서 뒤져요</span>'}</div>` +
       pts.map((P, j) => {
-        const st = pointState(myDoc.loc, selSpot, j), dg = pointDanger(myDoc.loc, selSpot, j);
+        const st = pointState(myDoc.loc, selSpot, j), dg = pointDanger(myDoc.loc, selSpot, j), cl = pointClosed(myDoc.loc, P.id);
+        if (cl) return `<div class="pt dep"><span class="bic">${P.ic}</span><div class="bnm">${P.n}<small>${cl} 때문에 들어갈 수 없다</small></div><button class="secondary" type="button" disabled>통제됨</button></div>`;
         const has = [P.food ? '음식' : '', P.drink ? '음료' : '', P.med ? '의료품' : '', P.tool ? '도구' : '', P.weapon ? '무기' : '', P.st ? '필기구' : ''].filter(Boolean).join('·');
         return `<div class="pt ${st.cls}"><span class="bic">${P.ic}</span><div class="bnm">${P.n}<small>${has || '잡동사니'} · 위험 ${Math.round(dg * 100)}% · ${st.label}</small></div><button class="secondary" type="button" data-point="${j}"${off ? ' disabled' : ''}>뒤지기 · ${P.min}분</button></div>`;
       }).join('');
@@ -3445,7 +3475,7 @@ const FIREBASE_CONFIG = {
   const ch = p => Math.random() < p;
   function evFat(n) { myDoc.fat = clamp(myDoc.fat + n); return ' (피로 ' + (n > 0 ? '+' : '') + n + ')'; }
   function evThirst(n) { myDoc.hyd = clamp(myDoc.hyd - n); return ' (수분 -' + n + ')'; }
-  function evKills(n) { myDoc.zombieKills = (myDoc.zombieKills || 0) + n; return ' (처치 +' + n + ')'; }
+  function evKills(n) { myDoc.zombieKills = (myDoc.zombieKills || 0) + n; regEvent('kill', myDoc.loc, n); return ' (처치 +' + n + ')'; }
   function evUse(ids) { const k = ids.find(x => inv(x) > 0); if (k) addItem(k, -1); return k; }
   function evLose(cat, n) {
     const out = [];
@@ -3819,10 +3849,12 @@ const FIREBASE_CONFIG = {
     if (Z.spit) { myDoc.hyd = clamp(myDoc.hyd - 5); t += ' (수분 -5)'; }
     if (Z.xp && Z.xp[0] === 'scav') gainSkill('scav', Z.xp[1]);
     if (Z.toxic && ch(.5)) { myDoc.hyd = clamp(myDoc.hyd - 10); t += ' 가스를 들이마셔 속이 뒤집혔다. (수분 -10)'; }
+    if (k === 'screamer') regEvent('noise', myDoc.loc, 8);
     if (k === 'screamer' && ch(.4)) { const d2 = rint(4, 10); myDoc.hp = clamp(myDoc.hp - d2); t += ' 몰려든 무리에게 한 번 더 당했다. (체력 -' + d2 + ')'; }
     gainSkill('melee', 1);
     if (ch((0.25 + 0.04 * skillLv('melee')) * (Z.killMult || 1))) {
       myDoc.zombieKills = (myDoc.zombieKills || 0) + 1;
+      regEvent('kill', myDoc.loc, 1);
       t += ' 결국 ' + josa(Z.n, '을', '를') + ' 쓰러뜨렸다. (처치 +1)';
       if (Z.xp && Z.xp[0] === 'melee') gainSkill('melee', Z.xp[1]);
       if (Z.drop && ch(Z.dropP || 1)) { const g = rollLoot(Z.drop, 1); if (lootText(g)) t += ' 몸을 뒤져 챙겼다. (' + lootText(g) + ')'; }
@@ -3983,6 +4015,303 @@ const FIREBASE_CONFIG = {
     }
   }
 
+  // ---------- 지역 상태: 좀비 밀도 · 물자 고갈 · 환경 (모든 생존자가 같은 세계를 공유한다) ----------
+  // world/state 문서: { tick: 처리 끝난 세계 날짜, r: { 지역id: { z, dep, noise, env:{상태id:{s,until,to}}, log:[{d,t}], influx } } }
+  // regionEvents 컬렉션: 생존자 행동(소음·물자 소비·처치·복구)을 덧붙이기만 한다 → 날이 바뀔 때 world/state에 합쳐진다
+  const REG_ENV = {
+    wildfire:    { n:'산불', ic:'🔥', d:'이동·조사가 위험해지고 연기에 지친다. 산책로·옥상 등 일부 지점은 접근할 수 없다. 시간이 지나면 꺼진다', auto:true },
+    blackout:    { n:'정전', ic:'⚡', d:'어두워 조사가 위험하고 냉장고 음식은 상해 있다. 고철 1·휘발유 1로 배전반을 고쳐야 풀린다', auto:false },
+    flooded:     { n:'침수', ic:'🌊', d:'이동이 위험하고 지친다. 지하실·주차장·차고 등은 물에 잠겼다. 시간이 지나면 물이 빠진다', auto:true },
+    roadblocked: { n:'도로 봉쇄', ic:'🚧', d:'이웃 지역 한 곳으로 가는 길이 막혔다. 장애물을 치워야 지나갈 수 있다', auto:false },
+    quarantine:  { n:'군사 검역', ic:'☣️', d:'감염 징후가 있으면 들어갈 수 없다. 군인들 덕에 조사는 조금 안전하다. 시간이 지나면 철수한다', auto:true },
+    looted:      { n:'대규모 약탈', ic:'🏴', d:'일반 물자가 크게 줄었다. 물자 고갈이 40 밑으로 내려가면 풀린다', auto:true },
+    occupied:    { n:'생존자 점령', ic:'🏕️', d:'생존자 집단이 자리 잡았다. 좀비는 줄지만 물자를 나눠 쓴다. 거래 이벤트가 생긴다', auto:true },
+    ash:         { n:'잿더미', ic:'🪵', d:'산불이 지나간 자리. 타다 남은 물자를 찾을 수 있다', auto:true }
+  };
+  const REG_IDS = Object.keys(DISTRICTS);
+  const FIRE_OK = REG_IDS.filter(k => (SPOTS[k] || []).some(([t]) => t === 'park' || t === 'cabin'));
+  const FLOOD_OK = COASTAL.concat(['glendale', 'dtla', 'vernon', 'boyle']);
+  const QUAR_OK = REG_IDS.filter(k => (SPOTS[k] || []).some(([t]) => t === 'shelter' || t === 'hospital'));
+  const CLOSED_BY = { wildfire: ['trail','shed','roof','tents','tower'], flooded: ['basement','parking','garage','dock','restroom'] };
+  const clampR = v => Math.max(0, Math.min(100, Math.round(+v || 0)));
+  function zBase(id) { return clampR(DISTRICTS[id].danger * 120 + 10); }
+  function rngOf(seed) { let a = hashStr(seed) >>> 0; return () => { a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+  function regDefault(id) { return { z: zBase(id), dep: 20, noise: 0, env: {}, log: [], influx: 0 }; }
+  function regInit(T) { const r = {}; REG_IDS.forEach(id => r[id] = regDefault(id)); return { v: 1, tick: T, r }; }
+  function regNorm(st) {
+    if (!st || typeof st !== 'object' || !st.r) return null;
+    REG_IDS.forEach(id => {
+      const r = st.r[id] = Object.assign(regDefault(id), st.r[id] || {});
+      r.z = clampR(r.z); r.dep = clampR(r.dep); r.noise = clampR(r.noise);
+      if (!r.env || typeof r.env !== 'object') r.env = {};
+      Object.keys(r.env).forEach(k => { if (!REG_ENV[k]) delete r.env[k]; });
+      if (!Array.isArray(r.log)) r.log = [];
+    });
+    st.tick = +st.tick || worldDay();
+    return st;
+  }
+  let regState = null, regSnapEvents = [], regLocal = [], regVer = 0, regCache = {}, regTicking = false, regUnsub = null, regEvUnsub = null;
+  function regEventsAll() {
+    const ids = new Set(regSnapEvents.map(e => e.cid));
+    regLocal = regLocal.filter(e => !ids.has(e.cid) && Date.now() - e.ts < 120000);
+    return regSnapEvents.concat(regLocal);
+  }
+  function regApply(r, e) {
+    if (e.kind === 'noise') r.noise = clampR(r.noise + e.a);
+    else if (e.kind === 'dep') r.dep = clampR(r.dep + e.a);
+    else if (e.kind === 'resupply') r.dep = clampR(r.dep - e.a);
+    else if (e.kind === 'kill') r.z = clampR(r.z - e.a);
+    else if (e.kind === 'clear' && REG_ENV[e.env]) delete r.env[e.env];
+  }
+  // 지금 이 순간의 지역 상태 = 공유 상태 + 아직 합쳐지지 않은 오늘의 행동들
+  function reg(id) {
+    if (regCache[id] && regCache[id].v === regVer) return regCache[id].r;
+    const base = regState && regState.r && regState.r[id] ? regState.r[id] : regDefault(id);
+    const r = JSON.parse(JSON.stringify(base)), tick = regState ? regState.tick : 0;
+    regEventsAll().forEach(e => { if (e.loc === id && e.day >= tick) regApply(r, e); });
+    regCache[id] = { v: regVer, r };
+    return r;
+  }
+  function regTouch() { regVer++; regCache = {}; }
+  function regEvent(kind, loc, a, extra) {
+    if (!DISTRICTS[loc] || !myDoc) return;
+    const e = Object.assign({ kind, loc, a: Math.round(+a || 0), day: worldDay(), ts: Date.now(), cid: Math.random().toString(36).slice(2, 10), by: myKey || '' }, extra || {});
+    regLocal.push(e); regTouch();
+    if (db) db.collection('regionEvents').add(e).catch(() => {});
+  }
+  // 좀비 밀도가 평소(기본값)보다 높으면 위험이 커지고 낮으면 줄어든다 — 기본 위험도와 겹쳐 세지 않도록 '평소 대비 배율'로만 쓴다
+  function regionMult(loc, kind) {
+    if (!DISTRICTS[loc]) return 1;
+    const r = reg(loc), base = zBase(loc);
+    let m = Math.max(0.5, Math.min(2, (r.z + 20) / (base + 20)));
+    m *= 1 + Math.min(0.4, r.noise / 250);
+    const E = r.env;
+    if (E.wildfire) m *= kind === 'move' ? 1.3 : 1.25;
+    if (E.flooded) m *= kind === 'move' ? 1.3 : 1.1;
+    if (E.blackout && kind === 'explore') m *= 1.15;
+    if (E.quarantine && kind === 'explore') m *= 0.9;
+    if (E.occupied && (kind === 'explore' || kind === 'hunt')) m *= 0.85;
+    return m;
+  }
+  function currentDanger(loc) { return Math.min(0.85, DISTRICTS[loc].danger * dangerMult(loc, 'explore')); }
+  // 물자 고갈 50부터 단계적으로 줄어든다 (조사 지점 자체의 '며칠 전에 뒤짐' 감소와는 따로, 안 뒤진 지점에만 적용)
+  function supplyMult(loc) {
+    const r = reg(loc);
+    let m = r.dep < 50 ? 1 : r.dep < 80 ? 0.75 : 0.5;
+    if (r.env.looted) m *= 0.7;
+    if (r.env.occupied) m *= 0.85;
+    return Math.max(0.35, m);
+  }
+  function roadBlocked(a, b) { const A = reg(a).env.roadblocked, B = reg(b).env.roadblocked; return !!((A && A.to === b) || (B && B.to === a)); }
+  function pointClosed(loc, pid) { const E = reg(loc).env; for (const k of Object.keys(CLOSED_BY)) if (E[k] && CLOSED_BY[k].includes(pid)) return REG_ENV[k].n; return ''; }
+  function zWord(z) { return z >= 70 ? '군집' : z >= 50 ? '많음' : z >= 30 ? '보통' : '적음'; }
+  function depWord(d) { return d >= 80 ? '고갈' : d >= 50 ? '부족' : d >= 25 ? '보통' : '풍부'; }
+  function regLog(r, d, t) { r.log = [{ d, t }].concat(r.log || []).slice(0, 6); }
+
+  // ----- 하루 갱신: 같은 날짜면 모든 클라이언트가 같은 결과를 낸다 (날짜 시드 난수) -----
+  function stBlocked(st, a, b) { const A = st.r[a].env.roadblocked, B = st.r[b].env.roadblocked; return !!((A && A.to === b) || (B && B.to === a)); }
+  function envCount(st, k) { return REG_IDS.filter(id => st.r[id].env[k]).length; }
+  function envTotal(st) { return REG_IDS.reduce((t, id) => t + Object.keys(st.r[id].env).filter(k => k !== 'ash').length, 0); }
+  function regDayStep(st, d) {
+    const R = rngOf('region-' + d), pickR = arr => arr[Math.floor(R() * arr.length)];
+    // 1) 만료
+    REG_IDS.forEach(id => {
+      const r = st.r[id];
+      Object.keys(r.env).forEach(k => {
+        const e = r.env[k];
+        if (k === 'looted') { if (r.dep < 40) { delete r.env[k]; regLog(r, d, '🏴 약탈 흔적이 옅어졌다. 물자가 다시 모이고 있다'); } return; }
+        if (!REG_ENV[k].auto || e.until == null || d < e.until) return;
+        delete r.env[k];
+        if (k === 'wildfire') { r.env.ash = { s: d, until: d + 6 }; regLog(r, d, '🔥 산불이 잦아들었다. 잿더미가 남았다'); }
+        else if (k === 'occupied') {
+          if (R() < 0.5) { r.env.looted = { s: d }; r.dep = clampR(r.dep + 25); regLog(r, d, '🏴 생존자 집단이 떠나며 물자를 쓸어 갔다'); }
+          else { r.dep = clampR(r.dep - 10); regLog(r, d, '🏕️ 생존자 집단이 떠났다. 남기고 간 물자가 있다'); }
+        } else if (k !== 'ash') regLog(r, d, REG_ENV[k].ic + ' ' + REG_ENV[k].n + ' 해제');
+      });
+    });
+    // 2) 소음은 좀비를 끌어들이고 반씩 사라진다 / 밀도는 평소 수준으로 천천히 돌아간다 / 물자는 조금씩 다시 모인다
+    REG_IDS.forEach(id => {
+      const r = st.r[id];
+      r.z = clampR(r.z + r.noise * 0.3 + (zBase(id) - r.z) * 0.05 - (r.env.wildfire ? 3 : 0) - (r.env.occupied ? 2 : 0));
+      r.noise = Math.floor(r.noise * 0.5);
+      if (r.env.occupied) r.dep = clampR(r.dep + 1);
+      else if (!r.env.looted) r.dep = clampR(r.dep - 1);
+      if (r.env.occupied && r.dep >= 85 && !r.env.looted && envTotal(st) < 6) { r.env.looted = { s: d }; regLog(r, d, '🏴 바닥난 물자를 두고 약탈이 벌어졌다'); }
+    });
+    // 3) 군집 이동: 밀도 70 이상, 하루 최대 2번, 같은 날 받은 곳은 다시 출발하지 않는다
+    let moves = 0; const recv = new Set();
+    REG_IDS.filter(id => st.r[id].z >= 70).sort((a, b) => st.r[b].z - st.r[a].z).forEach(id => {
+      if (moves >= 2 || recv.has(id) || R() >= 0.4) return;
+      const nb = (ADJ[id] || []).filter(n => !stBlocked(st, id, n) && !recv.has(n));
+      if (!nb.length) return;
+      const to = pickR(nb), amt = Math.round(st.r[id].z * (0.10 + R() * 0.10));
+      st.r[id].z = clampR(st.r[id].z - amt); st.r[to].z = clampR(st.r[to].z + amt); st.r[to].influx = d;
+      regLog(st.r[id], d, '🧟 좀비 군집이 ' + DISTRICTS[to].n + ' 쪽으로 빠져나갔다');
+      regLog(st.r[to], d, '🧟 ' + DISTRICTS[id].n + '에서 좀비 군집이 밀려들었다 (+' + amt + ')');
+      moves++; recv.add(to);
+    });
+    // 4) 산불 확산: 실제 이웃 지역으로만, 동시에 최대 3곳
+    REG_IDS.filter(id => st.r[id].env.wildfire).forEach(id => {
+      if (envCount(st, 'wildfire') >= 3 || envTotal(st) >= 6 || R() >= 0.15) return;
+      const nb = (ADJ[id] || []).filter(n => FIRE_OK.includes(n) && !st.r[n].env.wildfire && !st.r[n].env.ash);
+      if (!nb.length) return;
+      const n = pickR(nb);
+      st.r[n].env.wildfire = { s: d, until: d + 4 + Math.floor(R() * 4) };
+      regLog(st.r[n], d, '🔥 ' + DISTRICTS[id].n + '에서 번진 불길이 넘어왔다');
+    });
+    // 5) 새 사건: 하루 하나까지, 활성 상태는 전체 6개까지
+    if (envTotal(st) < 6) {
+      const x = R(), free = k => REG_IDS.filter(id => !st.r[id].env[k]);
+      if (x < 0.05 && envCount(st, 'wildfire') < 2) {
+        const c = FIRE_OK.filter(id => !st.r[id].env.wildfire && !st.r[id].env.ash);
+        if (c.length) { const id = pickR(c); st.r[id].env.wildfire = { s: d, until: d + 6 + Math.floor(R() * 5) }; regLog(st.r[id], d, '🔥 마른 덤불에 불이 붙었다. 산불이 번지고 있다'); }
+      } else if (x < 0.09 && envCount(st, 'flooded') < 2) {
+        const c = FLOOD_OK.filter(id => !st.r[id].env.flooded);
+        if (c.length) { const id = pickR(c); st.r[id].env.flooded = { s: d, until: d + 4 + Math.floor(R() * 5) }; regLog(st.r[id], d, '🌊 수로가 넘쳐 거리가 물에 잠겼다'); }
+      } else if (x < 0.12 && envCount(st, 'blackout') < 2) {
+        const c = free('blackout');
+        if (c.length) { const id = pickR(c); st.r[id].env.blackout = { s: d }; regLog(st.r[id], d, '⚡ 변전 설비가 터졌다. 일대가 정전됐다'); }
+      } else if (x < 0.15 && envCount(st, 'roadblocked') < 2) {
+        const open = (a, b) => (ADJ[a] || []).filter(n => n !== b && !stBlocked(st, a, n)).length >= 2;
+        const pairs = [];
+        EDGES.forEach(([a, b]) => { if (!stBlocked(st, a, b) && open(a, b) && open(b, a)) { if (!st.r[a].env.roadblocked) pairs.push([a, b]); else if (!st.r[b].env.roadblocked) pairs.push([b, a]); } });
+        if (pairs.length) { const [a, b] = pickR(pairs); st.r[a].env.roadblocked = { s: d, to: b }; regLog(st.r[a], d, '🚧 ' + DISTRICTS[b].n + '(으)로 가는 길이 차량 잔해로 막혔다'); regLog(st.r[b], d, '🚧 ' + DISTRICTS[a].n + '(으)로 가는 길이 막혔다는 소식이 들린다'); }
+      } else if (x < 0.17 && envCount(st, 'quarantine') < 1) {
+        const c = QUAR_OK.filter(id => !st.r[id].env.quarantine);
+        if (c.length) { const id = pickR(c); st.r[id].env.quarantine = { s: d, until: d + 8 + Math.floor(R() * 9) }; regLog(st.r[id], d, '☣️ 군이 들어와 검역 통제선을 쳤다'); }
+      } else if (x < 0.21 && envCount(st, 'occupied') < 2) {
+        const c = REG_IDS.filter(id => !st.r[id].env.occupied && st.r[id].z < 55);
+        if (c.length) { const id = pickR(c); st.r[id].env.occupied = { s: d, until: d + 10 + Math.floor(R() * 11) }; st.r[id].dep = clampR(st.r[id].dep - 10); regLog(st.r[id], d, '🏕️ 생존자 집단이 자리를 잡았다. 가져온 물자가 조금 풀렸다'); }
+      }
+    }
+    // 6) 서버 이벤트: 군 보급 투하가 시작되는 날 그 지역 물자 회복
+    const g = gevOf(d + 1);
+    if (g.type === 'drop' && g.start === d + 1) { const r = st.r[g.loc]; r.dep = clampR(r.dep - 30); regLog(r, d + 1, '🪂 군 보급품이 투하됐다. 물자 사정이 나아졌다'); }
+  }
+  // 행동 기록을 합칠 때 남길 만한 것만 지역 기록에 남긴다 (같은 날 같은 종류는 한 번)
+  function regFoldLog(st, e) {
+    const r = st.r[e.loc]; if (!r) return;
+    const add = t => { if (!(r.log[0] && r.log[0].d === e.day && r.log[0].t === t)) regLog(r, e.day, t); };
+    if (e.kind === 'noise' && e.a >= 10) add('🔫 큰 소음이 울렸다. 좀비들이 고개를 돌렸다');
+    else if (e.kind === 'clear') add(e.env === 'blackout' ? '⚡ 생존자가 배전반을 고쳐 전기가 돌아왔다' : '🚧 생존자가 잔해를 치워 길이 뚫렸다');
+    else if (e.kind === 'resupply') add('📦 생존자가 물자를 들여왔다');
+  }
+  async function regTick() {
+    if (!db || !myDoc || regTicking) return;
+    const T = worldDay();
+    if (regState && regState.tick >= T) return;
+    regTicking = true;
+    try {
+      const snap = await db.doc('world/state').get();
+      let st = snap && snap.exists ? regNorm(JSON.parse(JSON.stringify(snap.data()))) : null;
+      if (!st) st = regInit(T);
+      else if (st.tick >= T) { regState = st; regTouch(); return; }
+      else {
+        const all = regEventsAll(), from = st.tick;
+        const fold = all.filter(e => e.day >= from && e.day < T && st.r[e.loc]);
+        fold.sort((a, b) => a.ts - b.ts).forEach(e => { regApply(st.r[e.loc], e); regFoldLog(st, e); });
+        for (let d = Math.max(from, T - 48); d < T; d++) regDayStep(st, d);
+        st.tick = T;
+        all.filter(e => e.id && e.day < T).slice(0, 150).forEach(e => db.collection('regionEvents').doc(e.id).delete().catch(() => {}));
+      }
+      await db.doc('world/state').set(st);
+      regState = st; regTouch();
+    } catch (e) {}
+    finally { regTicking = false; if (myDoc) renderStatus(); }
+  }
+  function regSubscribe() {
+    if (!db) return;
+    try {
+      if (regUnsub) regUnsub();
+      regUnsub = db.doc('world/state').onSnapshot((snap) => {
+        const st = snap && snap.exists ? regNorm(JSON.parse(JSON.stringify(snap.data()))) : null;
+        if (st && (!regState || st.tick >= regState.tick)) { const ch = !regState || JSON.stringify(st) !== JSON.stringify(regState); regState = st; if (ch) { regTouch(); if (myDoc) renderStatus(); } }
+        if (!st || st.tick < worldDay()) regTick();
+      }, () => {});
+      if (regEvUnsub) regEvUnsub();
+      regEvUnsub = db.collection('regionEvents').orderBy('ts', 'desc').limit(400).onSnapshot((snap) => {
+        const list = (snap && snap.docs) ? snap.docs.map(d => { const v = d.data(); return v ? Object.assign({}, v, { id: d.id }) : null; }).filter(e => e && DISTRICTS[e.loc] && typeof e.kind === 'string') : [];
+        const sig = list.map(e => e.id).join(',');
+        if (sig !== regSnapEvents.map(e => e.id).join(',')) { regSnapEvents = list; regTouch(); if (myDoc) renderStatus(); }
+      }, () => {});
+    } catch (e) {}
+  }
+  setInterval(() => { if (myDoc) regTick(); }, 15000);
+
+  // ----- 화면 -----
+  function regionInfoHtml(id) {
+    const r = reg(id), E = Object.keys(r.env);
+    let h = `<div class="reg-box"><div class="reg-row"><span>🧟 좀비 밀도 <b>${r.z}</b> · ${zWord(r.z)}</span><span>📦 물자 <b>${depWord(r.dep)}</b> (고갈 ${r.dep})</span>${r.noise >= 10 ? '<span>🔊 소음 여파 ' + r.noise + '</span>' : ''}</div>`;
+    if (E.length) h += '<div class="reg-env">' + E.map(k => { const e = r.env[k], left = e.until != null ? Math.max(1, e.until - worldDay()) : null; return `<span class="pill reg-${k}" title="${REG_ENV[k].d}">${REG_ENV[k].ic} ${REG_ENV[k].n}${k === 'roadblocked' && DISTRICTS[e.to] ? ' → ' + DISTRICTS[e.to].n : ''}${left ? ' · ' + left + '일' : k === 'blackout' || k === 'roadblocked' ? ' · 복구 필요' : ''}</span>`; }).join('') + '</div>';
+    if (r.log.length) h += '<div class="reg-log">' + r.log.slice(0, 3).map(l => `<div><span>D${l.d}</span> ${escapeHtml(l.t)}</div>`).join('') + '</div>';
+    return h + '</div>';
+  }
+  function regionCondText(loc) {
+    const r = reg(loc), t = Object.keys(r.env).filter(k => k !== 'ash').map(k => REG_ENV[k].ic + ' ' + REG_ENV[k].n);
+    if (r.z >= 70) t.push('🧟 좀비 군집');
+    if (r.dep >= 80) t.push('📦 물자 고갈'); else if (r.dep >= 50) t.push('📦 물자 부족');
+    return t.join(' · ');
+  }
+  function regionMapIcons(id) { const r = reg(id); return Object.keys(r.env).filter(k => k !== 'ash' && k !== 'roadblocked').map(k => REG_ENV[k].ic).concat(r.z >= 70 ? ['🧟'] : []).slice(0, 2).join(''); }
+
+  // ----- 복구 행동: 배전반 고치기 / 도로 장애물 치우기 (20분) -----
+  function doFixEnv(arg) {
+    const loc = myDoc.loc;
+    if (arg === 'blackout') {
+      if (!reg(loc).env.blackout) { addLog('⚡ 이미 누군가 전기를 살려 놓았다.'); return; }
+      if (inv('scrap') < 1 || inv('fuel') < 1) { addLog('⚡ 고철과 휘발유가 없어 배전반에 손을 댈 수 없었다.'); return; }
+      gainSkill('mech', 3);
+      addItem('scrap', -1);
+      if (ch(0.6 + 0.05 * skillLv('mech'))) {
+        addItem('fuel', -1);
+        regEvent('clear', loc, 0, { env: 'blackout' });
+        addLog('⚡ 발전기에 휘발유를 붓고 타 버린 배선을 고철로 이었다. ' + DISTRICTS[loc].n + '에 불이 들어왔다! (고철 -1, 휘발유 -1)');
+      } else { const d = rint(4, 8); myDoc.hp = clamp(myDoc.hp - d); addLog('⚡ 배선을 잇다 불꽃이 튀었다. 감전돼 손이 저린다. 다시 해봐야 한다. (고철 -1, 체력 -' + d + ')'); }
+      return;
+    }
+    if (String(arg).startsWith('road:')) {
+      const to = String(arg).slice(5);
+      if (!DISTRICTS[to] || !roadBlocked(loc, to)) { addLog('🚧 ' + (DISTRICTS[to] ? josa(DISTRICTS[to].n, '으로', '로') + ' 가는 길은 이미 뚫려 있었다.' : '길은 이미 뚫려 있었다.')); return; }
+      const owner = reg(loc).env.roadblocked && reg(loc).env.roadblocked.to === to ? loc : to;
+      myDoc.fat = clamp(myDoc.fat + 10);
+      gainSkill('mech', 2);
+      let t = '🚧 뒤엉킨 차량과 잔해를 밀어내 ' + josa(DISTRICTS[to].n, '으로', '로') + ' 가는 길을 텄다. (피로 +10)';
+      if (ch(0.3)) t += ' 소리를 듣고 다가온 것이 있었다. ' + zombieFight([], [6, 14]);
+      regEvent('clear', owner, 0, { env: 'roadblocked' });
+      regEvent('noise', loc, 6);
+      addLog(t);
+    }
+  }
+
+  // ----- 지역 상태에 따라 열리는 조사 이벤트 (cond가 맞을 때만 후보가 된다) -----
+  EVENTS.push(
+    { id:'reg_influx', w:4, cond: loc => { const r = reg(loc); return (r.influx && worldDay() - r.influx <= 4) || r.z >= 75; },
+      run: () => '👣 바닥에 셀 수 없이 많은 발자국이 겹쳐 있다. 군집이 이 근처를 지나갔다. 아니, 아직 지나가는 중이다. ' + zombieFight([], [8, 16]) },
+    { id:'reg_smoke', w:4, cond: loc => !!reg(loc).env.wildfire,
+      run: () => '🔥 창문 틈으로 매캐한 연기가 밀려들었다. 눈을 뜨기 힘들 만큼 따갑다.' + evFat(6) + evHurt(3, 7) },
+    { id:'reg_ash', w:4, cond: loc => !!reg(loc).env.ash,
+      run: () => '🪵 불길이 휩쓸고 간 자리에 타다 남은 상자가 뒹군다. 겉은 그을렸지만 안은 멀쩡했다.' + evLoot(['beans','tuna','water','scrap','nails','matches'], 2) + (ch(.3) ? ' 뜨거운 잔해에 손을 데었다.' + evHurt(3, 8, 'scratch') : '') },
+    { id:'reg_flood', w:4, cond: loc => !!reg(loc).env.flooded,
+      run: () => '🌊 무릎까지 차오른 물 위로 상자 몇 개가 떠다닌다. 물살을 헤치고 건졌다.' + evLoot(['water','tuna','cloth','soda'], 2) + evFat(4) + (ch(.2) ? ' 물속에서 무언가 다리를 잡아당겼다. ' + zombieFight(['dock'], [6, 12]) : '') },
+    { id:'reg_dark', w:4, cond: loc => !!reg(loc).env.blackout,
+      run: () => '⚡ 정전으로 건물 안이 칠흑같이 어둡다. 벽을 더듬으며 나아갔다.' + (ch(.35) ? ' 어둠 속에서 손이 닿은 건 차가운 피부였다. ' + zombieFight([], [6, 14]) : ' 계산대 밑에서 손전등 대신 쓸 것을 찾았다.' + evLoot(['matches','lighter'], 1)) },
+    { id:'reg_looted', w:3, cond: loc => !!reg(loc).env.looted,
+      run: () => '🏴 서랍이란 서랍은 다 열려 있고 바닥엔 빈 포장지만 굴러다닌다. 누군가 이 일대를 싹 쓸어 갔다.' + (ch(.4) ? ' 그래도 구석에 하나가 남아 있었다.' + evLoot(['crackers','water','chips'], 1) : '') },
+    { id:'reg_trade', w:4, cond: loc => !!reg(loc).env.occupied, title:'🏕️ 자리 잡은 생존자들', text:'이 일대를 차지한 생존자 집단의 보초가 손을 들어 막아선다. "거래라면 환영이다. 싸울 생각이면 돌아가."',
+      opts:[['food','음식 2개를 탄약·의료품과 바꾼다'],['ammo','탄약 3발을 음식과 바꾼다'],['no','그냥 지나간다']],
+      resolve: k => {
+        if (k === 'food') { const n = ['beans','tuna','soup','crackers','chips','ramen','bread','jerky','mre','chocolate'].filter(x => inv(x) > 0); if (!n.length) return '내밀 음식이 없었다. 보초가 어깨를 으쓱했다.'; evUse(n); evUse(['beans','tuna','soup','crackers','chips','ramen','bread','jerky','mre','chocolate']); return '음식을 건네자 상자를 열어 보였다.' + evLoot(['ammo','bandage','first_aid','disinfectant'], 2); }
+        if (k === 'ammo') { if (inv('ammo') < 3) return '탄약이 모자랐다.'; addItem('ammo', -3); return '탄약을 건네자 통조림 꾸러미를 내줬다. (권총 탄약 -3)' + evLoot(['beans','tuna','soup','water'], 3); }
+        return '고개만 끄덕이고 지나갔다.';
+      } },
+    { id:'reg_checkpoint', w:4, cond: loc => !!reg(loc).env.quarantine, title:'☣️ 검역 검문소', text:'방독면을 쓴 군인이 총구를 내린 채 다가온다. "검사받고 지나가시오. 체온, 상처, 전부."',
+      opts:[['check','검사를 받는다'],['bribe','탄약 3발을 건넨다'],['back','돌아선다']],
+      resolve: k => {
+        if (k === 'check') return myDoc.infection > 0 ? '체온계가 삑 울렸다. 군인들이 가방을 빼앗고 통제선 밖으로 밀어냈다.' + evAny(2) + evHurt(4, 10, 'human') : '검사를 통과했다. 배급 상자를 하나 받았다.' + evLoot(['water','mre','crackers'], 2);
+        if (k === 'bribe') { if (inv('ammo') < 3) return '건넬 탄약이 모자랐다. 군인이 고개를 저었다.'; addItem('ammo', -3); return '탄약을 쥐여 주자 군인이 눈을 돌렸다. 통제선 안쪽 정보를 슬쩍 흘려줬다. (권총 탄약 -3)' + evReveal(); }
+        return '괜히 엮이지 않기로 했다.';
+      } }
+  );
   // ---------- 알림: 탭을 안 보고 있을 때 행동이 끝나거나 일이 생기면 알려준다 ----------
   let notifyOn = false;
   try { notifyOn = localStorage.getItem('lr_notify') === '1'; } catch(e) {}
@@ -4008,7 +4337,7 @@ const FIREBASE_CONFIG = {
     const tags = [P.id, SPOTS[loc][i][0], loc];
     let ev = myDoc.evChain && ch(.6) && EVENTS.find(e => e.id === myDoc.evChain);
     if (!ev) {
-      const pool = EVENTS.filter(e => !e.mission && e.id !== myDoc.evLast && (!e.where || e.where.some(t => tags.includes(t))));
+      const pool = EVENTS.filter(e => !e.mission && e.id !== myDoc.evLast && (!e.cond || e.cond(loc)) && (!e.where || e.where.some(t => tags.includes(t))));
       // 지역 이름으로만 걸린 이벤트는 그 지역 모든 지점에서 나오므로 가중치 절반
       const wt = e => e.where && !e.where.some(t => t === tags[0] || t === tags[1]) ? e.w / 2 : e.w;
       let r = Math.random() * pool.reduce((t, e) => t + wt(e), 0); ev = pool[0];
@@ -4017,11 +4346,14 @@ const FIREBASE_CONFIG = {
     if (myDoc.evChain === ev.id) myDoc.evChain = null;
     myDoc.evLast = ev.id;
     if (ev.chain) myDoc.evChain = ev.chain;
-    if (ev.run) { addLog(head + ev.run()); return; }
+    if (ev.run) { addLog(head + ev.run()); evNoise(ev.id, null); return; }
     myDoc.event = { id: ev.id, loc, i, j, head };
     addLog(head + ev.title + '. ' + ev.text);
     notify('선택이 필요해요', ev.title);
   }
+  // 시끄러운 이벤트 결과는 지역 소음으로 남는다
+  const EV_NOISE = { alarm: 10, bell: 8, car_alarm_horde: { off: 12, grab: 12, run: 12 }, smarket: { smash: 12 }, vending: { smash: 6 }, suv: { trunk: 10 }, station: { air: 10 }, megahorde: { lure: 8 }, gunfight: { join: 12, grab: 6 }, mis_supply_container: { force: 8 }, quake: { search: 6 } };
+  function evNoise(id, k) { const v = EV_NOISE[id], n = typeof v === 'number' ? v : v && k ? v[k] : 0; if (n && myDoc) regEvent('noise', myDoc.loc, n); }
   async function resolveEvent(k) {
     const E = myDoc && myDoc.event, ev = E && EVENTS.find(e => e.id === E.id);
     if (!E) return;
@@ -4030,6 +4362,8 @@ const FIREBASE_CONFIG = {
       const hp0 = myDoc.hp;
       leftBehind = {};
       addLog('→ ' + ev.resolve(k).trim());
+      evNoise(ev.id, k);
+      if (ev.mission && ev.kind === 'supply') regEvent('resupply', myDoc.loc, 8);
       const lb = Object.keys(leftBehind);
       if (lb.length) addLog('🎒 가방이 꽉 차서 두고 왔다: ' + lb.map(x => x + ' ' + leftBehind[x]).join(', '));
       checkDeath();
@@ -4097,9 +4431,15 @@ const FIREBASE_CONFIG = {
     let f = rint(fr[0], fr[1]) + (bonus && fr[1] ? 1 : 0), wa = rint(dr[0], dr[1]);
     let m = Math.random() < (P.med || 0) * (depleted ? 0.3 : 1) ? (Math.random() < (P.med || 0) / 2 ? 2 : 1) : 0;
     if (depleted) { f = Math.floor(f / 2); wa = Math.floor(wa / 2); }
+    else {
+      // 지역 물자 고갈: 안 뒤진 지점의 음식·음료 수량만 줄인다 (고정·희귀 보상은 그대로)
+      const sm = supplyMult(loc);
+      if (sm < 1) { f = Math.floor(f * sm + Math.random()); wa = Math.floor(wa * sm + Math.random()); head += '이 일대는 물자가 많이 줄었다. '; }
+    }
     const got = {};
     let foodPool = lootPool(S[0], 'food');
     if (P.fresh) { const fp = foodPool.filter(k => ITEMS[k].fresh); foodPool = fp.length ? fp : ['bread','apple','raw_meat']; }
+    if (P.fresh && reg(loc).env.blackout) { foodPool = ['rotten']; head += '정전으로 냉장고 속 음식은 다 상해 있었다. '; }
     if (P.id === 'trail') foodPool = ['berries','apple'];
     if (P.id === 'roof') rollLoot(['rainwater'], wa, got); else rollLoot(lootPool(S[0], 'drink'), wa, got);
     rollLoot(foodPool, f, got);
@@ -4108,6 +4448,8 @@ const FIREBASE_CONFIG = {
     const TL = TOOL_LOOT[S[0]] || [.1, ['cloth','matches']];
     if (!depleted && Math.random() < (P.tool || 0)) rollLoot(P.id === 'armory' ? ['ammo','ammo','pack'] : TL[1], Math.random() < 0.3 ? 2 : 1, got);
     const lt = lootText(got);
+    const taken = Object.keys(got).filter(k => ITEMS[k] && ['food','drink','med'].includes(ITEMS[k].cat) && k !== 'rotten').reduce((t, k) => t + got[k], 0);
+    if (taken) regEvent('dep', loc, Math.min(3, taken));
     addLog(head + (lt ? '쓸 만한 물자를 챙겼다. (' + lt + ')' : depleted ? '며칠 전에 뒤진 곳이라 남은 게 없다.' : '아무것도 없었다. 누군가 먼저 다녀간 모양이다.'));
     if (!depleted) findStationery(P.st || 0);
   }
@@ -4129,7 +4471,7 @@ const FIREBASE_CONFIG = {
     useWeapon(weapon);
     const bonus = partyBonusActive();
     let t = WEAPON_TIER[weapon] || 0, wnote = '';
-    if (weapon === '권총') { if (inv('ammo') > 0) { if (ch(0.05 * skillLv('shoot') + (myComp() && myComp().trait === 'marksman' ? 0.2 : 0))) wnote = ' (탄약을 아꼈다)'; else { addItem('ammo', -1); wnote = ' (탄약 -1)'; } } else { t = 1; wnote = ' (탄약이 없어 손잡이로 내려쳤다)'; } }
+    if (weapon === '권총') { if (inv('ammo') > 0) { if (ch(0.05 * skillLv('shoot') + (myComp() && myComp().trait === 'marksman' ? 0.2 : 0))) wnote = ' (탄약을 아꼈다)'; else { addItem('ammo', -1); wnote = ' (탄약 -1)'; } regEvent('noise', myDoc.loc, 15); } else { t = 1; wnote = ' (탄약이 없어 손잡이로 내려쳤다)'; } }
     if (weapon !== '맨손') wearWeapon(weapon);
     const sk = weapon === '권총' ? 'shoot' : 'melee', hc = myComp();
     gainSkill(sk, 2);
@@ -4144,6 +4486,7 @@ const FIREBASE_CONFIG = {
       let dmg = rint(0,8);
       if (bonus) dmg = Math.round(dmg * 0.7);
       myDoc.hp = clamp(myDoc.hp - dmg);
+      regEvent('kill', myDoc.loc, 1);
       const zk = pickZombie([myDoc.loc]), Z = ZTYPES[zk];
       const zd = Z.drop && ch(.6) ? lootText(rollLoot(Z.drop, 1)) : '';
       addLog(fmt(pick(HUNT_KILL), weapon, dmg) + (zk !== 'walker' ? ' 쓰러진 건 ' + Z.ic + ' ' + Z.n + '였다.' : '') + (zd ? ' (' + zd + ')' : '') + (dmg >= 5 ? injure('scratch') : ''));
@@ -4233,14 +4576,21 @@ const FIREBASE_CONFIG = {
     const A = ACTIONS[type];
     if (type === 'explore') {
       const [i, j] = String(arg).split(':').map(Number), S = (SPOTS[myDoc.loc] || [])[i], P = S && pointsOf(S[0])[j];
+      if (P && pointClosed(myDoc.loc, P.id)) return null;
       return P ? { min: P.min, label: P.ic + ' ' + S[1] + ' ' + P.n + ' 뒤지기' } : null;
     }
     if (type === 'move') {
       if (!DISTRICTS[arg] || !(ADJ[myDoc.loc] || []).includes(arg)) return null;
+      if (roadBlocked(myDoc.loc, arg) || (reg(arg).env.quarantine && myDoc.infection > 0)) return null;
       const mp = movePlan(arg);
       return { min: mp.min, veh: mp.veh, label: (mp.veh ? VEHICLES[mp.veh].ic : '🚶') + ' ' + (myDoc.visited.includes(arg) ? DISTRICTS[arg].n : '미지의 지역') + '(으)로 이동' };
     }
     if (type === 'hunt') return { min: A.min, label: '🔪 ' + arg + '(으)로 사냥' };
+    if (type === 'fixenv') {
+      if (arg === 'blackout') return reg(myDoc.loc).env.blackout ? { min: 20, label: '🔧 배전반 복구' } : null;
+      const to = String(arg).slice(5);
+      return String(arg).startsWith('road:') && DISTRICTS[to] && roadBlocked(myDoc.loc, to) ? { min: 20, label: '🚧 ' + DISTRICTS[to].n + ' 방향 장애물 치우기' } : null;
+    }
     if (type === 'med') return ITEMS[arg] ? { min: A.min, label: ITEMS[arg].ic + ' ' + ITEMS[arg].n + ' 사용' } : null;
     if (type === 'craft') { const r = RECIPES.find(x => x.id === arg); return r && canCraft(r) ? { min: r.min, label: r.ic + ' ' + r.n } : null; }
     if (type === 'raid') return arg ? { min: A.min, label: '⚔️ ' + (nameOfKey(arg) || '누군가') + ' 약탈' } : null;
@@ -4298,6 +4648,7 @@ const FIREBASE_CONFIG = {
         else if (t === 'raid') { if (RAID_ENABLED) await doRaid(b.arg); else addLog('누군가를 덮치려다 마음을 접었다.'); }
         else if (t === 'med') { if (canUseMed(b.arg)) useMed(b.arg); }
         else if (t === 'craft') doCraft(b.arg);
+        else if (t === 'fixenv') doFixEnv(b.arg);
         const lb = Object.keys(leftBehind);
         if (lb.length) addLog('🎒 가방이 꽉 차서 두고 왔다: ' + lb.map(k => k + ' ' + leftBehind[k]).join(', '));
         activityCost(b.min || 0, t === 'rest' || t === 'sleep');
@@ -4430,6 +4781,7 @@ const FIREBASE_CONFIG = {
           renderTrades();
         }, () => {});
         if (noticeUnsub) noticeUnsub();
+        regSubscribe();
         noticeUnsub = db.collection('notices').orderBy('ts', 'desc').limit(30).onSnapshot((snap) => {
           onNotices((snap && snap.docs) ? snap.docs.map(d => { const v = d.data(); return v ? Object.assign({ id: d.id }, v) : null; }).filter(Boolean) : []);
         }, () => {});
@@ -4718,6 +5070,7 @@ const FIREBASE_CONFIG = {
   // 업데이트할 때마다 맨 위에 추가한다
   const PATCH_NOTES = [
     { d:'10.18', items:[
+      '🌆 지역 상태 변화: 지역마다 좀비 밀도·물자 고갈·환경(산불·정전·침수·도로 봉쇄·군사 검역·대규모 약탈·생존자 점령)이 생기고 변해요. 총성은 좀비를 부르고, 군집은 이웃 지역으로 옮겨 가요. 지도에서 지역을 누르면 지금 상태와 최근 사건을 볼 수 있어요',
       '📦 추가 콘텐츠 v2: 조사 이벤트 20종, 무전 대사 16줄(임무 9개), 임무 이벤트 6종(같은 종류도 여러 장면), 좀비 6종(크롤러·브루트·스피터·장갑 좀비·잠복자·익사체), 동료 특성 5종·이름 8명·동료 대사, 대사 풀 확장',
       '🔔 알림: 상단 종 버튼을 켜면 탭을 안 보고 있을 때 행동 완료·선택 이벤트·무전 임무를 알려줘요',
       '📻 무전 임무: 구조 요청 무전에 「응답하기」를 누르고 그 지역을 조사하면 임무 이벤트가 열려요 (현실 3시간 안에)',
@@ -5209,6 +5562,8 @@ const FIREBASE_CONFIG = {
     if (memoUnsub) { try { memoUnsub(); } catch(e){} memoUnsub = null; }
     if (graveUnsub) { try { graveUnsub(); } catch(e){} graveUnsub = null; }
     if (noticeUnsub) { try { noticeUnsub(); } catch(e){} noticeUnsub = null; }
+    if (regUnsub) { try { regUnsub(); } catch(e){} regUnsub = null; }
+    if (regEvUnsub) { try { regEvUnsub(); } catch(e){} regEvUnsub = null; }
     notices = [];
     graves = [];
     if (tradeUnsub) { try { tradeUnsub(); } catch(e){} tradeUnsub = null; }
@@ -5263,7 +5618,7 @@ const FIREBASE_CONFIG = {
 </div>
 <script>
 (function(){
-  var BUILD_ID = '20261018051751';
+  var BUILD_ID = '20261018053625';
   function check(){
     fetch('version.txt?t=' + Date.now(), { cache: 'no-store' }).then(function(r){ return r.ok ? r.text() : ''; }).then(function(v){
       v = (v || '').trim();
