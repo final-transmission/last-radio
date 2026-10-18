@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://apis.google.com 'sha256-NzWzSr/JJIt0kS48PXCsqUjn9/ALxUaH31f7sTmbH+s=' 'sha256-XBhYyYOXmyHU+rUeBJm1vZW172xgTyzDLX1SllyaCU8=' 'sha256-MwWbuGV7T0y9iOsHxBhjQofAOHasKpg4larje77W3v0=' 'sha256-eWDLvVtBrVwGIWtX3AP/YE3Rvjxx5RJpEMzvaNSqvDs='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://www.google.com; connect-src 'self' https://*.googleapis.com https://*.firebaseapp.com https://*.firebaseio.com wss://*.firebaseio.com; frame-src https://*.firebaseapp.com; object-src 'none'; base-uri 'self'; form-action 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://apis.google.com 'sha256-NzWzSr/JJIt0kS48PXCsqUjn9/ALxUaH31f7sTmbH+s=' 'sha256-XBhYyYOXmyHU+rUeBJm1vZW172xgTyzDLX1SllyaCU8=' 'sha256-pn4otLhEzrznRB8B7IsW+a9VfSbXRXgJeh0zMGbnyDM=' 'sha256-cinI8CgpArtxD4EscbyaMo95FJmIyoUWAV2ApR7C5EY='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://www.google.com; connect-src 'self' https://*.googleapis.com https://*.firebaseapp.com https://*.firebaseio.com wss://*.firebaseio.com; frame-src https://*.firebaseapp.com; object-src 'none'; base-uri 'self'; form-action 'self'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <style id="antiClickjack">html{display:none !important}</style>
 <script>if (window.self === window.top) { var ack = document.getElementById('antiClickjack'); ack.parentNode.removeChild(ack); } else { try { window.top.location = window.self.location.href; } catch (e) {} }</script>
@@ -275,6 +275,10 @@
   .guide details:first-child { border-top: 0; }
   .guide summary { cursor: pointer; font-weight: 700; font-size: 14px; }
   .guide p { font-size: 13.5px; line-height: 1.65; margin: 6px 0 0; color: var(--text); }
+  .gift-targets { max-height: 240px; overflow-y: auto; border: 1px solid var(--border); border-radius: 4px; padding: 4px 8px; }
+  .gift-targets label { display: flex; align-items: center; gap: 8px; padding: 5px 0; font-size: 13px; border-bottom: 1px solid var(--border); }
+  .gift-targets label:last-child { border-bottom: none; }
+  .gift-targets input { width: auto; }
   .adm { display: flex; align-items: center; gap: 8px; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
   .adm .ainfo { flex: 1; min-width: 0; overflow-wrap: anywhere; }
   .adm .ainfo small { display: block; color: var(--text-dim); font-size: 11px; }
@@ -967,6 +971,14 @@
         <h2>🛠 생존자 관리</h2>
         <div class="muted" style="margin:0 0 8px">버그로 망가진 캐릭터를 고치거나 정리할 때 써요. 되돌릴 수 없으니 신중하게 눌러 주세요.</div>
         <div id="adminSurvivors"></div>
+      </div>
+      <div class="card">
+        <h2>🎁 아이템 지급</h2>
+        <div class="muted" style="margin:0 0 8px">물건을 골라 원하는 생존자에게 넣어 줘요. 받은 사람 일지에 기록이 남아요. 무게 제한은 무시해요.</div>
+        <div class="st-pick"><select id="giftItem" aria-label="지급할 아이템"></select><input type="number" id="giftQty" min="1" max="999" value="1" aria-label="수량"></div>
+        <div class="pol-row"><button class="secondary" type="button" id="giftSelAll">전체 선택</button><button class="secondary" type="button" id="giftSelNone">선택 해제</button></div>
+        <div id="giftTargets" class="gift-targets"></div>
+        <div class="pol-row" style="margin-top:8px"><button class="primary" type="button" id="giftBtn">선택한 생존자에게 주기</button><button class="secondary" type="button" id="giftAllBtn">🎁 전체 배포</button></div>
       </div>
       <div class="card">
         <h2>📻 전체 무전 정리</h2>
@@ -5658,7 +5670,7 @@ const FIREBASE_CONFIG = {
         if (mine && myDoc && +mine.adminTs > (+myDoc.adminTs || 0)) {
           const keepLog = myDoc.log;
           myDoc = Object.assign(JSON.parse(JSON.stringify(mine)), { log: keepLog, key: myKey });
-          addLog(mine.status === 'alive' && mine.hp >= 100 ? '🛠 관리자의 손길로 다시 일어섰다.' : '🛠 관리자가 내 상태를 바로잡았다.');
+          addLog(mine.adminNote || (mine.status === 'alive' && mine.hp >= 100 ? '🛠 관리자의 손길로 다시 일어섰다.' : '🛠 관리자가 내 상태를 바로잡았다.'));
           saveDoc();
         }
         renderBoard(latestDocs);
@@ -5732,6 +5744,7 @@ const FIREBASE_CONFIG = {
         <button class="secondary" type="button" data-adm="unparty" data-k="${k}"${d.party ? '' : ' disabled'}>쉘터 빼기</button>
         <button class="secondary" type="button" data-adm="delete" data-k="${k}"${isMe(d) ? ' disabled' : ''}>삭제</button></div>`;
     }).join('') || '<div class="muted">생존자가 없어요.</div>';
+    renderGift(docs);
     const glob = radioCh ? [] : chat.slice(-30).reverse();
     $('adminRadio').innerHTML = radioCh ? '<div class="muted">무전기를 전체 채널(7)로 맞추면 여기서 정리할 수 있어요.</div>'
       : glob.map(m => `<div class="adm"><div class="ainfo">${escapeHtml(String(m.text).slice(0, 80))}<small>${escapeHtml(String(m.author || '').slice(0, 12))} · ${hhmm(m.ts)}</small></div><button class="secondary" type="button" data-adm="radio" data-k="${escapeHtml(m._id || '')}">지우기</button></div>`).join('') || '<div class="muted">무전이 없어요.</div>';
@@ -5756,7 +5769,7 @@ const FIREBASE_CONFIG = {
           const snap = await db.doc('survivors/' + k).get();
           const t = snap && snap.exists ? JSON.parse(JSON.stringify(snap.data())) : null;
           if (t) {
-            delete t.log; delete t.avatar;
+            delete t.log; delete t.avatar; delete t.adminNote;
             if (act === 'revive') Object.assign(t, { status: 'alive', hp: 100, sat: 80, hyd: 80, fat: 15, infection: 0, infectionPart: null, turned: false, injuries: [], epitaph: null, busy: null });
             else t.party = '';
             t.updatedAt = t.adminTs = Date.now();
@@ -5768,6 +5781,61 @@ const FIREBASE_CONFIG = {
       }
     } catch(err) { adminMsg('처리하지 못했어요: ' + (err && err.message || '')); b.disabled = false; }
   });
+
+  // ----- 아이템 지급: 고른 생존자(또는 살아 있는 모두)에게 물건을 넣어 준다 -----
+  const giftSel = new Set();
+  function giftOptions() {
+    const cats = { food:'음식', drink:'음료', med:'의료품', tool:'도구·재료' };
+    let h = Object.keys(cats).map(c => `<optgroup label="${cats[c]}">` + Object.keys(ITEMS).filter(k => ITEMS[k].cat === c).map(k => `<option value="i:${k}">${ITEMS[k].ic} ${escapeHtml(ITEMS[k].n)}</option>`).join('') + '</optgroup>').join('');
+    h += '<optgroup label="필기구">' + STATIONERY_ITEMS.map(it => `<option value="s:${it.k}">${it.ic} ${it.n}</option>`).join('') + '</optgroup>';
+    h += '<optgroup label="무기">' + Object.keys(WEAPON_TIER).filter(w => w !== '맨손').map(w => `<option value="w:${escapeHtml(w)}">🗡️ ${escapeHtml(w)}</option>`).join('') + '</optgroup>';
+    return h;
+  }
+  function renderGift(docs) {
+    if (!$('giftItem').options.length) $('giftItem').innerHTML = giftOptions();
+    const alive = docs.filter(d => d.status !== 'dead');
+    $('giftTargets').innerHTML = alive.map(d => { const k = escapeHtml(keyOf(d)); return `<label><input type="checkbox" data-gk="${k}"${giftSel.has(keyOf(d)) ? ' checked' : ''}> <b>${escapeHtml(d.name)}</b>${isMe(d) ? ' (나)' : ''} <small class="muted" style="margin:0">♥${Math.max(0, +d.hp || 0)} · 생존 ${survDays(d)}일</small></label>`; }).join('') || '<div class="muted">살아 있는 생존자가 없어요.</div>';
+  }
+  function giftLabel(v, n) { const [t, id] = [v.slice(0, 1), v.slice(2)]; return t === 'i' ? ITEMS[id].n + ' ' + n + '개' : t === 's' ? STATIONERY_ITEMS.find(x => x.k === id).n + ' ' + n + '개' : id; }
+  function giftApply(t, v, n) {
+    const [kind, id] = [v.slice(0, 1), v.slice(2)];
+    if (kind === 'i') { t.inv = t.inv && typeof t.inv === 'object' ? t.inv : {}; t.inv[id] = (+t.inv[id] || 0) + n; }
+    else if (kind === 's') { t.items = t.items && typeof t.items === 'object' ? t.items : {}; t.items[id] = (+t.items[id] || 0) + n; }
+    else { t.weapons = Array.isArray(t.weapons) ? t.weapons : []; if (!t.weapons.includes(id)) t.weapons.push(id); t.wdur = t.wdur || {}; t.wdur[id] = WEAPON_DUR[id] || 20; }
+  }
+  async function giftTo(keys, v, n) {
+    const what = giftLabel(v, n), text = '🎁 관리자에게서 ' + josa(what, '을', '를') + ' 받았다.';
+    let ok = 0;
+    for (const k of keys) {
+      try {
+        if (k === myKey) { giftApply(myDoc, v, n); addLog(text); renderStatus(); await saveDoc(); ok++; continue; }
+        const snap = await db.doc('survivors/' + k).get();
+        const t = snap && snap.exists ? JSON.parse(JSON.stringify(snap.data())) : null;
+        if (!t || t.status === 'dead') continue;
+        delete t.log; delete t.avatar;
+        giftApply(t, v, n);
+        t.adminNote = text;
+        t.updatedAt = t.adminTs = Date.now();
+        await db.doc('survivors/' + k).set(t);
+        await appendLogTo(k, { day: t.day, text, ts: Date.now() });
+        ok++;
+      } catch (e) {}
+    }
+    adminMsg(josa(what, '을', '를') + ' ' + ok + '명에게 넣어 줬어요.' + (ok < keys.length ? ' (' + (keys.length - ok) + '명 실패)' : ''), ok > 0);
+  }
+  $('giftTargets').addEventListener('change', (e) => { const c = e.target.closest('input[data-gk]'); if (c) { if (c.checked) giftSel.add(c.dataset.gk); else giftSel.delete(c.dataset.gk); } });
+  $('giftSelAll').addEventListener('click', () => { latestDocs.filter(d => d.status !== 'dead').forEach(d => giftSel.add(keyOf(d))); renderAdmin(); });
+  $('giftSelNone').addEventListener('click', () => { giftSel.clear(); renderAdmin(); });
+  async function giftRun(keys, b) {
+    if (!isAdmin() || !db || !keys.length) { adminMsg('받을 생존자를 골라 주세요.'); return; }
+    const v = $('giftItem').value, n = Math.max(1, Math.min(999, parseInt($('giftQty').value, 10) || 1));
+    if (!v || !confirm(josa(giftLabel(v, n), '을', '를') + ' ' + keys.length + '명에게 줄까요?')) return;
+    b.disabled = true;
+    await giftTo(keys, v, n);
+    b.disabled = false;
+  }
+  $('giftBtn').addEventListener('click', () => giftRun(Array.from(giftSel).filter(k => latestDocs.some(d => keyOf(d) === k && d.status !== 'dead')), $('giftBtn')));
+  $('giftAllBtn').addEventListener('click', () => giftRun(latestDocs.filter(d => d.status !== 'dead').map(keyOf), $('giftAllBtn')));
 
   // ---------- 계정: 아이디/비밀번호로 어느 기기에서든 같은 캐릭터 ----------
   let myAccount = null;
@@ -6580,7 +6648,7 @@ const FIREBASE_CONFIG = {
 </div>
 <script>
 (function(){
-  var BUILD_ID = '20261018154330';
+  var BUILD_ID = '20261018155136';
   function check(){
     fetch('version.txt?t=' + Date.now(), { cache: 'no-store' }).then(function(r){ return r.ok ? r.text() : ''; }).then(function(v){
       v = (v || '').trim();

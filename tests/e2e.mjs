@@ -101,6 +101,7 @@ try {
   await A.p.click('#tabBtnBoard'); await A.p.waitForTimeout(2500);
   const x = await A.p.evaluate(() => window.__xss || 0);
   ok('악성 이름·소개 실행 안 됨 (XSS)', x === 0, 'xss=' + x);
+  await admin(async db => { const r = doc(db, 'survivors/' + ub.key); const d = (await getDoc(r)).data(); d.name = '밥'; d.bio = ''; await setDoc(r, d); });
   // 6) 관리자: 공지·백업·복원·오류 기록
   await C.p.click('#tabBtnGuide'); await C.p.fill('#noticeTitle', 'e2e 공지'); await C.p.fill('#noticeBody', '내용'); await C.p.click('#noticeBtn'); await C.p.waitForTimeout(1500);
   ok('관리자 공지 등록', (await admin(async db => (await getDocs(collection(db, 'notices'))).size)) === 1);
@@ -114,6 +115,16 @@ try {
   await C.p.setInputFiles('#restoreInput', file); await C.p.waitForTimeout(4000);
   const msg = await C.p.textContent('#adminMsg'); const hpBack = (await admin(async db => (await getDoc(doc(db, 'survivors/' + ua.key))).data())).hp;
   ok('백업에서 복원', /복원 완료/.test(msg) && !/실패/.test(msg) && hpBack === bk.data.survivors[ua.key].hp, msg + ' / hp ' + hpBack);
+  // 아이템 지급: 관리자가 앨리스에게 백신 2개, 전체 배포로 생수 3개
+  C.p.once('dialog', d => d.accept());
+  await C.p.selectOption('#giftItem', 'i:vaccine'); await C.p.fill('#giftQty', '2');
+  await C.p.check('#giftTargets input[data-gk="' + ua.key + '"]'); await C.p.click('#giftBtn'); await C.p.waitForTimeout(2500);
+  C.p.once('dialog', d => d.accept());
+  await C.p.selectOption('#giftItem', 'i:water'); await C.p.fill('#giftQty', '3'); await C.p.click('#giftAllBtn'); await C.p.waitForTimeout(4000);
+  const gA = (await admin(async db => (await getDoc(doc(db, 'survivors/' + ua.key))).data())), gB = (await admin(async db => (await getDoc(doc(db, 'survivors/' + ub.key))).data()));
+  ok('관리자 아이템 지급', (+gA.inv.vaccine || 0) >= 2 && (+gB.inv.water || 0) >= 3 && !(+gB.inv.vaccine), 'A vaccine ' + gA.inv.vaccine + ' water ' + gA.inv.water + ' / B water ' + gB.inv.water + ' · ' + await C.p.textContent('#adminMsg'));
+  const aLog = await A.p.evaluate(() => [...document.querySelectorAll('#myLog .txt')].slice(0, 6).map(x => x.textContent).join(' | '));
+  ok('지급 받은 사람 일지', /관리자에게서/.test(aLog), aLog.slice(0, 160));
   await C.p.click('#errLoadBtn'); await C.p.waitForTimeout(1500);
   const errs = await admin(async db => (await getDocs(collection(db, 'errors'))).docs.map(d => d.data().msg));
   ok('오류 기록 (권한·저장 오류 없음)', !errs.some(m => /permission|saveDoc/i.test(m)), JSON.stringify(errs).slice(0, 300));
