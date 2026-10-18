@@ -2753,7 +2753,7 @@
   const DISTRICT_KEYS = regionKeys('la');
   function npcAt(k) {
     const h = hashStr('npc-slot-' + k);
-    if (h % 100 >= 25) return null;
+    if (h % 100 >= 35) return null;
     const line = NPC_LINES[hashStr('npc-line-' + k) % NPC_LINES.length];
     const dk = DISTRICT_KEYS[hashStr('npc-d-' + k) % DISTRICT_KEYS.length], d = DISTRICTS[dk];
     const text = line.t.replace(/\{d\}로/g, josa(d.n, '으로', '로')).replace(/\{d\}/g, d.n).replace('{n}', 2 + hashStr('npc-n-' + k) % 4);
@@ -5692,6 +5692,7 @@
   // 업데이트할 때마다 맨 위에 추가한다
   const PATCH_NOTES = [
     { d:'10.18', items:[
+      '📻 무전기에 NPC 무전이 잡힐 확률이 25%에서 35%로 올라갔어요',
       '🧳 떠돌이 상인의 백신은 하루 1개만 팔아요. 먼저 바꾼 사람이 가져가고 그 뒤엔 품절',
       '🗺️ LA 밖 지방 전용 이벤트 10종과 구간별 이동 장면 추가',
       '😴 피로 회복량 증가: 잠자기 -75~90(밤엔 -85~100), 휴식 -20~28',

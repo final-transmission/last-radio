@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://apis.google.com 'sha256-NzWzSr/JJIt0kS48PXCsqUjn9/ALxUaH31f7sTmbH+s=' 'sha256-XBhYyYOXmyHU+rUeBJm1vZW172xgTyzDLX1SllyaCU8=' 'sha256-9p1kEjenPqs286HjyN2F3x8ZM8CIFIwqfMTPfXDtmus=' 'sha256-3ei+anq+fTK0v6+/HtsZXEL7N2fO3DztYZfDT/MrjaM='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://www.google.com; connect-src 'self' https://*.googleapis.com https://*.firebaseapp.com https://*.firebaseio.com wss://*.firebaseio.com; frame-src https://*.firebaseapp.com; object-src 'none'; base-uri 'self'; form-action 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://apis.google.com 'sha256-NzWzSr/JJIt0kS48PXCsqUjn9/ALxUaH31f7sTmbH+s=' 'sha256-XBhYyYOXmyHU+rUeBJm1vZW172xgTyzDLX1SllyaCU8=' 'sha256-vIWkO4huzEKTKBwZtpXQNRpCYYFg4D+TJ7SqVf5pKPk=' 'sha256-lghdCg/cqgSYPV/Vd/Kxe/V16p7HX+xr+5uZ3xjUIBI='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://www.google.com; connect-src 'self' https://*.googleapis.com https://*.firebaseapp.com https://*.firebaseio.com wss://*.firebaseio.com; frame-src https://*.firebaseapp.com; object-src 'none'; base-uri 'self'; form-action 'self'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <style id="antiClickjack">html{display:none !important}</style>
 <script>if (window.self === window.top) { var ack = document.getElementById('antiClickjack'); ack.parentNode.removeChild(ack); } else { try { window.top.location = window.self.location.href; } catch (e) {} }</script>
@@ -2786,7 +2786,7 @@ const FIREBASE_CONFIG = {
   const DISTRICT_KEYS = regionKeys('la');
   function npcAt(k) {
     const h = hashStr('npc-slot-' + k);
-    if (h % 100 >= 25) return null;
+    if (h % 100 >= 35) return null;
     const line = NPC_LINES[hashStr('npc-line-' + k) % NPC_LINES.length];
     const dk = DISTRICT_KEYS[hashStr('npc-d-' + k) % DISTRICT_KEYS.length], d = DISTRICTS[dk];
     const text = line.t.replace(/\{d\}로/g, josa(d.n, '으로', '로')).replace(/\{d\}/g, d.n).replace('{n}', 2 + hashStr('npc-n-' + k) % 4);
@@ -5742,6 +5742,7 @@ const FIREBASE_CONFIG = {
   // 업데이트할 때마다 맨 위에 추가한다
   const PATCH_NOTES = [
     { d:'10.18', items:[
+      '📻 무전기에 NPC 무전이 잡힐 확률이 25%에서 35%로 올라갔어요',
       '🧳 떠돌이 상인의 백신은 하루 1개만 팔아요. 먼저 바꾼 사람이 가져가고 그 뒤엔 품절',
       '🗺️ LA 밖 지방 전용 이벤트 10종과 구간별 이동 장면 추가',
       '😴 피로 회복량 증가: 잠자기 -75~90(밤엔 -85~100), 휴식 -20~28',
@@ -6340,7 +6341,7 @@ const FIREBASE_CONFIG = {
 </div>
 <script>
 (function(){
-  var BUILD_ID = '20261018120308';
+  var BUILD_ID = '20261018121737';
   function check(){
     fetch('version.txt?t=' + Date.now(), { cache: 'no-store' }).then(function(r){ return r.ok ? r.text() : ''; }).then(function(v){
       v = (v || '').trim();
