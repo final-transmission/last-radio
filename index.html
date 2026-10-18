@@ -3024,7 +3024,7 @@ const FIREBASE_CONFIG = {
 
   // ---------- 조사 중 돌발 이벤트 (좀비물 클리셰) ----------
   // where: 이 지점에서만, run: 즉시 결과, opts+resolve: 선택지가 있는 이벤트 (myDoc.event에 저장)
-  function evHurt(a, b, kind) { const d = rint(a, b); myDoc.hp = clamp(myDoc.hp - d); return ' (체력 -' + d + ')' + (kind ? injure(kind) : ''); }
+  function evHurt(a, b, kind) { const d = rint(a, b); if (d <= 0) return ''; myDoc.hp = clamp(myDoc.hp - d); return ' (체력 -' + d + ')' + (kind ? injure(kind) : ''); }
   function evKill() { myDoc.zombieKills = (myDoc.zombieKills || 0) + 1; }
   function evLoot(pool, n) { const g = rollLoot(pool, n); const t = lootText(g); return t ? ' (' + t + ')' : ' (가방이 꽉 차 아무것도 챙기지 못했다)'; }
   function evReveal() {
@@ -3087,10 +3087,181 @@ const FIREBASE_CONFIG = {
       resolve: k => k !== 'smash' ? '아쉬움을 삼키고 지나쳤다.'
         : (Math.random() < 0.35 ? '와장창! 소리에 워커가 몰려왔다. 챙길 만큼만 챙겨 달아났다.' + evHurt(4, 10, 'forage') : '와장창! 다행히 아무도 오지 않았다.') + evLoot(['soda','soda','energy','chips','chocolate','crackers'], 3) }
   ];
+  // ----- 추가 이벤트 (사용자 제공 시나리오) -----
+  // 동료·사기 시스템이 없어서 '동료'는 우연히 만난 생존자로, 영입은 정보·물자로 바꿔 처리한다
+  const ch = p => Math.random() < p;
+  function evFat(n) { myDoc.fat = clamp(myDoc.fat + n); return ' (피로 ' + (n > 0 ? '+' : '') + n + ')'; }
+  function evThirst(n) { myDoc.hyd = clamp(myDoc.hyd - n); return ' (수분 -' + n + ')'; }
+  function evKills(n) { myDoc.zombieKills = (myDoc.zombieKills || 0) + n; return ' (처치 +' + n + ')'; }
+  function evUse(ids) { const k = ids.find(x => inv(x) > 0); if (k) addItem(k, -1); return k; }
+  function evLose(cat, n) {
+    const out = [];
+    for (let t = 0; t < n; t++) { const ks = Object.keys(invOf(myDoc)).filter(k => ITEMS[k] && ITEMS[k].cat === cat); if (!ks.length) break; const k = pick(ks); addItem(k, -1); out.push(ITEMS[k].n); }
+    return out.length ? ' (잃음: ' + out.join(', ') + ')' : '';
+  }
+  const FOODS = ['beans','tuna','soup','crackers','chips','chocolate','ramen','jerky'], MREPACK = ['mre','mre','ammo','first_aid','water'];
+  EVENTS.push(
+    { id:'freeway', w:2, where:['parking','gas','vernon','inglewood','lax','southla'], run: () => '🛣️ 끝없이 늘어선 차들 사이로 버려진 여행 가방과 핏자국. 차 안에 갇힌 시체들이 유리창을 두드린다.' + evLoot(FOODS, 1) + evFat(6) + (ch(.2) ? ' 창문 하나가 깨지며 무리가 쏟아져 나왔다.' + evHurt(10, 20, 'forage') : '') },
+    { id:'lastfuel', w:3, where:['gas'], run: () => '⛽ 주유기에서 아직 기름이 조금씩 흘러나온다. 주변 차들엔 도망치다 버린 짐이 가득하다.' + evLoot(['fuel'], 1) + (ch(.2) ? ' 짐을 뒤지다 깨진 유리에 베였다.' + evHurt(5, 10, 'scratch') : '') },
+    { id:'pharm', w:3, where:['pharmacy','medshelf'], run: () => '💊 털리지 않은 약국이다. 계산대 뒤에서 바닥을 긁는 소리가 들린다.' + evLoot(['bandage','painkillers','antibiotics','disinfectant'], 2) + (ch(.35) ? ' 계산대 뒤의 워커가 발목을 잡았다.' + evHurt(8, 16, 'fight') : '') },
+    { id:'parcel', w:3, where:['house','living'], run: () => '📦 현관에 배달 음식과 택배 상자가 쌓여 있다. 문 안쪽에서 TV 소리와 함께 누군가 걸어 다닌다.' + evLoot(['chips','crackers','cloth','soda','chocolate'], 2) + (ch(.3) ? ' 문이 벌컥 열렸다. 집주인이었던 것이 덮쳐왔다.' + evHurt(8, 16, 'forage') : '') },
+    { id:'er', w:3, where:['hospital'], run: () => '🔔 텅 빈 응급실에 호출 벨이 반복해서 울린다. 커튼 너머 침대 하나가 흔들린다.' + (ch(.5) ? evLoot(['bandage','suture','antibiotics','first_aid'], 2) : ' 침대에 묶인 환자였던 것을 처리했다.' + evKills(1)) + (ch(.25) ? ' 벨 소리에 무리가 몰려왔다.' + evHurt(10, 20, 'fight') + evFat(10) : '') },
+    { id:'precinct', w:3, where:['police'], run: () => '🚓 벽엔 실종자 전단이 빼곡하다. 열린 무기 보관실, 무전기에선 구조 요청이 반복된다.' + evLoot(['ammo','ammo','pack','first_aid'], 2) + (ch(.3) ? ' 무전 소리를 따라 워커들이 들이닥쳤다.' + evHurt(8, 18, 'fight') : '') },
+    { id:'shutter', w:3, where:['market','shelves'], run: () => '🛍️ 반쯤 내려온 셔터 아래로 기어 들어갔다. 뒤집힌 진열대와 깨진 마네킹 사이를 뒤졌다.' + evLoot(['cloth','cloth','beans','chips','crackers'], 2) + (ch(.25) ? ' 마네킹인 줄 알았던 것들이 움직였다.' + evHurt(10, 22, 'forage') : '') },
+    { id:'upstairs', w:2, where:['motel','office','house'], run: () => '👣 계단을 오를 때마다 위층에서 발소리가 따라온다. 멈추면 멈추고, 움직이면 움직인다.' + evFat(8) + (ch(.5) ? ' 계단참에서 워커와 마주쳤다.' + evHurt(6, 14, 'forage') : ' 발소리의 끝엔 누군가 살던 빈방이 있었다.' + evLoot(['water','beans','bandage','matches'], 2)) },
+    { id:'hero', w:3, where:['hollywood','studio','stage'], run: () => '🦸 영웅 복장을 한 시체가 쓰러져 있다. 촬영 소품과 장난감 총이 흩어져 있다.' + evLoot(['cloth','chocolate','energy'], 1) + (ch(.3) ? ' 망토 자락이 꿈틀하더니 시체가 일어났다.' + evHurt(6, 14, 'forage') + evKills(1) : '') },
+    { id:'rollcall', w:3, where:['school'], run: () => '🏫 칠판엔 쓰다 만 대피 안내. 스피커에선 녹음된 교사 목소리가 학생 이름을 계속 부른다.' + evLoot(['crackers','juice','apple'], 1) + evPages(rint(1, 3)) + (ch(.25) ? ' 사물함 안에 숨어 있던 것이 튀어나왔다.' + evHurt(6, 14, 'forage') : '') },
+    { id:'carwash', w:2, where:['gas','garage'], run: () => '🚿 고장 난 세차기가 물을 뿜는다. 물안개 너머로 사람 형체가 하나씩 드러난다.' + evLoot(['scrap','fuel','nails'], 1) + (ch(.35) ? ' 안개 속에서 기습당했다.' + evHurt(8, 18, 'fight') : '') },
+    { id:'canal', w:2, where:['vernon','dtla','boyle','southla','park','trail'], run: () => '🌊 거대한 콘크리트 수로에 쇼핑 카트와 담요가 널려 있다. 벽엔 화살표와 \'위험\' 낙서.' + evReveal() + (ch(.3) ? ' 담요 더미 속에서 워커가 기어 나왔다.' + evHurt(6, 14, 'forage') : '') },
+
+    { id:'mtruck', w:2, where:['parking','vernon','inglewood','lax','southla','gate'], title:'🪖 넘어진 군용 트럭', text:'고속도로에 군용 트럭이 넘어져 있다. 군용 상자가 흩어져 있고 안쪽에서 희미한 신음이 들린다.', opts:[['go','트럭에 접근한다'],['round','멀리 돌아간다']],
+      resolve: k => k === 'go' ? '상자를 열었다.' + evLoot(['ammo','mre','mre','first_aid'], 3) + (ch(.45) ? ' 짐칸의 군인 좀비와 싸웠다.' + evKills(1) + evHurt(8, 18, 'fight') : '')
+        : '크게 돌아갔다.' + evFat(10) + (ch(.25) ? ' 그 길에서 우회로를 찾았다.' + evReveal() : '') },
+    { id:'plea', w:2, where:['house','motel'], title:'🚪 문 너머의 생존자', text:'"제발, 아직 살아 있어요!" 문을 두드리는 소리. 그런데 문틈 아래로 피가 흘러나온다.', opts:[['open','문을 열어 준다'],['lock','문을 잠그고 떠난다']],
+      resolve: k => k !== 'open' ? '문고리에 의자를 걸고 떠났다. 두드리는 소리가 점점 거칠어졌다.'
+        : ch(.45) ? '문을 연 순간 그는 이미 사람이 아니었다.' + evHurt(10, 20, 'fight') + evKills(1)
+        : '다친 생존자였다. 붕대를 감아주자 아는 걸 전부 알려줬다.' + evReveal() + evLoot(['water','beans'], 1) },
+    { id:'suspect', w:2, where:['gas','market','shelter','counter'], chain:'hidebite', title:'🤒 감염 의심자', text:'함께 움직이던 생존자의 팔에 물린 듯한 상처가 있다. 넘어져 다친 거라며 치료를 요구하지만, 식은땀에 눈동자가 흔들린다.', opts:[['iso','격리한다'],['treat','치료하고 함께 간다'],['leave','버리고 떠난다']],
+      resolve: k => k === 'iso' ? '창고에 가두고 밤새 지켜봤다.' + (myDoc.sat = clamp(myDoc.sat - 8), ' (포만감 -8)') + evFat(12) + (ch(.5) ? ' 새벽에 문 너머에서 짐승 소리가 났다. 감염이었다.' : ' 아침에 멀쩡히 나왔다. 정말 넘어진 거였다.')
+        : k === 'treat' ? (evUse(['bandage','disinfectant','first_aid','painkillers']) ? '약을 써서 상처를 감아줬다.' : '줄 약이 없어 천으로 감았다.') + (ch(.4) ? ' 며칠 뒤, 그는 자다가 일어나 나를 덮쳤다.' + evHurt(10, 22, 'fight') + evKills(1) : ' 고맙다며 숨겨둔 물자를 나눠줬다.' + evLoot(FOODS, 2))
+        : '등 뒤에서 이름을 부르는 소리를 무시했다. 발걸음이 무겁다.' + evFat(5) },
+    { id:'suv', w:3, where:['parking','garage','house'], title:'🚙 경보가 울리는 SUV', text:'SUV 경보가 갑자기 울린다. 열린 트렁크엔 짐이 가득하고, 골목에서 좀비들이 몰려온다.', opts:[['trunk','트렁크를 뒤진다'],['off','경보를 끄고 차를 조사한다'],['run','즉시 도망친다']],
+      resolve: k => k === 'trunk' ? '정신없이 쓸어 담았다.' + evLoot(['beans','tuna','water','nails','scrap','matches'], 3) + (ch(.6) ? evHurt(8, 20, 'forage') : '')
+        : k === 'off' ? '배선을 뜯어 경보를 껐다.' + evLoot(['scrap','fuel','cloth','water'], 2) + evFat(12)
+        : '뒤도 안 보고 달렸다.' + evFat(5) },
+    { id:'bus', w:2, where:['terminal','dtla','koreatown','lobby'], title:'🚌 마지막 버스', text:'목적지 표시판에 \'EVACUATION CENTER\'가 떠 있는 버스. 아무도 없는 것 같지만 뒷좌석 커튼이 흔들린다.', opts:[['search','버스 안을 수색한다'],['drive','버스로 이동한다'],['pass','지나친다']],
+      resolve: k => k === 'search' ? '좌석 밑을 뒤졌다.' + evLoot(['crackers','water','chips','pack'], 2) + (ch(.4) ? ' 커튼 뒤에 숨어 있던 것이 덮쳤다.' + evHurt(8, 18, 'fight') : '')
+        : k === 'drive' ? (inv('fuel') ? (addItem('fuel', -1), '휘발유를 붓고 시동을 걸었다. 굉음과 함께 몇 블록을 달렸다.' + evReveal() + (ch(.35) ? ' 소리를 따라온 무리를 겨우 떨쳤다.' + evHurt(5, 12, 'forage') : '')) : '시동이 걸리지 않는다. 연료가 없다.' + evFat(5))
+        : '버스를 지나쳤다.' },
+    { id:'smarket', w:3, where:['market'], title:'🏪 잠긴 슈퍼마켓', text:'유리문에 출입 금지 안내. 안쪽 진열대엔 통조림과 생수가 남아 있는 듯하다.', opts:[['smash','유리문을 깬다'],['back','직원용 출입구를 찾는다'],['leave','포기한다']],
+      resolve: k => k === 'smash' ? '와장창!' + evLoot(['beans','tuna','soup','water','water','ramen'], 5) + ' 소리에 몰려온 워커를 피해 달아났다.' + evHurt(10, 22, 'forage')
+        : k === 'back' ? '뒷문을 찾아 조용히 들어갔다.' + evLoot(['beans','tuna','water','crackers'], 3) + evFat(12)
+        : '아쉽지만 돌아섰다.' },
+    { id:'flare', w:2, where:['roof','tower','office'], chain:'station', title:'🎆 옥상의 구조 신호', text:'맞은편 옥상에서 붉은 조명탄이 오른다. 그 불빛을 본 좀비들도 움직이기 시작한다.', opts:[['reply','신호에 응답한다'],['hide','무시하고 숨는다'],['go','그 건물로 향한다']],
+      resolve: k => k === 'reply' ? '손전등으로 답했다. 상대가 좌표를 깜빡여 보냈다.' + evReveal() + (ch(.5) ? ' 불빛에 이끌린 워커들이 몰려왔다.' + evHurt(10, 20, 'forage') : '')
+        : k === 'hide' ? '불빛이 꺼질 때까지 숨죽였다.' + evFat(10)
+        : '건물에 도착했을 땐 아무도 없었다. 남은 짐만 있었다.' + evLoot(['water','mre','bandage'], 2) + evReveal() + (ch(.35) ? evHurt(8, 16, 'forage') : '') },
+    { id:'checkpoint', w:2, where:['shelter','gate','lax','tents'], title:'🚧 군의 검문소', text:'철조망과 바리케이드. 천막 안 무전기는 대피 명령을 반복하는데 초소엔 아무도 없다.', opts:[['search','검문소를 수색한다'],['climb','철조망을 넘는다'],['other','다른 길을 찾는다']],
+      resolve: k => k === 'search' ? '천막을 뒤졌다.' + evLoot(MREPACK, 3) + (ch(.35) ? ' 천막 뒤에서 군복 입은 무리가 일어섰다.' + evHurt(10, 22, 'fight') : '')
+        : k === 'climb' ? '철조망을 넘었다.' + (ch(.5) ? ' 가시가 살을 찢었다.' + evHurt(6, 12, 'scratch') : ' 무사히 넘었다.')
+        : '먼 길로 돌았다.' + evFat(10) + (ch(.4) ? evReveal() : '') },
+    { id:'fireapt', w:2, where:['house','motel','koreatown','weho'], title:'🔥 불타는 아파트', text:'창문에서 검은 연기가 피어오른다. 위층에서 살려 달라는 외침, 1층 출입구엔 불길을 피해 나온 좀비들.', opts:[['in','들어가 생존자를 찾는다'],['loot','주변 물자만 챙긴다'],['leave','즉시 벗어난다']],
+      resolve: k => k === 'in' ? '연기를 뚫고 올라갔다.' + (ch(.5) ? ' 구해낸 생존자가 안전한 길을 알려줬다.' + evReveal() : ' 늦었다. 아무도 구하지 못했다.') + ' [화상]' + evHurt(8, 18) + evFat(15)
+        : k === 'loot' ? '불길이 닿기 전에 챙겼다.' + evLoot(['beans','water','cloth','matches'], 3) + (ch(.3) ? ' 일부는 타버렸다.' + evLose('food', 1) : '')
+        : '연기를 등지고 떠났다.' },
+    { id:'motelroom', w:3, where:['motel'], title:'🏨 문을 잠근 방', text:'\'VACANCY\' 간판이 깜빡인다. 안에서 잠근 방문 틈으로 물병 하나가 밀려 나온다.', opts:[['knock','문을 두드린다'],['break','잠금장치를 부순다'],['other','다른 방을 조사한다']],
+      resolve: k => k === 'knock' ? (ch(.6) ? '조심스러운 목소리가 대답했다. 물병 값이라며 정보를 줬다.' + evLoot(['water'], 1) + evReveal() : '문이 열리며 총구가 나왔다. 가진 걸 내놓으라 했다.' + evLose('food', 2) + evHurt(4, 10, 'human'))
+        : k === 'break' ? (ch(.4) ? '문 안쪽엔 함정이 있었다.' + evHurt(10, 20, 'human') : '안엔 비상식량이 쌓여 있었다. 주인은 없었다.' + evLoot(['beans','tuna','water','bandage','painkillers'], 3))
+        : '옆방을 뒤졌다.' + evLoot(['cloth','soda','chips','matches'], 2) + (ch(.3) ? ' 욕조에 있던 것과 마주쳤다.' + evHurt(6, 14, 'forage') : '') },
+    { id:'heli', w:2, where:['griffith','malibu','cabin','pasadena','glendale','trail'], title:'🚁 군용 헬기 잔해', text:'언덕 아래 추락한 헬기. 조종석은 찌그러졌지만 화물칸엔 군용 상자가 남아 있다.', opts:[['cargo','화물칸을 수색한다'],['cockpit','조종석을 확인한다'],['away','멀어진다']],
+      resolve: k => k === 'cargo' ? '상자를 끌어냈다.' + evLoot(['ammo','ammo','mre','first_aid','pack'], 3) + (ch(.35) ? ' 잔해가 무너져 내렸다.' + evHurt(10, 20, 'human') : '')
+        : k === 'cockpit' ? '조종사의 비행 기록에 구조 지점이 표시돼 있었다.' + evReveal() + evFat(8)
+        : '잔해를 등지고 떠났다.' },
+    { id:'station', w:2, where:['studio','burbank','office'], title:'📺 방송국의 마지막 송출', text:'비상 전원이 살아 있다. 모니터엔 도시 곳곳의 CCTV, 그중 하나에 안전지대 같은 곳이 잡혀 있다.', opts:[['cctv','CCTV와 기록을 확인한다'],['air','비상 방송을 송출한다'],['off','장비를 끄고 떠난다']],
+      resolve: k => k === 'cctv' ? '화면을 하나하나 확인했다.' + evReveal() + evReveal() + evFat(10)
+        : k === 'air' ? '마이크를 잡고 말했다. "아직 살아 있는 사람, 듣고 있다면..."' + (ch(.5) ? ' 스피커 소리에 워커들이 몰려왔다.' + evHurt(10, 22, 'forage') : ' 누군가 응답했다. 서로 물자를 나눴다.' + evLoot(FOODS, 2))
+        : '전원을 끄고 나왔다.' },
+
+    { id:'kid', w:1.5, where:['park','house','trail'], title:'🧒 물린 아이', text:'놀이터 구석에서 아이가 울고 있다. 누가 구하러 올 거라며 떠나지 않으려 한다. 다리에 붉은 상처가 있다.', opts:[['take','데려간다'],['check','상처를 확인한다'],['leave','두고 떠난다']],
+      resolve: k => k === 'take' ? '아이를 업고 걸었다.' + (myDoc.sat = clamp(myDoc.sat - 10), ' (포만감 -10)') + (ch(.5) ? ' 밤이 되자 등 뒤의 숨소리가 달라졌다.' + evHurt(8, 18, 'fight') : ' 근처 대피 캠프에 아이를 맡겼다. 고맙다며 물자를 줬다.' + evLoot(['water','bandage','beans'], 2))
+        : k === 'check' ? (evUse(['bandage','disinfectant','first_aid']) ? '상처를 소독했다.' : '맨손으로 살폈다.') + (ch(.5) ? ' 넘어져 생긴 상처였다. 아이를 근처 캠프에 맡겼다.' + evReveal() : ' 이빨 자국이었다. 할 수 있는 건 없었다.') + evFat(6)
+        : '울음소리가 멀어졌다.' + evFat(5) },
+    { id:'gunfight', w:2, where:['warehouse','parking'], chain:'missingfood', title:'🔫 총격전', text:'창고 안에서 총성이 연달아 울린다. 두 무리가 물자를 두고 싸우고, 바닥엔 탄약 상자가 떨어져 있다.', opts:[['join','개입한다'],['grab','혼란을 틈타 챙긴다'],['run','도망친다']],
+      resolve: k => k === 'join' ? '한쪽 편을 들었다.' + (inv('ammo') ? (addItem('ammo', -Math.min(3, inv('ammo'))), ' (탄약 소모)') : '') + evHurt(8, 20, 'human') + ' 이긴 쪽이 몫을 나눠줬다.' + evLoot(['ammo','mre','first_aid'], 2)
+        : k === 'grab' ? '바닥을 기어 상자를 낚아챘다.' + evLoot(['ammo','ammo','mre','water'], 3) + (ch(.4) ? ' 들켰다. 총알이 스쳤다.' + evHurt(10, 22, 'human') : '')
+        : '총성이 멀어질 때까지 달렸다.' + evFat(8) },
+    { id:'badwater', w:2, where:['shelter','basement','cabin'], chain:'heatwave', title:'🚱 오염된 식수', text:'물통에서 이상한 냄새가 난다. 바닥엔 정체 모를 침전물이 가라앉아 있다.', opts:[['drink','그대로 마신다'],['purify','정수한다'],['dump','전부 버린다']],
+      resolve: k => k === 'drink' ? (myDoc.hyd = clamp(myDoc.hyd + 25), '벌컥벌컥 마셨다. (수분 +25)') + (ch(.5) ? ' 배가 뒤틀린다.' + evHurt(6, 12) : '')
+        : k === 'purify' ? (evUse(['matches','lighter','cloth']) ? '천으로 거르고 끓였다. 깨끗한 물을 얻었다.' + evLoot(['water'], 2) : '정수할 도구가 없었다.')
+        : '전부 쏟아 버렸다.' + evLose('drink', 1) },
+    { id:'radio', w:2, where:['roof','police','shelter','tower'], chain:'safezone', title:'📻 낯선 무전', text:'정확한 좌표를 부르는 구조 요청. 뒤편에선 총성과 비명이 끊이지 않는다.', opts:[['reply','응답한다'],['note','위치만 기록한다'],['ignore','무시한다']],
+      resolve: k => k === 'reply' ? '좌표로 향했다.' + (ch(.4) ? ' 매복이었다.' + evHurt(10, 22, 'human') + evLose('food', 1) : ' 살아남은 사람이 물자를 나눠줬다.' + evLoot(['ammo','water','mre'], 2))
+        : k === 'note' ? '지도에 표시만 했다.' + evReveal()
+        : '주파수를 돌렸다.' },
+    { id:'generator', w:2, where:['basement','garage','shelter'], chain:'blackout', title:'🔌 발전기 고장', text:'발전기가 멈췄다. 냉장 보관하던 것들이 상할 판이고, 어둠 속에서 뭔가 움직인다.', opts:[['fix','직접 고친다'],['parts','부품을 구하러 간다'],['quit','전력을 포기한다']],
+      resolve: k => k === 'fix' ? evFat(12) + (inv('scrap') || inv('fuel') ? (evUse(['fuel','scrap']), ' 불이 다시 들어왔다.') : ' 부품이 없어 실패했다.')
+        : k === 'parts' ? '부품을 찾아 나섰다.' + evLoot(['scrap','fuel','nails'], 2) + (ch(.3) ? evHurt(8, 16, 'forage') : evReveal())
+        : '전력을 포기했다.' + evLose('food', 1) },
+    { id:'megahorde', w:1.5, where:['dtla','vernon','parking','roof'], chain:'freeway', title:'🧟 거대한 좀비 무리', text:'수백 마리가 도로를 따라 이동한다. 끝이 보이지 않는다. 반대편은 버려진 차들이 막고 있다.', opts:[['hide','숨는다'],['lure','소리로 다른 곳에 유인한다'],['run','다른 길로 도망친다']],
+      resolve: k => k === 'hide' ? '두 시간 넘게 숨을 죽였다.' + evFat(18) + evThirst(10)
+        : k === 'lure' ? (ch(.5) ? '병을 멀리 던졌다. 무리가 방향을 틀었다.' + evKills(rint(1, 3)) : '소리가 너무 가까웠다. 무리가 이쪽으로 왔다.' + evHurt(18, 30, 'fight'))
+        : '골목으로 빠져 달렸다.' + evFat(12) + (ch(.4) ? evReveal() : '') },
+
+    { id:'wildfire', w:1.5, where:['griffith','malibu','pasadena','glendale','cabin','trail'], title:'🔥 LA를 삼키는 산불', text:'산등성이 너머로 거대한 불길. 불씨가 도로에 떨어지고, 대피 차량들이 좁은 길에 뒤엉켜 있다.', opts:[['road','산악 도로를 통과한다'],['detour','주택가로 우회한다'],['hide','가까운 건물에 숨는다']],
+      resolve: k => k === 'road' ? '연기 속을 뚫고 지났다. [화상]' + evHurt(8, 18) + (ch(.3) ? evLose('food', 1) : '')
+        : k === 'detour' ? '주택가로 돌았다.' + evFat(12) + evReveal() + (ch(.3) ? evHurt(6, 14, 'forage') : '')
+        : '불길이 지나갈 때까지 버텼다.' + evFat(6) + (ch(.35) ? ' 건물 안에 먼저 숨어든 것이 있었다.' + evHurt(8, 16, 'forage') : '') },
+    { id:'heatwave', w:2, where:['parking','roof','dtla','vernon','inglewood','park'], title:'🌡️ 살인적인 폭염', text:'전기가 끊긴 도시. 아스팔트 위로 아지랑이가 피어오르고, 물통은 바닥을 드러냈다.', opts:[['shade','그늘에서 쉰다'],['water','물을 찾아 나선다'],['push','그대로 강행한다']],
+      resolve: k => k === 'shade' ? '그늘에서 해가 기울기를 기다렸다.' + evFat(-12) + evThirst(10)
+        : k === 'water' ? '물을 찾아 헤맸다.' + evLoot(['water','rainwater','soda'], 2) + evFat(10)
+        : '이를 악물고 걸었다.' + evThirst(20) + evHurt(5, 12) },
+    { id:'fakeems', w:1.5, where:['hospital','parking','lobby'], chain:'scammer', title:'🚑 가짜 구조대', text:'구급차 앞에서 구조대원 복장을 한 사람들이 생존자를 태우고 있다. 차 안엔 수갑과 핏자국이 보인다.', opts:[['ask','구조를 요청한다'],['watch','멀리서 감시한다'],['leave','즉시 떠난다']],
+      resolve: k => k === 'ask' ? (ch(.6) ? '함정이었다. 가진 걸 빼앗기고 겨우 도망쳤다.' + evLose('food', 2) + evLose('med', 1) + evHurt(6, 14, 'human') : '진짜 구조대였다. 안전지대 위치를 알려줬다.' + evReveal())
+        : k === 'watch' ? '몰래 지켜봤다. 그들의 은신처 방향을 알아냈다.' + evReveal() + evFat(10)
+        : '구급차 소리를 등지고 떠났다.' },
+    { id:'max', w:2, where:['house','park','trail'], title:'🐶 맥스', text:'작은 개 한 마리가 꼬리를 흔들며 다가온다. 목줄 이름표엔 \'맥스\'. 입가엔 검붉은 피가 묻어 있다.', opts:[['feed','먹이를 주며 다가간다'],['watch','멀리서 지켜본다'],['leave','자극하지 않고 떠난다']],
+      resolve: k => k === 'feed' ? (evUse(['dogfood','jerky','raw_meat','beans']) ? '먹이를 내밀었다.' : '빈손을 내밀었다.') + (ch(.3) ? ' 맥스가 손을 물었다.' + evHurt(4, 10, 'forage') : ' 맥스가 앞장서 주인의 집으로 데려갔다.' + evLoot(['dogfood','water','bandage','beans'], 3))
+        : k === 'watch' ? '맥스를 따라가 보니 주인의 은신처였다.' + evLoot(['water','beans','matches'], 2) + evFat(6)
+        : '맥스가 한참 따라오다 멈췄다.' },
+    { id:'subway', w:2, where:['dtla','koreatown','hollywood','terminal'], title:'🚇 지하철 터널', text:'멈춘 전광판, 선로 위에 비스듬히 선 열차. 터널 저편 발소리가 일정한 간격으로 반복된다.', opts:[['track','선로를 따라간다'],['train','열차 안을 수색한다'],['up','지상으로 돌아간다']],
+      resolve: k => k === 'track' ? '어둠 속을 걸었다.' + evFat(12) + evReveal() + (ch(.4) ? evHurt(8, 18, 'forage') : '')
+        : k === 'train' ? '객차를 하나씩 뒤졌다.' + evLoot(['pack','crackers','water','chips'], 2) + (ch(.4) ? ' 갇혀 있던 승객들이 깨어났다.' + evHurt(8, 18, 'fight') : '')
+        : '계단을 올라 지상으로 나왔다.' },
+    { id:'boats', w:2, where:['santamonica','venice','longbeach','malibu','dock','lifeguard'], title:'⛵ 해변의 대피선', text:'해변에 작은 보트들이 묶여 있다. 멀리 바다에 불빛이 보이지만, 모래사장엔 시체가 가득하다.', opts:[['boat','보트를 점검한다'],['beach','해변 물자를 수색한다'],['leave','해변을 떠난다']],
+      resolve: k => k === 'boat' ? (inv('fuel') ? (addItem('fuel', -1), '휘발유를 넣고 해안을 따라 나갔다. 바다에서 본 해안선을 지도에 옮겼다.' + evReveal() + evReveal()) : '연료가 없다. 보트 안을 뒤지는 걸로 만족했다.' + evLoot(['water','rainwater'], 1)) + (ch(.25) ? evHurt(6, 14, 'forage') : '')
+        : k === 'beach' ? '시체 사이를 뒤졌다.' + evLoot(['water','jerky','first_aid','cloth','tuna'], 3) + (ch(.4) ? ' 모래 위의 시체들이 하나둘 일어났다.' + evHurt(10, 20, 'fight') : '')
+        : '파도 소리를 뒤로하고 떠났다.' },
+    { id:'scammer', w:2, where:['market','parking','tents','counter'], title:'🎒 물자 사기꾼', text:'낡은 배낭을 멘 남자가 식량과 탄약을 바꾸자고 한다. 거래 내내 주변을 살핀다.', opts:[['deal','거래한다'],['check','물자부터 확인한다'],['no','거절한다']],
+      resolve: k => k === 'deal' ? evLose('food', 1) + (ch(.5) ? ' 받은 통조림은 돌멩이로 채워져 있었다.' : ' 정당한 거래였다.' + evLoot(['ammo'], 1))
+        : k === 'check' ? (ch(.5) ? '가짜를 찾아냈다. 남자가 칼을 꺼냈다.' + evHurt(6, 14, 'human') : '진짜였다. 공정하게 바꿨다.' + evLose('food', 1) + evLoot(['ammo','bandage'], 1))
+        : '고개를 저었다. 남자는 투덜대며 사라졌다.' },
+    { id:'keycorpse', w:2, where:['parking','lobby','house'], title:'🔑 열쇠를 쥔 시체', text:'거리 한복판의 시체. 주변엔 좀비 흔적이 없고, 손엔 반짝이는 열쇠가 쥐어져 있다.', opts:[['search','시체를 뒤진다'],['observe','멀리서 확인한다'],['pass','지나간다']],
+      resolve: k => k === 'search' ? (ch(.4) ? '손가락을 펴는 순간 시체가 눈을 떴다.' + evHurt(8, 18, 'fight') + evKills(1) : '') + ' 열쇠는 근처 창고 것이었다.' + evLoot(['beans','water','ammo','first_aid','tuna'], 3)
+        : k === 'observe' ? '돌을 던져봤다.' + (ch(.5) ? ' 시체가 몸을 일으켰다. 멀리서 처리했다.' + evKills(1) : ' 미동도 없다. 열쇠만 챙겼다.' + evLoot(['beans','water'], 2)) + evFat(5)
+        : '지나쳤다.' },
+    { id:'mimic', w:1.5, where:['basement','storeroom','restroom'], title:'🗣️ 소리를 흉내 내는 것', text:'"도와주세요!" 잠시 후 똑같은 억양으로 다시. "도와주세요!" 주변 좀비들은 반응하지 않는다.', opts:[['go','소리 쪽으로 간다'],['careful','주변을 살피며 접근한다'],['ignore','무시한다']],
+      resolve: k => k === 'go' ? (ch(.55) ? '어둠 속에서 무언가가 덮쳤다.' + evHurt(15, 28, 'fight') : '고장 난 녹음기였다. 옆에 짐이 있었다.' + evLoot(FOODS, 2))
+        : k === 'careful' ? '벽을 따라 다가가 뒤에서 덮쳤다.' + evKills(1) + evFat(8)
+        : '소리가 멀어졌다.' },
+    { id:'quake', w:1, title:'🌐 갑작스러운 지진', text:'땅이 흔들리고 외벽이 무너진다. 도로가 갈라지고 차들이 부딪치며 경보음이 울린다.', opts:[['inside','튼튼한 건물로 피한다'],['open','공터로 나간다'],['search','멈추자마자 물자를 뒤진다']],
+      resolve: k => k === 'inside' ? (ch(.3) ? '입구가 무너져 갇혔다. 겨우 빠져나왔다.' + evHurt(6, 14, 'human') + evFat(12) : '낙하물을 피했다.')
+        : k === 'open' ? '공터로 달렸다.' + evFat(8)
+        : '무너진 상가를 뒤졌다.' + evLoot(['planks','nails','scrap','beans','water'], 3) + (ch(.4) ? ' 여진과 함께 워커들이 쏟아졌다.' + evHurt(10, 20, 'forage') : '') },
+    { id:'blackout', w:2, where:['office','dtla'], title:'🏢 정전된 고층 빌딩', text:'비상등만 희미하다. 엘리베이터는 멈췄고, 계단 위에서 금속 문을 두드리는 소리가 울린다.', opts:[['up','비상계단으로 올라간다'],['down','지하 주차장으로 내려간다'],['out','건물 밖으로 나간다']],
+      resolve: k => k === 'up' ? '옥상까지 올라갔다.' + evFat(15) + evReveal() + (ch(.4) ? evHurt(8, 18, 'forage') : '')
+        : k === 'down' ? '어두운 주차장을 뒤졌다.' + evLoot(['scrap','fuel','nails','water'], 2) + (ch(.4) ? ' 기둥 뒤에 있던 것이 덮쳤다.' + evHurt(8, 18, 'fight') : '')
+        : '건물을 빠져나왔다.' },
+    { id:'hsign', w:2, where:['hollywood','griffith'], title:'🌟 할리우드 사인의 불빛', text:'어둠 속 할리우드 사인 뒤로 불빛이 깜빡인다. 누군가 캠프를 차린 듯한데, 산길 곳곳에 함정이 보인다.', opts:[['climb','산길을 오른다'],['scope','망원경으로 관찰한다'],['pass','지나간다']],
+      resolve: k => k === 'climb' ? (ch(.4) ? '함정에 걸렸다.' + evHurt(10, 20, 'human') : '캠프 사람들이 경계하며 물자를 나눠줬다.' + evLoot(['water','jerky','bandage'], 2)) + evReveal()
+        : k === 'scope' ? '캠프 규모와 순찰 경로를 파악했다.' + evReveal() + evFat(8)
+        : '불빛을 뒤로하고 지나갔다.' },
+    { id:'missingfood', w:1.5, where:['shelter','storeroom','basement'], title:'🥫 사라진 식량', text:'쌓아둔 식량 일부가 사라졌다. 문은 잠겨 있고 창문도 닫혀 있다. 바닥엔 낯선 신발 자국.', opts:[['probe','함께 있던 이들을 추궁한다'],['trap','출입구에 함정을 놓는다'],['guard','덮고 경계를 강화한다']],
+      resolve: k => evLose('food', 1) + (k === 'probe' ? (ch(.5) ? ' 범인을 찾았다. 남은 걸 돌려받았다.' + evLoot(FOODS, 1) : ' 서로를 의심하는 눈빛만 남았다.' + evFat(8))
+        : k === 'trap' ? (evUse(['nails','planks','cloth']) ? ' 못과 판자로 함정을 놓았다. 밤에 걸린 침입자가 물자를 두고 달아났다.' + evLoot(FOODS, 2) : ' 함정을 만들 재료가 없었다.')
+        : ' 밤새 불침번을 섰다.' + evFat(10)) },
+    { id:'hidebite', w:1.5, where:['shelter','bedroom','basement'], title:'🩹 감염을 숨긴 생존자', text:'같이 지내던 생존자가 밤새 몸살을 앓는다. 소매 안쪽에 붕대로 감은 상처. 아무에게도 알리지 말아 달라고 한다.', opts:[['iso','즉시 격리한다'],['keep','비밀을 지키고 지켜본다'],['tell','다른 사람들에게 알린다']],
+      resolve: k => k === 'iso' ? '문을 잠갔다. 문 너머에서 원망하는 소리가 들렸다.' + evFat(8)
+        : k === 'keep' ? (ch(.5) ? '새벽, 그가 내 목을 노렸다.' + evHurt(12, 25, 'fight') + evKills(1) : '열이 내렸다. 그냥 몸살이었다. 고맙다며 비상식량을 건넸다.' + evLoot(['mre','beans'], 1))
+        : '모두가 무기를 들었다. 그는 스스로 떠났다.' + evFat(6) },
+    { id:'safezone', w:1.5, where:['roof','tower','office','shelter','studio'], title:'📡 안전지대의 거짓말', text:'라디오가 정부 안전지대 위치를 반복한다. 그 사이 누군가 끼어들어 속삭인다. "가지 마세요. 아무도 살아서 나오지 못합니다."', opts:[['go','방송을 믿고 간다'],['ask','다른 생존자에게 확인한다'],['trace','방송 출처를 추적한다']],
+      resolve: k => k === 'go' ? evReveal() + (ch(.5) ? ' 도착한 곳은 철조망 안에 갇힌 시체 더미였다.' + evHurt(15, 28, 'fight') : ' 진짜 보급소였다. 물자를 받았다.' + evLoot(MREPACK, 3))
+        : k === 'ask' ? '무전으로 물었다. 진짜 정보를 얻었다.' + evReveal() + (myDoc.sat = clamp(myDoc.sat - 6), ' (포만감 -6)')
+        : '주파수를 따라갔다.' + evReveal() + evFat(12) + (ch(.35) ? ' 무장한 무리와 마주쳤다.' + evHurt(8, 18, 'human') : '') }
+  );
+  // where는 지점 종류·건물 종류·지역 중 하나와 맞으면 된다. 같은 이벤트 연속 금지, 후속 이벤트(chain)는 다음 이벤트 때 60% 확률로 이어진다
   function maybeEvent(loc, i, j, P, head) {
-    const pool = EVENTS.filter(e => !e.where || e.where.includes(P.id));
-    let r = Math.random() * pool.reduce((t, e) => t + e.w, 0), ev = pool[0];
-    for (const e of pool) { r -= e.w; if (r < 0) { ev = e; break; } }
+    const tags = [P.id, SPOTS[loc][i][0], loc];
+    let ev = myDoc.evChain && ch(.6) && EVENTS.find(e => e.id === myDoc.evChain);
+    if (!ev) {
+      const pool = EVENTS.filter(e => e.id !== myDoc.evLast && (!e.where || e.where.some(t => tags.includes(t))));
+      // 지역 이름으로만 걸린 이벤트는 그 지역 모든 지점에서 나오므로 가중치 절반
+      const wt = e => e.where && !e.where.some(t => t === tags[0] || t === tags[1]) ? e.w / 2 : e.w;
+      let r = Math.random() * pool.reduce((t, e) => t + wt(e), 0); ev = pool[0];
+      for (const e of pool) { r -= wt(e); if (r < 0) { ev = e; break; } }
+    }
+    if (myDoc.evChain === ev.id) myDoc.evChain = null;
+    myDoc.evLast = ev.id;
+    if (ev.chain) myDoc.evChain = ev.chain;
     if (ev.run) { addLog(head + ev.run()); return; }
     myDoc.event = { id: ev.id, loc, i, j, head };
     addLog(head + ev.title + '. ' + ev.text);
@@ -3102,7 +3273,7 @@ const FIREBASE_CONFIG = {
     if (ev && myDoc.status !== 'dead') {
       const hp0 = myDoc.hp;
       leftBehind = {};
-      addLog('→ ' + ev.resolve(k));
+      addLog('→ ' + ev.resolve(k).trim());
       const lb = Object.keys(leftBehind);
       if (lb.length) addLog('🎒 가방이 꽉 차서 두고 왔다: ' + lb.map(x => x + ' ' + leftBehind[x]).join(', '));
       checkDeath();
@@ -3837,13 +4008,14 @@ const FIREBASE_CONFIG = {
     planks:      { n:'나무판자', ic:'🪵', cat:'tool', wt:2, desc:'쉘터 건설 재료' },
     nails:       { n:'못', ic:'📌', cat:'tool', wt:.05, desc:'쉘터 건설 재료' },
     scrap:       { n:'고철', ic:'⚙️', cat:'tool', wt:1, desc:'쉘터 건설 재료' },
+    fuel:        { n:'휘발유 통', ic:'⛽', cat:'tool', wt:1, desc:'차·보트·발전기 연료 (이벤트용)' },
     pack:        { n:'등산 배낭', ic:'🎒', cat:'tool', wt:1, desc:'들고 있으면 가방 +10kg' },
     vitamins:    { n:'비타민', ic:'💛', cat:'med', wt:0.05, hp:3, fat:-3, desc:'체력 +3' }
   };
   const CAT_NAME = { food:'음식', drink:'음료', med:'의료품', tool:'도구·재료' };
   const TOOL_LOOT = {
     hardware:[.7,['planks','nails','nails','scrap']], warehouse:[.6,['planks','scrap','nails','cloth']], house:[.45,['cloth','matches','lighter','nails']],
-    motel:[.4,['cloth','matches','lighter']], police:[.45,['ammo','ammo','ammo','pack']], gunshop:[.8,['ammo','ammo','ammo']], gas:[.35,['lighter','matches','scrap']],
+    motel:[.4,['cloth','matches','lighter']], police:[.45,['ammo','ammo','ammo','pack']], gunshop:[.8,['ammo','ammo','ammo']], gas:[.35,['lighter','matches','scrap','fuel']],
     market:[.3,['matches','lighter','cloth']], studio:[.4,['planks','cloth','scrap','nails']], cabin:[.4,['matches','planks','cloth','pack']],
     lifeguard:[.2,['cloth','pack']], terminal:[.2,['pack','cloth','lighter']], shelter:[.3,['ammo','cloth','matches']], fire:[.3,['cloth','scrap','pack']],
     school:[.2,['cloth']], office:[.15,['cloth']], church:[.2,['cloth','matches']], park:[.1,['planks']]
@@ -4202,7 +4374,7 @@ const FIREBASE_CONFIG = {
 </div>
 <script>
 (function(){
-  var BUILD_ID = '20261018024659';
+  var BUILD_ID = '20261018025831';
   function check(){
     fetch('version.txt?t=' + Date.now(), { cache: 'no-store' }).then(function(r){ return r.ok ? r.text() : ''; }).then(function(v){
       v = (v || '').trim();
