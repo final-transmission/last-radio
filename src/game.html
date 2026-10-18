@@ -1406,9 +1406,9 @@
 
     autoConsume('food'); autoConsume('food');
     autoConsume('drink'); autoConsume('drink');
-    if (myDoc.sat <= 0) { myDoc.hp = clamp(myDoc.hp - 8); addLog('며칠째 제대로 못 먹어 몸이 쇠약해졌다.'); }
-    if (myDoc.hyd <= 0) { myDoc.hp = clamp(myDoc.hp - 10); addLog('갈증으로 입술이 갈라지고 정신이 아득해졌다.'); }
-    if (myDoc.fat >= 95) { myDoc.hp = clamp(myDoc.hp - 4); addLog('며칠간 제대로 못 자 반응이 느려졌다. 위험한 신호다.'); }
+    if (myDoc.sat <= 0) { starve(8); addLog('며칠째 제대로 못 먹어 몸이 쇠약해졌다.'); }
+    if (myDoc.hyd <= 0) { starve(10); addLog('갈증으로 입술이 갈라지고 정신이 아득해졌다.'); }
+    if (myDoc.fat >= 95) { starve(4); addLog('며칠간 제대로 못 자 반응이 느려졌다. 위험한 신호다.'); }
     hordeHit(false);
     spoilFresh(false);
     progressBody(true);
@@ -1502,16 +1502,21 @@
     if (!quiet) addLog('☠ 밤새 무리가 ' + DISTRICTS[myDoc.loc].n + '을(를) 휩쓸었다. ' + (inside ? '문을 걸어 잠그고 버텼지만 ' : '') + '무사하지 못했다. (체력 -' + dmg + ')' + note);
   }
   function shelterBarricade() { return myDoc && myDoc.party && shelterDoc && shelterDoc.builds ? Math.min(3, +shelterDoc.builds.barricade || 0) : 0; }
+  // 굶주림·갈증·피로로는 체력 1 밑으로 떨어지지 않는다 (죽음은 직접 한 행동의 위험에서만)
+  function starve(n) { if (myDoc.hp > 0) myDoc.hp = Math.max(1, myDoc.hp - n); }
+  // 자리를 비운 동안은 잠든 것으로 친다: 소모 1/4, 피로 회복, 무리 습격도 체력 1에서 멈춘다
   function applyPassiveDay() {
-    myDoc.sat = clamp(myDoc.sat - rint(8,14));
-    myDoc.hyd = clamp(myDoc.hyd - rint(10,16));
-    myDoc.fat = clamp(myDoc.fat + rint(6,12));
-    autoConsume('food', true); autoConsume('food', true);
-    autoConsume('drink', true); autoConsume('drink', true);
-    if (myDoc.sat <= 0) myDoc.hp = clamp(myDoc.hp - 8);
-    if (myDoc.hyd <= 0) myDoc.hp = clamp(myDoc.hp - 10);
-    if (myDoc.fat >= 95) myDoc.hp = clamp(myDoc.hp - 4);
+    myDoc.sat = clamp(myDoc.sat - rint(2,4));
+    myDoc.hyd = clamp(myDoc.hyd - rint(3,4));
+    myDoc.fat = clamp(myDoc.fat - rint(8,12));
+    autoConsume('food', true);
+    autoConsume('drink', true);
+    if (myDoc.sat <= 0) starve(8);
+    if (myDoc.hyd <= 0) starve(10);
+    if (myDoc.sat > 0 && myDoc.hyd > 0) myDoc.hp = clamp(myDoc.hp + 1);
+    const hp0 = myDoc.hp;
     hordeHit(true);
+    if (hp0 > 0 && myDoc.hp <= 0) myDoc.hp = 1;
     spoilFresh(true);
     progressBody(false);
   }
@@ -1543,7 +1548,7 @@
         myDoc.day = wd;
         const df = invCount('food') - startFood, dw = invCount('drink') - startWater, dh = myDoc.hp - startHp;
         if (saved) addLog('🛡️ 자리를 비운 사이 몇 번이고 쓰러질 뻔했지만 끝내 버텼다. (신참 보호)');
-        addLog(missed + '일 동안 자리를 비운 사이, 세계는 계속 흘러갔다. (음식 ' + (df>=0?'+':'') + df + ', 음료 ' + (dw>=0?'+':'') + dw + ', 체력 ' + (dh>=0?'+':'') + dh + ')');
+        addLog('💤 ' + missed + '일 동안 자리를 비운 사이 깊이 잠들어 있었다. 세계는 계속 흘러갔다. (음식 ' + (df>=0?'+':'') + df + ', 음료 ' + (dw>=0?'+':'') + dw + ', 체력 ' + (dh>=0?'+':'') + dh + ')');
       }
     }
     myDoc.actedToday = false;
