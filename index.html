@@ -3126,6 +3126,23 @@ const FIREBASE_CONFIG = {
         renderChat();
       }, () => { $('chatLog').innerHTML = '<div class="rd-sys">무전이 끊겼다. 잠시 후 다시 들어와 보세요.</div>'; });
     } catch(e) {}
+    pruneRadio(chCollection());
+  }
+  // 오래된 무전 자동 정리: 채널에 들어갈 때 가장 오래된 것부터 50개씩 보고 3일(현실) 지난 건 지운다
+  // 모든 접속자가 매번 하면 낭비라 30% 확률로, 채널마다 한 세션에 한 번만
+  const RADIO_KEEP_MS = 3 * 24 * 3600 * 1000, prunedCh = new Set();
+  async function pruneRadio(coll) {
+    if (!db || prunedCh.has(coll) || Math.random() >= 0.3) return;
+    prunedCh.add(coll);
+    try {
+      const q = db.collection(coll).orderBy('ts', 'asc').limit(50);
+      if (typeof q.get !== 'function') return;
+      const snap = await q.get(), cut = Date.now() - RADIO_KEEP_MS;
+      for (const d of (snap && snap.docs) || []) {
+        const v = d.data();
+        if (v && +v.ts < cut) await db.collection(coll).doc(d.id).delete().catch(() => {});
+      }
+    } catch(e) {}
   }
   function setChannel(ch) {
     radioCh = ch;
@@ -5097,6 +5114,7 @@ const FIREBASE_CONFIG = {
   // 업데이트할 때마다 맨 위에 추가한다
   const PATCH_NOTES = [
     { d:'10.18', items:[
+      '🧹 3일 지난 무전은 자동으로 지워져요',
       '⚙️ 데이터 절약: 탭을 10분 넘게 안 보면 실시간 연결을 잠시 끊었다가 돌아오면 다시 이어요. 같은 곳 대화·쉘터 채팅은 그 탭을 볼 때만 연결해요',
       '🌆 지역 상태 변화: 지역마다 좀비 밀도·물자 고갈·환경(산불·정전·침수·도로 봉쇄·군사 검역·대규모 약탈·생존자 점령)이 생기고 변해요. 총성은 좀비를 부르고, 군집은 이웃 지역으로 옮겨 가요. 지도에서 지역을 누르면 지금 상태와 최근 사건을 볼 수 있어요',
       '📦 추가 콘텐츠 v2: 조사 이벤트 20종, 무전 대사 16줄(임무 9개), 임무 이벤트 6종(같은 종류도 여러 장면), 좀비 6종(크롤러·브루트·스피터·장갑 좀비·잠복자·익사체), 동료 특성 5종·이름 8명·동료 대사, 대사 풀 확장',
@@ -5646,7 +5664,7 @@ const FIREBASE_CONFIG = {
 </div>
 <script>
 (function(){
-  var BUILD_ID = '20261018054705';
+  var BUILD_ID = '20261018055109';
   function check(){
     fetch('version.txt?t=' + Date.now(), { cache: 'no-store' }).then(function(r){ return r.ok ? r.text() : ''; }).then(function(v){
       v = (v || '').trim();
