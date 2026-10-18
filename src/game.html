@@ -570,10 +570,26 @@
   .grave .gic { font-size: 20px; }
   .grave small { color: var(--text-dim); }
   .grave .gepi { font-style: italic; color: var(--text-dim); margin-top: 2px; }
+  .gev-line { margin-top: 8px; font: 700 12px var(--font-mono); color: var(--danger); }
+  .mission-line { margin-bottom: 10px; padding: 8px 12px; border: 1px dashed var(--accent); border-radius: 8px; font-size: 13px; display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+  .mission-line button { margin-left: auto; width: auto; padding: 3px 10px; font-size: 11px; }
+  .rd-ans { margin-top: 4px; background: #2a2c23; color: #e7c34a; border: 1px solid #5b5a40; border-radius: 4px; padding: 3px 8px; font: 700 11px var(--font-mono); cursor: pointer; }
+  .rd-ans.on { display: inline-block; cursor: default; opacity: .8; }
+  .sk { display: flex; gap: 10px; align-items: center; padding: 6px 0; }
+  .sk-ic { font-size: 18px; width: 24px; text-align: center; }
+  .sk-b { flex: 1; min-width: 0; }
+  .sk-h { display: flex; justify-content: space-between; font-size: 13px; }
+  .sk-h span { font: 600 11px var(--font-mono); color: var(--accent); }
+  .sk small { color: var(--text-dim); font-size: 11px; }
+  .comp { display: flex; gap: 10px; align-items: center; }
+  .comp > div { flex: 1; min-width: 0; }
+  .comp-ic { font-size: 26px; }
+  .comp small { color: var(--text-dim); font-size: 11px; }
+  .comp button { width: auto; padding: 5px 10px; font-size: 12px; }
 </style>
 <header class="top">
   <h1><span class="hazard" aria-hidden="true">☣</span>최후의 무전</h1>
-  <div class="who-wrap"><span class="newbie-badge" id="newbieLine" hidden></span><button class="theme-btn" id="themeBtn" type="button" aria-label="다크/라이트 모드 전환"></button><button class="who-btn" id="whoBtn" type="button" aria-expanded="false" aria-controls="statusPop" hidden><span class="avatar sm" id="whoAvatar"></span><span class="who" id="whoLabel"></span><span class="who-hp" id="whoHp"></span><span class="who-caret" aria-hidden="true">▾</span></button></div>
+  <div class="who-wrap"><span class="newbie-badge" id="newbieLine" hidden></span><button class="theme-btn" id="notifyBtn" type="button" aria-label="알림 켜기/끄기"></button><button class="theme-btn" id="themeBtn" type="button" aria-label="다크/라이트 모드 전환"></button><button class="who-btn" id="whoBtn" type="button" aria-expanded="false" aria-controls="statusPop" hidden><span class="avatar sm" id="whoAvatar"></span><span class="who" id="whoLabel"></span><span class="who-hp" id="whoHp"></span><span class="who-caret" aria-hidden="true">▾</span></button></div>
 </header>
 
 <div class="wrap">
@@ -627,6 +643,7 @@
     <div class="card radio-card">
       <h2>📻 오늘의 무전 <span class="rec">● 수신 중</span><span class="wx" id="wxBadge"></span></h2>
       <div class="radio-text" id="radioText">수신 중...</div>
+      <div class="gev-line" id="gevLine" hidden></div>
     </div>
 
     <div id="tabMap">
@@ -678,6 +695,7 @@
         <button class="primary" id="rebirthBtn" type="button" style="margin-top:10px">🔄 같은 이름으로 다시 시작하기</button>
         <div class="muted">이름·사진·캐릭터 설정·쉘터는 그대로, 몸과 배낭은 처음부터. 어딘가 낯선 곳에서 다시 눈을 떠요.</div>
       </div>
+      <div class="mission-line" id="missionLine" hidden></div>
       <div class="event-box" id="eventBox" hidden></div>
       <div class="busy" id="busyBox" hidden>
         <div class="busy-top"><span id="busyLbl"></span><span class="busy-left" id="busyLeft"></span></div>
@@ -892,6 +910,12 @@
           <details><summary>🩸 부상과 감염</summary><p>워커와 싸우면 부위별로 타박상·할큄·열상·물림을 입어요. 물리면 감염이 시작되고, 머리·목을 물리면 더 빨리 퍼져요. 감염이 100%가 되면 워커가 돼요. 항생제·혼합 허브로 감염을, 붕대·소독약·봉합 키트로 상처를 치료해요. 캐릭터 탭의 신체 검진표에서 상태를 볼 수 있어요.</p></details>
           <details><summary>🎒 아이템과 제작</summary><p>배낭은 기본 15kg, 등산 배낭이 있으면 25kg까지 들 수 있어요. 신선식품은 하루마다 조금씩 상해요. 무기는 쓸수록 닳고, 권총은 탄약이 필요해요. 라이터·성냥이 있으면 고기를 굽고 빗물을 끓일 수 있고, 천 조각으로 붕대를 만들 수 있어요.</p></details>
           <details><summary>📻 무전기와 소통</summary><p>무전기는 전체 채널과 숫자 채널(100.1처럼 소수점 가능)이 있어요. 멀리 있는 사람의 무전일수록 잡음이 섞여요. 가끔 미확인 구조 신호가 잡히기도 해요. 「같은 곳」은 같은 건물에 있는 생존자끼리 얼굴을 보며 대화하는 곳이고, 물물교환도 할 수 있어요. 지역에 종이와 필기구로 메모를 남길 수도 있어요.</p></details>
+          <details><summary>📻 무전 임무</summary><p>무전기에 구조 요청이 잡히면 「📍 응답하기」 버튼이 붙어요. 응답하면 그 지역이 지도에 📻로 표시되고, 게임 6일(현실 3시간) 안에 그 지역의 아무 지점이나 조사하면 임무 이벤트가 열려요. 구조, 치료, 물 교환, 남겨진 물자… 그리고 가끔은 함정도 있어요.</p></details>
+          <details><summary>🧟 좀비 종류</summary><p>워커 말고도 러너(빠르고 아프다), 비명꾼(무리를 부른다), 방호복 좀비(의료품을 지님, 병원·약국에 많다), 군인 좀비(탄약·전투식량을 지님, 경찰서·군 시설에 많다), 부푼 시체(가스로 속을 뒤집는다)가 있어요.</p></details>
+          <details><summary>📈 기술</summary><p>수색(조사), 근접전(사냥·몸싸움), 사격(권총), 의술(의료품), 요리(굽기·끓이기), 정비(탈것)가 쓸수록 올라요. 최대 10레벨이고, 다시 시작하면 처음부터예요.</p></details>
+          <details><summary>🤝 동료</summary><p>무전 구조 임무나 조사 중 만난 생존자를 도우면 동료가 생길 수 있어요. 간호사·사냥꾼·정비공·경비원·짐꾼, 그리고 개. 동료는 매일 음식을 나눠 먹고 사흘 굶으면 떠나요. 싸움에서 대신 맞기도 하고, 쓰러지면 돌아오지 않아요.</p></details>
+          <details><summary>🪂 서버 이벤트</summary><p>현실 6시간마다 한 번, 1시간 동안 모두에게 같은 사건이 일어나요. 군 보급 투하: 그 지역을 조사하면 상자를 한 번 얻어요. 대습격: 날이 바뀔 때 그 지역에 있으면 혼자선 다치지만, 다른 생존자나 동료와 함께면 막아내고 보상을 받아요. 예고는 오늘의 무전과 지도에 떠요.</p></details>
+          <details><summary>🔔 알림</summary><p>상단의 종 버튼을 켜면, 다른 탭을 보고 있을 때 행동이 끝나거나 선택이 필요한 일이 생기면 알려줘요. 브라우저에서 알림을 허용해야 해요.</p></details>
           <details><summary>🏠 쉘터</summary><p>쉘터를 만들거나 들어가면 동료끼리 쉘터 채팅, 공용 창고, 시설(빗물 수집기·텃밭·바리케이드)을 함께 써요. 같은 지역에 쉘터 동료가 있으면 조사와 사냥이 더 안전해져요.</p></details>
           <details><summary>💤 자리를 비우면</summary><p>현실 1시간 반 넘게 접속하지 않으면 잠든 것으로 쳐요. 소모는 1/4로 줄고 피로는 회복돼요. 감염도 1/4 속도로 진행되다가 95%(말기)에서 멈추니, 돌아오면 서둘러 치료하세요.</p></details>
           <details><summary>🛡️ 신참 보호</summary><p>캐릭터를 만든 뒤 현실 14일 동안은 체력이 0이 돼도 죽지 않고 체력 1로 버텨요. 남은 기간은 맨 위 상단바에 보여요.</p></details>
@@ -972,6 +996,15 @@
         <button class="primary" id="bioBtn" type="button">설정 저장</button>
         <div class="muted">저장한 설정은 생존자 현황판에서 다른 생존자들도 볼 수 있어요.</div>
         <div class="char-msg" id="bioMsg" role="status"></div>
+      </div>
+      <div class="card">
+        <h2>🤝 동료</h2>
+        <div id="compBox"></div>
+      </div>
+      <div class="card">
+        <h2>📈 기술</h2>
+        <div id="skillList"></div>
+        <div class="muted">행동을 할수록 관련 기술이 올라요. 다시 시작하면 처음부터예요.</div>
       </div>
       </div>
       <div class="char-col char-mid">
@@ -1307,6 +1340,9 @@
     renderBusy();
     renderVehicle();
     renderSavedCh();
+    renderMission();
+    renderComp();
+    renderSkills();
     const nl = newbieLeft();
     $('newbieLine').hidden = !nl || dead;
     if (nl) { $('newbieLine').textContent = '🛡️ 신참 보호 · ' + (nl >= 864e5 ? Math.ceil(nl / 864e5) + '일' : Math.ceil(nl / 36e5) + '시간') + ' 남음'; $('newbieLine').title = '캐릭터를 만든 뒤 14일 동안은 체력이 0이 돼도 죽지 않아요'; }
@@ -1495,6 +1531,8 @@
     if (myDoc.hyd <= 0) { starve(10); addLog('갈증으로 입술이 갈라지고 정신이 아득해졌다.'); }
     if (myDoc.fat >= 95) { starve(4); addLog('며칠간 제대로 못 자 반응이 느려졌다. 위험한 신호다.'); }
     hordeHit(false);
+    gevSiege(false);
+    compDaily(false);
     spoilFresh(false);
     progressBody(true);
   }
@@ -1550,6 +1588,8 @@
     const w = weatherOf(worldDay());
     if (w.id === 'fog') m *= kind === 'move' ? 1.5 : 1.15;
     if (hordeOf(worldDay()) === loc) m *= 1.8;
+    const gv = gevActive(worldDay());
+    if (gv && gv.type === 'siege' && gv.loc === loc) m *= 1.5;
     return m;
   }
   function conditionText(loc) {
@@ -1602,6 +1642,8 @@
     const hp0 = myDoc.hp;
     hordeHit(true);
     if (hp0 > 0 && myDoc.hp <= 0) myDoc.hp = 1;
+    gevSiege(true);
+    compDaily(true);
     spoilFresh(true);
     progressBody(false, true);
   }
@@ -1646,6 +1688,9 @@
     const w = weatherOf(worldDay());
     $('actionHint').textContent = dead ? '' : '· Day ' + myDoc.day + ' · ' + (isNight() ? '🌙 ' : '🕗 ') + gameClock() + ' · ' + w.ic + ' ' + w.n + ' · 다음 날까지 ' + left;
     document.documentElement.classList.toggle('is-night', isNight());
+    const gt = gevText();
+    $('gevLine').hidden = !gt;
+    if (gt && $('gevLine').textContent !== gt) $('gevLine').textContent = gt;
   }
   let clockDay = 0;
   setInterval(async () => {
@@ -1947,6 +1992,9 @@
         const nm = memos.filter(m => m.loc === id).length;
         if (nm) h += `<g class="m-pin" transform="translate(${D.x - 17},${D.y - 17}) rotate(-10)"><rect width="8" height="9" rx=".5"/><line x1="1.5" y1="3" x2="6.5" y2="3"/><line x1="1.5" y1="5" x2="6.5" y2="5"/><line x1="1.5" y1="7" x2="5" y2="7"/></g>`;
         if (hordeOf(worldDay()) === id) h += `<text x="${D.x - 12}" y="${D.y + 4}" text-anchor="end" class="m-horde">☠</text>`;
+        const gv = gevActive(worldDay());
+        if (gv && gv.loc === id) h += `<text x="${D.x + 12}" y="${D.y - 8}" class="m-horde">${gv.type === 'drop' ? '🪂' : '🧟'}</text>`;
+        if (myMission() && myMission().loc === id) h += `<text x="${D.x + 12}" y="${D.y + 12}" class="m-horde">📻</text>`;
         if (counts[id]) h += `<circle class="m-badge" cx="${D.x + 10}" cy="${D.y - 10}" r="5.5"/><text class="m-badge-t" x="${D.x + 10}" y="${D.y - 10}">${counts[id]}</text>`;
       } else {
         h += `<rect class="m-blk unk" x="${D.x - 8}" y="${D.y - 8}" width="16" height="16" rx="2"/>`;
@@ -2231,43 +2279,43 @@
   // 30분 단위 시간 칸마다 같은 씨앗으로 뽑으므로 모든 유저, 모든 채널에 똑같이 들린다
   const NPC_SLOT = 30 * 60 * 1000;
   const NPC_LINES = [
-    { who:'미확인 신호', t:'여기는 {d}... 누구라도 들리면... 제발 살려줘...' },
-    { who:'미확인 신호', t:'{d} 지하 주차장에 갇혔다. 문 밖에 놈들이 너무 많아. 사흘째 아무것도 못 먹었어.' },
-    { who:'미확인 신호', t:'아이가 둘 있어요. {d}에 있어요. 누가 좀... 누구라도...' },
-    { who:'미확인 신호', t:'다리를 물렸어. {d}에 있다. 의약품 있는 사람... 아직 시간이 있어. 제발.' },
-    { who:'미확인 신호', t:'피가 멈추질 않아. {d} 주유소 뒤편이야. 동생이 지금 혼자 버티고 있어.' },
-    { who:'생존자 무리', t:'{d}로 와라. 우리 무리가 있다. 물과 식량을 나눌 수 있다. 무기는 입구에 두고 들어와.' },
-    { who:'생존자 무리', t:'{d} 옥상에 깃발을 세웠다. 이 주파수 듣는 사람 있으면 해 지기 전에 와줘.' },
-    { who:'생존자 무리', t:'{d}로 오면 안전하다. 우리가 지켜준다. 혼자 와라. 꼭 혼자 와라.' },
-    { who:'주 방위군', t:'여기는 캘리포니아 주 방위군. {d}에서 구조 거점을 운영 중이다. 감염되지 않은 생존자는 즉시 이동하라. 반복한다.' },
+    { who:'미확인 신호', t:'여기는 {d}... 누구라도 들리면... 제발 살려줘...' , m:'rescue' },
+    { who:'미확인 신호', t:'{d} 지하 주차장에 갇혔다. 문 밖에 놈들이 너무 많아. 사흘째 아무것도 못 먹었어.' , m:'rescue' },
+    { who:'미확인 신호', t:'아이가 둘 있어요. {d}에 있어요. 누가 좀... 누구라도...' , m:'rescue' },
+    { who:'미확인 신호', t:'다리를 물렸어. {d}에 있다. 의약품 있는 사람... 아직 시간이 있어. 제발.' , m:'medic' },
+    { who:'미확인 신호', t:'피가 멈추질 않아. {d} 주유소 뒤편이야. 동생이 지금 혼자 버티고 있어.' , m:'medic' },
+    { who:'생존자 무리', t:'{d}로 와라. 우리 무리가 있다. 물과 식량을 나눌 수 있다. 무기는 입구에 두고 들어와.' , m:'supply' },
+    { who:'생존자 무리', t:'{d} 옥상에 깃발을 세웠다. 이 주파수 듣는 사람 있으면 해 지기 전에 와줘.' , m:'rescue' },
+    { who:'생존자 무리', t:'{d}로 오면 안전하다. 우리가 지켜준다. 혼자 와라. 꼭 혼자 와라.' , m:'trap' },
+    { who:'주 방위군', t:'여기는 캘리포니아 주 방위군. {d}에서 구조 거점을 운영 중이다. 감염되지 않은 생존자는 즉시 이동하라. 반복한다.' , m:'supply' },
     { who:'주 방위군', t:'{d} 구조 헬기는 {n}일 후 마지막으로 이륙한다. 그 이후 추가 구조는 없다. 반복한다, 추가 구조는 없다.' },
     { who:'FEMA 비상방송', t:'연방재난관리청 안내 방송입니다. 생존자는 {d} 임시 대피소로 이동하십시오. 물린 상처가 있는 사람은 입소할 수 없습니다.' },
     { who:'FEMA 비상방송', t:'...{d} 대피소는 폐쇄되었습니다. 접근하지 마십시오. 반복합니다, {d}에 접근하지...' },
     { who:'주 방위군', t:'...구조 작전은 취소되었다. {d} 거점과 연락이 끊겼다. 들리는 사람은... 각자 살아남아라.' },
     { who:'???', t:'들리나? 아무도 없나? 오늘이 며칠째인지도 모르겠다. 그냥... 누군가 듣고 있다고 말해줘.' },
-    { who:'미확인 신호', t:'{d} 병원 3층. 문을 책상으로 막아두었다. 배터리가 얼마 안 남았어. 이게 마지막 교신일지도...' },
+    { who:'미확인 신호', t:'{d} 병원 3층. 문을 책상으로 막아두었다. 배터리가 얼마 안 남았어. 이게 마지막 교신일지도...' , m:'rescue' },
     { who:'미확인 신호', t:'엄마, 아빠. 혹시 듣고 있으면... 나 {d}에 있어. 살아 있어. 꼭 찾으러 갈게.' },
-    { who:'미확인 신호', t:'여기 {d}. 물이 다 떨어졌다. 빗물도 안 온다. 누구든 물 있으면 교환하자. 총알도 있어.' },
-    { who:'미확인 신호', t:'열이 나. 몸이 뜨거워. 물린 건 아닌데... 아닌 것 같은데... {d}에 누가 있으면 나 좀 봐줘.' },
-    { who:'미확인 신호', t:'차가 버려진 차들 사이에 끼었다. {d} 쪽 고속도로. 놓들이 창문을 두드리고 있어. 창이... 금이 가고 있어.' },
+    { who:'미확인 신호', t:'여기 {d}. 물이 다 떨어졌다. 빗물도 안 온다. 누구든 물 있으면 교환하자. 총알도 있어.' , m:'water' },
+    { who:'미확인 신호', t:'열이 나. 몸이 뜨거워. 물린 건 아닌데... 아닌 것 같은데... {d}에 누가 있으면 나 좀 봐줘.' , m:'medic' },
+    { who:'미확인 신호', t:'차가 버려진 차들 사이에 끼었다. {d} 쪽 고속도로. 놓들이 창문을 두드리고 있어. 창이... 금이 가고 있어.' , m:'rescue' },
     { who:'미확인 신호', t:'남편이 변했어요. 방에 가둬두었는데... 아직 제 이름을 부르는 것 같아요. {d}예요. 어떻게 해야 하죠?' },
-    { who:'미확인 신호', t:'여기는 {d} 소방서. 대원들은 모두 죽었다. 장비는 남아 있다. 필요한 사람은 가져가라.' },
+    { who:'미확인 신호', t:'여기는 {d} 소방서. 대원들은 모두 죽었다. 장비는 남아 있다. 필요한 사람은 가져가라.' , m:'supply' },
     { who:'미확인 신호', t:'우리 무리 절반이 당했다. {d}는 가지 마라. 놓들이 수백... 아니 수천이야.' },
     { who:'미확인 신호', t:'배가 고파. 열흘째 통조림 하나로 버티는 중이야. {d} 근처에 먹을 거 남은 곳 아는 사람?' },
     { who:'미확인 신호', t:'여동생을 찾고 있어요. 열일곱 살, 빨간 후드티. 마지막으로 본 게 {d}였어요. 보신 분...' },
     { who:'미확인 신호', t:'총소리 들렸지? 그거 나야. {d}에서 무리를 다른 쪽으로 끌어낼 테니까 그동안 다들 빠져나가.' },
     { who:'미확인 신호', t:'...매일 밤 이 시간에 방송한다. 내 이름은 엘리. {d}에 있다. 내일도 살아 있으면 또 말할게.' },
     { who:'미확인 신호', t:'있잖아, 웃긴 얘기 하나 해줄까. 나 판사 시험 다음 주였어. ...그냥 누구랑 말하고 싶었어.' },
-    { who:'미확인 신호', t:'강아지가 짖어서 우리가 살았어. {d}에 있어. 개 사료 같은 거 있으면... 아니, 아무거나 있으면.' },
-    { who:'생존자 무리', t:'{d} 교회에 모여 있다. 의사가 필요하다. 의료 경험 있는 사람은 구조해주겠다.' },
+    { who:'미확인 신호', t:'강아지가 짖어서 우리가 살았어. {d}에 있어. 개 사료 같은 거 있으면... 아니, 아무거나 있으면.' , m:'rescue' },
+    { who:'생존자 무리', t:'{d} 교회에 모여 있다. 의사가 필요하다. 의료 경험 있는 사람은 구조해주겠다.' , m:'medic' },
     { who:'생존자 무리', t:'거래한다. {d} 입구에서 정오. 의약품 하나에 식량 셋. 무기는 꺼내지 마라.' },
     { who:'생존자 무리', t:'{d}에서 우리 물건 훔쳐 간 놈 듣고 있지? 찾아낼 거다. 끝까지.' },
     { who:'생존자 무리', t:'대피소는 거짓말이야. 거기 간 사람 아무도 못 돌아왔어. {d}에 가지 마.' },
-    { who:'생존자 무리', t:'{d} 학교 체육관에 아이들이 있다. 어른이 둘뿐이다. 손을 보태줄 사람을 찾는다.' },
+    { who:'생존자 무리', t:'{d} 학교 체육관에 아이들이 있다. 어른이 둘뿐이다. 손을 보태줄 사람을 찾는다.' , m:'rescue' },
     { who:'생존자 무리', t:'여기는 {d} 경비 구역. 다가오면 경고 없이 쏜다. 이것이 유일한 경고다.' },
     { who:'생존자 무리', t:'트럭에 연료 넣었다. 내일 아침 {d}에서 북쪽으로 떠난다. 자리는 셋. 선착순.' },
     { who:'주 방위군', t:'모든 민간인에게 알린다. {d}는 격리 구역으로 지정되었다. 예고 없이 폭격이 있을 수 있다.' },
-    { who:'주 방위군', t:'생존자 여러분, {d}에 물과 식량을 투하했다. 낙하산 색은 주황색이다. 반복한다.' },
+    { who:'주 방위군', t:'생존자 여러분, {d}에 물과 식량을 투하했다. 낙하산 색은 주황색이다. 반복한다.' , m:'supply' },
     { who:'주 방위군', t:'호출부호 브라보 식스. 기지 응답하라. 대원 둘 남았다. {d}에서 철수한다. 기지, 응답하라...' },
     { who:'주 방위군', t:'구조 호송대는 {n}일 뒤 오전 6시 {d}를 지난다. 멈추지 않는다. 도로변에서 흰 천을 흔들어라.' },
     { who:'FEMA 비상방송', t:'감염 증상 안내. 물린 후 고열, 오한, 혈관 변색이 나타나면 즉시 격리하십시오. 치료법은 없습니다.' },
@@ -2276,7 +2324,7 @@
     { who:'라디오 KLAX', t:'...여기는 KLAX, 아직 방송 중입니다. 발전기가 돌아가는 한 음악을 틀겠습니다. 다음 곡은...' },
     { who:'라디오 KLAX', t:'오늘의 생존 팁. 놓들은 소리에 모입니다. {d}쪽은 어제 불꽃놀이 때문에 무리가 몰렸다고 합니다.' },
     { who:'???', t:'하나, 둘, 셋, 넷... 숫자를 세면 덜 무서워. 다섯, 여섯... 여섯...' },
-    { who:'???', t:'우리는 보고 있다. {d}에서 너희가 무엇을 하는지 전부.' },
+    { who:'???', t:'우리는 보고 있다. {d}에서 너희가 무엇을 하는지 전부.' , m:'trap' },
     { who:'???', t:'그들은 죽은 게 아니야. 기억하고 있어. 집으로 돌아가려고 하는 거야. 나는 봤어.' },
     { who:'???', t:'(숨소리만 들린다. 멀리서 무언가 긁는 소리. 그리고 아주 가까이서 마찬가지의 소리.)' }
   ];
@@ -2285,10 +2333,10 @@
     const h = hashStr('npc-slot-' + k);
     if (h % 100 >= 25) return null;
     const line = NPC_LINES[hashStr('npc-line-' + k) % NPC_LINES.length];
-    const d = DISTRICTS[DISTRICT_KEYS[hashStr('npc-d-' + k) % DISTRICT_KEYS.length]];
+    const dk = DISTRICT_KEYS[hashStr('npc-d-' + k) % DISTRICT_KEYS.length], d = DISTRICTS[dk];
     const text = line.t.replace(/\{d\}/g, d.n).replace('{n}', 2 + hashStr('npc-n-' + k) % 4);
     const noise = 0.06 + (hashStr('npc-z-' + k) % 20) / 100;
-    return { npc: true, ts: k * NPC_SLOT + (hashStr('npc-t-' + k) % (NPC_SLOT - 60000)), author: line.who, text, noise, bars: 1 + hashStr('npc-b-' + k) % 2, key: 'npc' + k };
+    return { npc: true, ts: k * NPC_SLOT + (hashStr('npc-t-' + k) % (NPC_SLOT - 60000)), author: line.who, text, noise, bars: 1 + hashStr('npc-b-' + k) % 2, key: 'npc' + k, m: line.m || null, dk };
   }
   function npcRecent(sinceMs) {
     const now = Date.now(), out = [];
@@ -2305,7 +2353,7 @@
   function npcLine(m) {
     return `<div class="rd-ln npc${chatFresh.has(m.key) ? ' fresh' : ''}">
       <div class="hd"><span>◀ RX</span><span>${hhmm(m.ts)}</span><span class="tag">미확인</span><span class="cs">${escapeHtml(m.author)}</span><span aria-label="신호 세기 ${m.bars}">${BAR[m.bars]}</span></div>
-      <div class="tx">${escapeHtml(garble(m.text, m.noise, m.key))} <span class="over">— 지지직...</span></div></div>`;
+      <div class="tx">${escapeHtml(garble(m.text, m.noise, m.key))} <span class="over">— 지지직...</span></div>${m.m && myDoc && myDoc.status !== 'dead' && Date.now() - m.ts < 3 * 3600e3 ? ((myDoc.misDone || []).includes(m.key) ? '<div class="rd-ans on">✔ 해결함</div>' : myDoc.mission && myDoc.mission.key === m.key ? '<div class="rd-ans on">📍 응답함 · ' + DISTRICTS[m.dk].n + '</div>' : `<button type="button" class="rd-ans" data-mis="${m.key}">📍 응답하기 · ${DISTRICTS[m.dk].n}</button>`) : ''}</div>`;
   }
   let npcLastTs = 0;
   function checkNpc() {
@@ -2319,6 +2367,13 @@
     }
   }
   setInterval(checkNpc, 20000);
+  $('chatLog').addEventListener('click', async (e) => {
+    const b = e.target.closest('button[data-mis]');
+    if (!b || !myDoc) return;
+    if (myMission() && !confirm('이미 응답한 요청이 있어요. 이 요청으로 바꿀까요?')) return;
+    acceptMission(b.dataset.mis);
+    renderStatus(); renderChat(); await saveDoc();
+  });
 
   function renderChat() {
     if (!npcLastTs) checkNpc();
@@ -3256,7 +3311,7 @@
         if (!m) return '줄 약이 없었다. 손을 잡아주는 것 말고는 할 수 있는 게 없었다.';
         addItem(m, -1);
         return Math.random() < 0.5 ? josa(ITEMS[m].n, '을', '를') + ' 건넸다. 잠시 뒤, 그 사람의 눈이 하얗게 뒤집혔다. 결국 내 손으로 끝냈다.' + (evKill(), evHurt(0, 8, 'scratch'))
-          : josa(ITEMS[m].n, '을', '를') + ' 건넸다. 고맙다며 자기가 모아둔 걸 내밀었다.' + evLoot(['beans','tuna','water','ammo','jerky'], 3);
+          : josa(ITEMS[m].n, '을', '를') + ' 건넸다. 고맙다며 자기가 모아둔 걸 내밀었다.' + evLoot(['beans','tuna','water','ammo','jerky'], 3) + (ch(.35) ? recruit() : '');
       } },
     { id:'gas', w:2, where:['kitchen','basement','garage','storeroom'], title:'💨 가스 냄새', text:'코를 찌르는 가스 냄새가 난다. 어디선가 새고 있다.', opts:[['out','당장 나간다'],['stay','빨리 마저 뒤진다']],
       resolve: k => k === 'out' ? '숨을 참고 빠져나왔다. 조금 뒤, 안에서 쿵 하는 소리가 났다.'
@@ -3310,7 +3365,7 @@
     { id:'plea', w:2, where:['house','motel'], title:'🚪 문 너머의 생존자', text:'"제발, 아직 살아 있어요!" 문을 두드리는 소리. 그런데 문틈 아래로 피가 흘러나온다.', opts:[['open','문을 열어 준다'],['lock','문을 잠그고 떠난다']],
       resolve: k => k !== 'open' ? '문고리에 의자를 걸고 떠났다. 두드리는 소리가 점점 거칠어졌다.'
         : ch(.45) ? '문을 연 순간 그는 이미 사람이 아니었다.' + evHurt(10, 20, 'fight') + evKills(1)
-        : '다친 생존자였다. 붕대를 감아주자 아는 걸 전부 알려줬다.' + evReveal() + evLoot(['water','beans'], 1) },
+        : '다친 생존자였다. 붕대를 감아주자 아는 걸 전부 알려줬다.' + evReveal() + evLoot(['water','beans'], 1) + (ch(.5) ? recruit() : '') },
     { id:'suspect', w:2, where:['gas','market','shelter','counter'], chain:'hidebite', title:'🤒 감염 의심자', text:'함께 움직이던 생존자의 팔에 물린 듯한 상처가 있다. 넘어져 다친 거라며 치료를 요구하지만, 식은땀에 눈동자가 흔들린다.', opts:[['iso','격리한다'],['treat','치료하고 함께 간다'],['leave','버리고 떠난다']],
       resolve: k => k === 'iso' ? '창고에 가두고 밤새 지켜봤다.' + (myDoc.sat = clamp(myDoc.sat - 8), ' (포만감 -8)') + evFat(12) + (ch(.5) ? ' 새벽에 문 너머에서 짐승 소리가 났다. 감염이었다.' : ' 아침에 멀쩡히 나왔다. 정말 넘어진 거였다.')
         : k === 'treat' ? (evUse(['bandage','disinfectant','first_aid','painkillers']) ? '약을 써서 상처를 감아줬다.' : '줄 약이 없어 천으로 감았다.') + (ch(.4) ? ' 며칠 뒤, 그는 자다가 일어나 나를 덮쳤다.' + evHurt(10, 22, 'fight') + evKills(1) : ' 고맙다며 숨겨둔 물자를 나눠줬다.' + evLoot(FOODS, 2))
@@ -3336,7 +3391,7 @@
         : k === 'climb' ? '철조망을 넘었다.' + (ch(.5) ? ' 가시가 살을 찢었다.' + evHurt(6, 12, 'scratch') : ' 무사히 넘었다.')
         : '먼 길로 돌았다.' + evFat(10) + (ch(.4) ? evReveal() : '') },
     { id:'fireapt', w:2, where:['house','motel','koreatown','weho'], title:'🔥 불타는 아파트', text:'창문에서 검은 연기가 피어오른다. 위층에서 살려 달라는 외침, 1층 출입구엔 불길을 피해 나온 좀비들.', opts:[['in','들어가 생존자를 찾는다'],['loot','주변 물자만 챙긴다'],['leave','즉시 벗어난다']],
-      resolve: k => k === 'in' ? '연기를 뚫고 올라갔다.' + (ch(.5) ? ' 구해낸 생존자가 안전한 길을 알려줬다.' + evReveal() : ' 늦었다. 아무도 구하지 못했다.') + ' [화상]' + evHurt(8, 18) + evFat(15)
+      resolve: k => k === 'in' ? '연기를 뚫고 올라갔다.' + (ch(.5) ? ' 구해낸 생존자가 안전한 길을 알려줬다.' + evReveal() + (ch(.5) ? recruit() : '') : ' 늦었다. 아무도 구하지 못했다.') + ' [화상]' + evHurt(8, 18) + evFat(15)
         : k === 'loot' ? '불길이 닿기 전에 챙겼다.' + evLoot(['beans','water','cloth','matches'], 3) + (ch(.3) ? ' 일부는 타버렸다.' + evLose('food', 1) : '')
         : '연기를 등지고 떠났다.' },
     { id:'motelroom', w:3, where:['motel'], title:'🏨 문을 잠근 방', text:'\'VACANCY\' 간판이 깜빡인다. 안에서 잠근 방문 틈으로 물병 하나가 밀려 나온다.', opts:[['knock','문을 두드린다'],['break','잠금장치를 부순다'],['other','다른 방을 조사한다']],
@@ -3390,7 +3445,7 @@
         : k === 'watch' ? '몰래 지켜봤다. 그들의 은신처 방향을 알아냈다.' + evReveal() + evFat(10)
         : '구급차 소리를 등지고 떠났다.' },
     { id:'max', w:2, where:['house','park','trail'], title:'🐶 맥스', text:'작은 개 한 마리가 꼬리를 흔들며 다가온다. 목줄 이름표엔 \'맥스\'. 입가엔 검붉은 피가 묻어 있다.', opts:[['feed','먹이를 주며 다가간다'],['watch','멀리서 지켜본다'],['leave','자극하지 않고 떠난다']],
-      resolve: k => k === 'feed' ? (evUse(['dogfood','jerky','raw_meat','beans']) ? '먹이를 내밀었다.' : '빈손을 내밀었다.') + (ch(.3) ? ' 맥스가 손을 물었다.' + evHurt(4, 10, 'forage') : ' 맥스가 앞장서 주인의 집으로 데려갔다.' + evLoot(['dogfood','water','bandage','beans'], 3))
+      resolve: k => k === 'feed' ? (evUse(['dogfood','jerky','raw_meat','beans']) ? '먹이를 내밀었다.' : '빈손을 내밀었다.') + (ch(.3) ? ' 맥스가 손을 물었다.' + evHurt(4, 10, 'forage') : ' 맥스가 앞장서 주인의 집으로 데려갔다.' + evLoot(['dogfood','water','bandage','beans'], 3) + (ch(.5) ? recruit('맥스', 'dog') : ''))
         : k === 'watch' ? '맥스를 따라가 보니 주인의 은신처였다.' + evLoot(['water','beans','matches'], 2) + evFat(6)
         : '맥스가 한참 따라오다 멈췄다.' },
     { id:'subway', w:2, where:['dtla','koreatown','hollywood','terminal'], title:'🚇 지하철 터널', text:'멈춘 전광판, 선로 위에 비스듬히 선 열차. 터널 저편 발소리가 일정한 간격으로 반복된다.', opts:[['track','선로를 따라간다'],['train','열차 안을 수색한다'],['up','지상으로 돌아간다']],
@@ -3462,7 +3517,9 @@
       opts:[['try', V.tank ? '시동을 걸어본다' : '살펴본다'], ['leave', '그냥 둔다']],
       resolve: kk => {
         if (kk !== 'try') return josa(V.n, '은', '는') + ' 그대로 두고 왔다.';
-        if (!ch(.3)) return pick(V.fail) + ' 쓸 수 없다.' + (V.tank && ch(.2) ? ' 시동 거는 소리에 워커가 몰려왔다.' + evHurt(5, 12, 'forage') : '');
+        gainSkill('mech', 2);
+        const vc = myComp();
+        if (!ch(.3 + 0.04 * skillLv('mech') + (vc && vc.trait === 'mech' ? 0.25 : 0))) return pick(V.fail) + ' 쓸 수 없다.' + (V.tank && ch(.2) ? ' 시동 거는 소리에 워커가 몰려왔다.' + evHurt(5, 12, 'forage') : '');
         const old = myVeh(), fuel = V.tank ? rint(0, Math.ceil(V.tank / 2)) : 0;
         myDoc.vehicle = { id: k, fuel, loc: myDoc.loc };
         return (old ? '타던 ' + josa(VEHICLES[old.id].n, '은', '는') + ' 두고 ' : '') + V.ic + ' ' + josa(V.n, '을', '를') + ' 손에 넣었다!' +
@@ -3475,6 +3532,7 @@
     const V = VEHICLES[v.id];
     if (!V.tank || v.fuel >= V.tank) return;
     addItem('fuel', -1);
+    gainSkill('mech', 1);
     v.fuel = Math.min(V.tank, v.fuel + FUEL_PER_CAN);
     addLog('⛽ ' + V.n + '에 휘발유를 부었다. (연료 ' + v.fuel + '/' + V.tank + ')');
   }
@@ -3494,12 +3552,234 @@
     renderStatus(); await saveDoc();
   });
 
+  // ---------- 기술: 쓸수록 오른다 (최대 10레벨, 다시 시작하면 처음부터) ----------
+  const SKILLS = {
+    scav:  { n:'수색', ic:'🔦', d:'조사할 때 물자를 더 찾고 덜 들킨다' },
+    melee: { n:'근접전', ic:'🔪', d:'사냥 성공률, 마주친 좀비를 쓰러뜨릴 확률' },
+    shoot: { n:'사격', ic:'🔫', d:'권총 사냥 성공률, 탄약을 아낄 확률' },
+    medic: { n:'의술', ic:'🩺', d:'의료품을 쓸 때 체력 추가 회복, 감염 추가 억제' },
+    cook:  { n:'요리', ic:'🍳', d:'굽기·끓이기 때 두 배로 만들 확률' },
+    mech:  { n:'정비', ic:'🔧', d:'탈것 시동이 걸릴 확률' }
+  };
+  function skillXp(k) { return myDoc && myDoc.skills ? +myDoc.skills[k] || 0 : 0; }
+  function skillLv(k) { let xp = skillXp(k), lv = 0; while (lv < 10 && xp >= 5 * (lv + 1)) { xp -= 5 * (lv + 1); lv++; } return lv; }
+  function gainSkill(k, n) {
+    if (!SKILLS[k] || !myDoc) return;
+    const before = skillLv(k);
+    myDoc.skills = myDoc.skills || {};
+    myDoc.skills[k] = skillXp(k) + n;
+    const after = skillLv(k);
+    if (after > before) addLog('📈 ' + SKILLS[k].ic + ' ' + SKILLS[k].n + ' 기술이 ' + after + '레벨이 됐다. (' + SKILLS[k].d + ')');
+  }
+  function renderSkills() {
+    $('skillList').innerHTML = Object.keys(SKILLS).map(k => {
+      const S = SKILLS[k], lv = skillLv(k);
+      let xp = skillXp(k); for (let l = 0; l < lv; l++) xp -= 5 * (l + 1);
+      const need = 5 * (lv + 1), pct = lv >= 10 ? 100 : Math.round(xp / need * 100);
+      return `<div class="sk"><span class="sk-ic">${S.ic}</span><div class="sk-b"><div class="sk-h"><b>${S.n}</b><span>Lv ${lv}${lv >= 10 ? ' (최고)' : ''}</span></div><div class="bar-bg"><div class="bar-fill" style="width:${pct}%"></div></div><small>${S.d}</small></div></div>`;
+    }).join('');
+  }
+
+  // ---------- 좀비 종류 ----------
+  const ZTYPES = {
+    walker:   { n:'워커', ic:'🧟', w:60, dmg:1 },
+    runner:   { n:'러너', ic:'🏃', w:12, dmg:1.4, t:'눈이 번뜩이는 러너가 전력으로 달려들었다.' },
+    screamer: { n:'비명꾼', ic:'😱', w:8, dmg:1.1, t:'비명꾼이 찢어지는 소리를 질렀다. 사방에서 신음이 대답했다.' },
+    hazmat:   { n:'방호복 좀비', ic:'☣️', w:6, dmg:.9, t:'찢어진 방호복을 입은 좀비가 비틀거리며 다가왔다.', drop:['first_aid','antibiotics','disinfectant','bandage'], more:['hospital','pharmacy','ward','medshelf'] },
+    soldier:  { n:'군인 좀비', ic:'🪖', w:6, dmg:1.3, t:'방탄조끼를 입은 군인 좀비가 총을 질질 끌며 다가왔다.', drop:['ammo','mre','first_aid'], more:['police','gunshop','shelter','armory','gate','tents'] },
+    bloater:  { n:'부푼 시체', ic:'🫃', w:6, dmg:.8, t:'퉁퉁 부푼 시체가 터지며 썩은 가스를 뿜었다.', toxic:true }
+  };
+  function pickZombie(tags) {
+    const ks = Object.keys(ZTYPES), wt = k => ZTYPES[k].w * (ZTYPES[k].more && ZTYPES[k].more.some(t => (tags || []).includes(t)) ? 4 : 1);
+    let r = Math.random() * ks.reduce((t, k) => t + wt(k), 0);
+    for (const k of ks) { r -= wt(k); if (r < 0) return k; }
+    return 'walker';
+  }
+  // 마주친 좀비: 피해를 주고, 근접전 기술에 따라 쓰러뜨리기도 한다. 반환: 기록 문장
+  function zombieFight(tags, base) {
+    const k = pickZombie(tags), Z = ZTYPES[k], c = myComp();
+    let dmg = Math.round(rint(base[0], base[1]) * Z.dmg * (c && c.trait === 'guard' ? 0.75 : 1));
+    let note = '';
+    if (c && ch(.2)) { const cd = Math.min(dmg, rint(8, 16)); dmg -= Math.round(cd / 2); note += hurtComp(cd); }
+    myDoc.hp = clamp(myDoc.hp - dmg);
+    let t = (Z.t ? Z.ic + ' ' + Z.t + ' ' : '') + '(체력 -' + dmg + ')' + injure(k === 'runner' ? 'fight' : ch(.5) ? 'fight' : 'forage');
+    if (Z.toxic && ch(.5)) { myDoc.hyd = clamp(myDoc.hyd - 10); t += ' 가스를 들이마셔 속이 뒤집혔다. (수분 -10)'; }
+    if (k === 'screamer' && ch(.4)) { const d2 = rint(4, 10); myDoc.hp = clamp(myDoc.hp - d2); t += ' 몰려든 무리에게 한 번 더 당했다. (체력 -' + d2 + ')'; }
+    gainSkill('melee', 1);
+    if (ch(0.25 + 0.04 * skillLv('melee'))) {
+      myDoc.zombieKills = (myDoc.zombieKills || 0) + 1;
+      t += ' 결국 ' + josa(Z.n, '을', '를') + ' 쓰러뜨렸다. (처치 +1)';
+      if (Z.drop) { const g = rollLoot(Z.drop, 1); if (lootText(g)) t += ' 몸을 뒤져 챙겼다. (' + lootText(g) + ')'; }
+    }
+    return t + note;
+  }
+
+  // ---------- 동료 (NPC) ----------
+  const COMP_NAMES = ['마커스','엘레나','지민','호세','레이첼','대니','미겔','수아','토마스','그레이스','하비에르','민준','케이티','오마르','루시아','태오'];
+  const COMP_TRAITS = {
+    nurse:  { n:'전직 간호사', d:'매일 체력을 조금 회복시켜 준다' },
+    hunter: { n:'사냥꾼', d:'사냥 성공률이 오른다' },
+    mech:   { n:'정비공', d:'탈것 시동 확률이 오른다' },
+    guard:  { n:'전직 경비원', d:'좀비에게 받는 피해가 줄어든다' },
+    porter: { n:'짐꾼', d:'가방 한도 +5kg' },
+    dog:    { n:'개', d:'위험을 먼저 알아채 조사가 조금 더 안전해진다' }
+  };
+  function myComp() { const c = myDoc && myDoc.companion; return c && COMP_TRAITS[c.trait] ? c : null; }
+  function recruit(name, trait) {
+    if (myComp()) return ' 하지만 이미 함께하는 ' + myComp().name + '이(가) 있어 각자 길을 가기로 했다.';
+    trait = trait || pick(Object.keys(COMP_TRAITS).filter(t => t !== 'dog'));
+    name = name || pick(COMP_NAMES);
+    myDoc.companion = { name, trait, hp: 100, hunger: 0, since: myDoc.day };
+    return ' 🤝 ' + name + '(' + COMP_TRAITS[trait].n + ')이(가) 동료가 됐다.';
+  }
+  function hurtComp(n) {
+    const c = myComp(); if (!c) return '';
+    c.hp = Math.max(0, c.hp - n);
+    if (c.hp <= 0) { myDoc.companion = null; return ' 💔 ' + c.name + '이(가) 나를 감싸다 쓰러졌다. 다시 일어나기 전에 보내줬다.'; }
+    return ' ' + c.name + '이(가) 대신 맞았다. (동료 체력 -' + n + ')';
+  }
+  // 하루에 한 번: 동료도 먹어야 한다. 사흘 굶으면 떠난다. away면 자리를 비운 동안(드물게 먹는다)
+  function compDaily(away) {
+    const c = myComp(); if (!c) return;
+    if (c.trait === 'nurse' && myDoc.hp > 0) myDoc.hp = clamp(myDoc.hp + (away ? 1 : 2));
+    c.hp = Math.min(100, c.hp + 2);
+    if (!ch(away ? 0.12 : 0.5)) return;
+    const food = c.trait === 'dog' ? ['dogfood','raw_meat','jerky','beans','tuna'] : ['beans','tuna','soup','crackers','chips','ramen','bread','jerky','mre','dogfood'];
+    const f = food.find(x => inv(x) > 0);
+    if (f) { addItem(f, -1); c.hunger = 0; return; }
+    c.hunger = Math.min(away ? 2 : 3, (c.hunger || 0) + 1);
+    if (c.hunger >= 3) { myDoc.companion = null; addLog('🚪 ' + c.name + '이(가) 굶주림을 못 견디고 떠났다. 쪽지 하나 없이.'); }
+    else if (!away) addLog('🍽️ ' + c.name + '이(가) 배고프다고 한다. 나눠줄 음식이 없다.');
+  }
+  function renderComp() {
+    const c = myComp(), el = $('compBox');
+    el.innerHTML = c ? `<div class="comp"><span class="comp-ic">${c.trait === 'dog' ? '🐕' : '🧑'}</span><div><b>${escapeHtml(c.name)}</b> <small>${COMP_TRAITS[c.trait].n}</small><div class="bar-bg" style="margin:4px 0"><div class="bar-fill${c.hp < 40 ? ' low' : ''}" style="width:${c.hp}%"></div></div><small>${COMP_TRAITS[c.trait].d}${c.hunger ? ' · 🍽️ 배고픔 ' + c.hunger + '/3' : ''}</small></div><button class="secondary" type="button" id="compBye">헤어지기</button></div>`
+      : '<div class="muted" style="margin:0">함께하는 동료가 없어요. 무전 구조 요청에 응답하거나, 조사 중 만난 생존자를 도우면 동료가 생길 수 있어요.</div>';
+  }
+  $('compBox').addEventListener('click', async (e) => {
+    if (e.target.id !== 'compBye' || !myComp() || !confirm(myComp().name + '와(과) 헤어질까요?')) return;
+    addLog('👋 ' + myComp().name + '와(과) 헤어졌다. "몸조심해." 그 한마디가 마지막이었다.');
+    myDoc.companion = null; renderStatus(); await saveDoc();
+  });
+
+  // ---------- 무전 구조 요청 → 임무 ----------
+  // 무전에서 m이 붙은 신호에 응답하면, 그 지역을 조사할 때 임무 이벤트가 열린다 (게임 6일 = 현실 3시간 안에)
+  const MISSION_DAYS = 6;
+  function myMission() { const m = myDoc && myDoc.mission; return m && DISTRICTS[m.loc] && m.until >= myDoc.day ? m : null; }
+  function acceptMission(key) {
+    const k = +String(key).replace('npc', ''), m = npcAt(k);
+    if (!m || !m.m || !myDoc || myDoc.status === 'dead' || (myDoc.misDone || []).includes(m.key)) return;
+    myDoc.mission = { key: m.key, loc: m.dk, kind: m.m, who: m.author, until: myDoc.day + MISSION_DAYS };
+    const known = myDoc.visited.includes(m.dk);
+    addLog('📻 ' + m.author + '의 무전에 응답했다. "' + josa(DISTRICTS[m.dk].n, '으로', '로') + ' 가겠다." ' + (known ? '' : '좌표를 지도에 표시했다.'));
+    if (!known) myDoc.visited.push(m.dk);
+    sfx('done');
+  }
+  const MISSION_EV = {
+    rescue: { title:'📻 무전의 주인', text:'무전에서 들었던 목소리다. 구석에 숨어 있던 생존자가 나를 알아보고 울음을 터뜨린다.', opts:[['take','함께 가자고 한다'],['share','물자를 나눠주고 보낸다']],
+      resolve: k => k === 'take' ? '손을 내밀었다.' + recruit() + evLoot(['water','beans'], 1)
+        : '가진 걸 조금 나눠줬다. 답례로 숨겨둔 물자 위치를 알려줬다.' + evLose('food', 1) + evLoot(['ammo','first_aid','mre','antibiotics','water'], 3) },
+    medic:  { title:'📻 다친 생존자', text:'무전 속 그 사람이다. 상처가 깊고 열이 펄펄 끓는다. "약... 약 있어요?"', opts:[['treat','의료품을 써서 치료한다'],['leave','해줄 수 있는 게 없다']],
+      resolve: k => {
+        if (k !== 'treat') return '고개를 저었다. 그 사람은 벽에 기대 눈을 감았다.';
+        const m = evUse(['first_aid','antibiotics','disinfectant','bandage','suture','painkillers']);
+        if (!m) return '줄 의료품이 없었다. 손을 잡아주는 것밖에 할 수 없었다.';
+        gainSkill('medic', 3);
+        return ITEMS[m].n + '으로 치료했다. 한참 뒤 숨이 고르게 돌아왔다.' + (ch(.6) ? recruit() : ' "이 은혜는 꼭..." 숨겨둔 물자를 내줬다.' + evLoot(['ammo','mre','water','tuna'], 3));
+      } },
+    water:  { title:'📻 목마른 교환꾼', text:'무전으로 물을 찾던 사람이 총알 상자를 들고 서 있다. "물 있어? 바꾸자."', opts:[['trade','물 2개를 건넨다'],['no','거절한다']],
+      resolve: k => {
+        if (k !== 'trade') return '물이 귀하긴 마찬가지다. 거절했다.';
+        const n = ['water','juice','soda','rainwater'].filter(x => inv(x) > 0);
+        if (!n.length) return '건넬 물이 없었다.';
+        evUse(n); evUse(['water','juice','soda','rainwater']);
+        return '물을 건네자 탄약과 통조림을 내밀었다.' + evLoot(['ammo','ammo','tuna','mre'], 3);
+      } },
+    supply: { title:'📻 남겨진 물자', text:'무전에서 말한 그곳이다. 대원들은 없고, 장비와 상자만 덩그러니 남아 있다.', opts:[['take','챙길 수 있는 만큼 챙긴다'],['part','필요한 것만 챙긴다']],
+      resolve: k => k === 'take' ? '정신없이 쓸어 담았다.' + evLoot(['first_aid','mre','ammo','water','pack','fuel','antibiotics'], 5) + (ch(.35) ? ' 소리를 듣고 몰려온 것들이 있었다. ' + zombieFight([], [6, 14]) : '')
+        : '조용히 필요한 것만 챙겼다.' + evLoot(['first_aid','mre','water'], 2) },
+    trap:   { title:'📻 너무 친절한 목소리', text:'"혼자 왔지?" 무전의 목소리가 등 뒤에서 들렸다. 무장한 사람들이 둘러선다.', opts:[['fight','싸운다'],['give','가진 걸 내놓는다'],['run','달린다']],
+      resolve: k => k === 'fight' ? '몸싸움 끝에 빠져나왔다.' + evHurt(10, 22, 'human') + (ch(.4) ? ' 쓰러진 놈의 가방을 낚아챘다.' + evLoot(['ammo','mre','water'], 2) : '')
+        : k === 'give' ? '배낭을 열어 보였다.' + evLose('food', 2) + evLose('drink', 1) + ' 그들은 낄낄대며 사라졌다.'
+        : '골목으로 뛰어들었다.' + (ch(.5) ? ' 총알이 귀를 스쳤다.' + evHurt(6, 14, 'human') : ' 겨우 따돌렸다.') + evFat(10) }
+  };
+  Object.keys(MISSION_EV).forEach(k => EVENTS.push(Object.assign({ id: 'mis_' + k, w: 0, mission: true }, MISSION_EV[k])));
+  function renderMission() {
+    const m = myMission(), el = $('missionLine');
+    el.hidden = !m || myDoc.status === 'dead';
+    if (m) el.innerHTML = `📻 <b>임무</b> · ${escapeHtml(m.who)}의 요청 · <b>${DISTRICTS[m.loc].n}</b>에서 아무 지점이나 조사 · ${m.until - myDoc.day + 1}일 남음 <button type="button" class="secondary" id="misDrop">포기</button>`;
+  }
+  $('missionLine').addEventListener('click', async (e) => {
+    if (e.target.id !== 'misDrop' || !myMission()) return;
+    addLog('📻 ' + myMission().who + '의 요청을 포기했다. 무전기 너머가 조용해졌다.');
+    myDoc.mission = null; renderStatus(); await saveDoc();
+  });
+
+  // ---------- 서버 전체 이벤트: 현실 6시간(게임 12일)마다 한 번, 게임 2일(현실 1시간) 동안 ----------
+  const GEV_SLOT = 12, GEV_START = 4, GEV_LEN = 2;
+  function gevOf(day) {
+    const slot = Math.floor((day - 1) / GEV_SLOT), start = slot * GEV_SLOT + 1 + GEV_START;
+    const keys = Object.keys(DISTRICTS);
+    return { slot, start, end: start + GEV_LEN - 1, type: hashStr('gev-t-' + slot) % 2 ? 'siege' : 'drop', loc: keys[hashStr('gev-d-' + slot) % keys.length] };
+  }
+  function gevActive(day) { const g = gevOf(day); return day >= g.start && day <= g.end ? g : null; }
+  function gevText() {
+    const day = worldDay(), g = gevOf(day), D = DISTRICTS[g.loc];
+    if (day > g.end) return '';
+    const what = g.type === 'drop' ? '🪂 군 보급 투하' : '🧟 대습격';
+    if (day < g.start) { const h = Math.round(((g.start - day) * WORLD_DAY_MS - (WORLD_DAY_MS - msToNextDay())) / 36e5 * 10) / 10; return what + ' 예고 · ' + D.n + ' · 약 ' + (h >= 1 ? h + '시간' : Math.max(1, Math.round(h * 60)) + '분') + ' 뒤'; }
+    return what + ' 진행 중 · ' + D.n + (g.type === 'drop' ? ' · 그 지역을 조사하면 보급 상자를 찾을 수 있어요' : ' · 그 지역에 두 명 이상 모이면 함께 막아내요');
+  }
+  // 보급 투하: 진행 중에 그 지역을 조사하면 한 번 상자를 얻는다
+  function gevDropCheck() {
+    const g = gevActive(myDoc.day);
+    if (!g || g.type !== 'drop' || g.loc !== myDoc.loc || myDoc.gevClaim === g.slot) return '';
+    myDoc.gevClaim = g.slot;
+    return ' 🪂 주황색 낙하산이 걸린 보급 상자를 찾았다!' + evLoot(['mre','mre','water','water','first_aid','antibiotics','ammo','fuel'], 5);
+  }
+  // 대습격: 날이 바뀔 때 그 지역에 있으면 — 혼자면 피해, 동료나 다른 생존자가 있으면 함께 막고 보상
+  function gevSiege(away) {
+    const g = gevActive(myDoc.day);
+    if (!g || g.type !== 'siege' || g.loc !== myDoc.loc || myDoc.status === 'dead') return;
+    const allies = latestDocs.filter(d => !isMe(d) && d.status !== 'dead' && d.loc === myDoc.loc).length + (myComp() ? 1 : 0);
+    if (allies >= 1) {
+      if (myDoc.gevClaim === g.slot) return;
+      myDoc.gevClaim = g.slot;
+      const k = rint(2, 5); myDoc.zombieKills = (myDoc.zombieKills || 0) + k;
+      addLog('🧟 대습격! ' + DISTRICTS[g.loc].n + '에 무리가 밀려들었다. 함께 바리케이드를 지키며 버텨냈다. (처치 +' + k + ')' + evLoot(['ammo','mre','first_aid','water'], 3));
+    } else {
+      const d = rint(10, 20);
+      if (away) myDoc.hp = Math.max(Math.min(myDoc.hp, 1), myDoc.hp - d); else myDoc.hp = clamp(myDoc.hp - d);
+      if (!away) addLog('🧟 대습격! ' + DISTRICTS[g.loc].n + '에 무리가 밀려들었다. 혼자서는 역부족이었다. (체력 -' + d + ')' + injure('fight'));
+    }
+  }
+
+  // ---------- 알림: 탭을 안 보고 있을 때 행동이 끝나거나 일이 생기면 알려준다 ----------
+  let notifyOn = false;
+  try { notifyOn = localStorage.getItem('lr_notify') === '1'; } catch(e) {}
+  const baseTitle = document.title;
+  function renderNotifyBtn() { const b = $('notifyBtn'); b.textContent = notifyOn ? '🔔' : '🔕'; b.title = notifyOn ? '알림 켜짐 (누르면 끄기)' : '알림 꺼짐 (누르면 켜기)'; b.setAttribute('aria-pressed', notifyOn); }
+  $('notifyBtn').addEventListener('click', async () => {
+    if (!notifyOn && 'Notification' in window && Notification.permission === 'default') { try { await Notification.requestPermission(); } catch(e) {} }
+    notifyOn = !notifyOn;
+    try { localStorage.setItem('lr_notify', notifyOn ? '1' : '0'); } catch(e) {}
+    renderNotifyBtn();
+  });
+  renderNotifyBtn();
+  function notify(title, body) {
+    if (!document.hidden) return;
+    document.title = '● ' + title + ' — ' + baseTitle;
+    if (!notifyOn || !('Notification' in window) || Notification.permission !== 'granted') return;
+    try { new Notification(title, { body: body || '', tag: 'last-radio', silent: false }); } catch(e) {}
+  }
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) document.title = baseTitle; });
+
   // where는 지점 종류·건물 종류·지역 중 하나와 맞으면 된다. 같은 이벤트 연속 금지, 후속 이벤트(chain)는 다음 이벤트 때 60% 확률로 이어진다
   function maybeEvent(loc, i, j, P, head) {
     const tags = [P.id, SPOTS[loc][i][0], loc];
     let ev = myDoc.evChain && ch(.6) && EVENTS.find(e => e.id === myDoc.evChain);
     if (!ev) {
-      const pool = EVENTS.filter(e => e.id !== myDoc.evLast && (!e.where || e.where.some(t => tags.includes(t))));
+      const pool = EVENTS.filter(e => !e.mission && e.id !== myDoc.evLast && (!e.where || e.where.some(t => tags.includes(t))));
       // 지역 이름으로만 걸린 이벤트는 그 지역 모든 지점에서 나오므로 가중치 절반
       const wt = e => e.where && !e.where.some(t => t === tags[0] || t === tags[1]) ? e.w / 2 : e.w;
       let r = Math.random() * pool.reduce((t, e) => t + wt(e), 0); ev = pool[0];
@@ -3511,6 +3791,7 @@
     if (ev.run) { addLog(head + ev.run()); return; }
     myDoc.event = { id: ev.id, loc, i, j, head };
     addLog(head + ev.title + '. ' + ev.text);
+    notify('선택이 필요해요', ev.title);
   }
   async function resolveEvent(k) {
     const E = myDoc && myDoc.event, ev = E && EVENTS.find(e => e.id === E.id);
@@ -3550,14 +3831,25 @@
     if (!P) return;
     const T = SPOT_TYPES[S[0]], key = pointKey(loc, i, j), depleted = !!pointState(loc, i, j).depleted;
     const bonus = partyBonusActive();
-    const danger = Math.min(0.85, pointDanger(loc, i, j) * (bonus ? 0.75 : 1) * dangerMult(loc, 'explore'));
+    const c0 = myComp(), danger = Math.min(0.85, pointDanger(loc, i, j) * (bonus ? 0.75 : 1) * (c0 && c0.trait === 'dog' ? 0.85 : 1) * (1 - 0.015 * skillLv('scav')) * dangerMult(loc, 'explore'));
     let head = S[1] + ' ' + P.n + ' 뒤지기. ';
     myDoc.searched[key] = myDoc.day;
+    gainSkill('scav', 1);
+    const mis = myMission();
+    if (mis && mis.loc === loc && EVENTS.find(e => e.id === 'mis_' + mis.kind)) {
+      const ev = EVENTS.find(e => e.id === 'mis_' + mis.kind);
+      myDoc.mission = null;
+      myDoc.misDone = (myDoc.misDone || []).concat(mis.key).slice(-30);
+      myDoc.event = { id: ev.id, loc, i, j, head };
+      addLog(head + ev.title + '. ' + ev.text);
+      notify('무전 임무', ev.title);
+      return;
+    }
+    const drop = gevDropCheck();
+    if (drop) addLog(head + drop.trim());
     if (Math.random() < (window.__forceEvent || (depleted ? 0.08 : 0.18))) { maybeEvent(loc, i, j, P, head); return; }
     if (Math.random() < danger) {
-      const dmg = rint(8, 18);
-      myDoc.hp = clamp(myDoc.hp - dmg);
-      addLog(head + pick(EXPLORE_ENCOUNTER) + ' (체력 -' + dmg + ')' + injure(Math.random() < 0.5 ? 'fight' : 'forage'));
+      addLog(head + pick(EXPLORE_ENCOUNTER) + ' ' + zombieFight([P.id, S[0]], [8, 18]));
       if (Math.random() < 0.5) return;
       head = '도망치는 와중에도 ';
     }
@@ -3581,6 +3873,7 @@
     if (P.id === 'trail') foodPool = ['berries','apple'];
     if (P.id === 'roof') rollLoot(['rainwater'], wa, got); else rollLoot(lootPool(S[0], 'drink'), wa, got);
     rollLoot(foodPool, f, got);
+    if (!depleted && ch(0.04 * skillLv('scav'))) rollLoot(foodPool.concat(lootPool(S[0], 'drink')), 1, got);
     rollLoot(P.id === 'trail' ? ['green_herb','green_herb','mixed_herb'] : lootPool(S[0], 'med').length ? lootPool(S[0], 'med') : GENERAL_LOOT.med, m, got);
     const TL = TOOL_LOOT[S[0]] || [.1, ['cloth','matches']];
     if (!depleted && Math.random() < (P.tool || 0)) rollLoot(P.id === 'armory' ? ['ammo','ammo','pack'] : TL[1], Math.random() < 0.3 ? 2 : 1, got);
@@ -3606,9 +3899,11 @@
     useWeapon(weapon);
     const bonus = partyBonusActive();
     let t = WEAPON_TIER[weapon] || 0, wnote = '';
-    if (weapon === '권총') { if (inv('ammo') > 0) { addItem('ammo', -1); wnote = ' (탄약 -1)'; } else { t = 1; wnote = ' (탄약이 없어 손잡이로 내려쳤다)'; } }
+    if (weapon === '권총') { if (inv('ammo') > 0) { if (ch(0.05 * skillLv('shoot'))) wnote = ' (탄약을 아꼈다)'; else { addItem('ammo', -1); wnote = ' (탄약 -1)'; } } else { t = 1; wnote = ' (탄약이 없어 손잡이로 내려쳤다)'; } }
     if (weapon !== '맨손') wearWeapon(weapon);
-    const pSucc = 0.25 + 0.05 * t, pKill = pSucc + 0.25 + 0.03 * t, pHurt = pKill + 0.25 - 0.04 * t;
+    const sk = weapon === '권총' ? 'shoot' : 'melee', hc = myComp();
+    gainSkill(sk, 2);
+    const pSucc = 0.25 + 0.05 * t + (sk === 'shoot' ? 0.03 : 0.02) * skillLv(sk) + (hc && hc.trait === 'hunter' ? 0.1 : 0), pKill = pSucc + 0.25 + 0.03 * t, pHurt = pKill + 0.25 - 0.04 * t;
     let r = Math.random();
     if (Math.random() < 0.15 * (dangerMult(myDoc.loc, 'hunt') - 1)) r = pKill + 0.001;
     if (r < pSucc) {
@@ -3619,7 +3914,9 @@
       let dmg = rint(0,8);
       if (bonus) dmg = Math.round(dmg * 0.7);
       myDoc.hp = clamp(myDoc.hp - dmg);
-      addLog(fmt(pick(HUNT_KILL), weapon, dmg) + (dmg >= 5 ? injure('scratch') : ''));
+      const zk = pickZombie([myDoc.loc]), Z = ZTYPES[zk];
+      const zd = Z.drop && ch(.6) ? lootText(rollLoot(Z.drop, 1)) : '';
+      addLog(fmt(pick(HUNT_KILL), weapon, dmg) + (zk !== 'walker' ? ' 쓰러진 건 ' + Z.ic + ' ' + Z.n + '였다.' : '') + (zd ? ' (' + zd + ')' : '') + (dmg >= 5 ? injure('scratch') : ''));
     } else if (r < pHurt) {
       let dmg = rint(15,28);
       if (bonus) dmg = Math.round(dmg * 0.7);
@@ -3777,6 +4074,8 @@
         checkDeath();
         if (myDoc.hp < hp0) { sfx('zombie'); sfx('hurt'); }
         else sfx(t === 'med' ? 'heal' : t === 'rest' || t === 'sleep' ? 'none' : 'done');
+        const ll = myDoc.log[myDoc.log.length - 1];
+        notify(myDoc.status === 'dead' ? '💀 쓰러졌다' : '✅ ' + b.label + ' 끝', ll ? String(ll.text).slice(0, 120) : '');
       }
       renderStatus();
       await saveDoc();
@@ -4172,6 +4471,12 @@
   // 업데이트할 때마다 맨 위에 추가한다
   const PATCH_NOTES = [
     { d:'10.18', items:[
+      '🔔 알림: 상단 종 버튼을 켜면 탭을 안 보고 있을 때 행동 완료·선택 이벤트·무전 임무를 알려줘요',
+      '📻 무전 임무: 구조 요청 무전에 「응답하기」를 누르고 그 지역을 조사하면 임무 이벤트가 열려요 (현실 3시간 안에)',
+      '🧟 좀비 종류: 러너, 비명꾼, 방호복 좀비, 군인 좀비, 부푼 시체',
+      '📈 기술: 수색·근접전·사격·의술·요리·정비가 쓸수록 올라요 (캐릭터 탭)',
+      '🤝 동료: 구조한 생존자나 개가 동료가 돼요. 매일 음식을 나눠 먹고, 사흘 굶으면 떠나요',
+      '🪂 서버 이벤트: 현실 6시간마다 군 보급 투하 또는 대습격이 1시간 동안 열려요 (오늘의 무전·지도에 표시)',
       '📻 무전 채널 저장: 맞춘 채널을 ★로 저장하고 전체 채널 옆에서 바로 전환·삭제',
       '📜 안내 탭 추가: 공지사항, 패치 노트, 게임 안내',
       '🪦 죽으면 그 자리에 묘비를 남기고 같은 이름으로 다시 시작할 수 있어요',
@@ -4350,7 +4655,7 @@
   // 무게: 기본 15kg, 등산 배낭이 있으면 25kg
   const WEAPON_WT = { '각목':1.5, '식칼':0.3, '야구방망이':1, '쇠파이프':1.5, '낫':0.8, '손도끼':1, '활':1, '도끼':2, '권총':1 };
   const WEAPON_DUR = { '각목':12, '식칼':15, '야구방망이':20, '쇠파이프':30, '낫':20, '손도끼':25, '활':30, '도끼':30, '권총':40 };
-  function carryMax() { const v = myDoc && vehHere(); return (inv('pack') > 0 ? 25 : 15) + (v && VEHICLES[v.id].carry || 0); }
+  function carryMax() { const v = myDoc && vehHere(); return (inv('pack') > 0 ? 25 : 15) + (v && VEHICLES[v.id].carry || 0) + (myDoc && myComp() && myComp().trait === 'porter' ? 5 : 0); }
   function carryWeight() {
     const v = invOf(myDoc);
     let w = Object.keys(v).reduce((t, k) => t + (ITEMS[k] ? (ITEMS[k].wt || 0) * Math.max(0, +v[k] || 0) : 0), 0);
@@ -4493,7 +4798,10 @@
       if (myDoc.infection === 0) { myDoc.infectionPart = null; what = josa(it.n, '을', '를') + ' 쓰고 한참을 앓았다. 거짓말처럼 열이 내렸다.'; parts.push('감염 치료'); }
       else { what = josa(it.n, '으로', '로') + ' 열을 겨우 눌렀다. 진행이 조금 늦춰졌을 뿐이다.'; parts.push('감염 ' + myDoc.infection + '%'); }
     }
-    if (it.hp) { myDoc.hp = clamp(myDoc.hp + it.hp); parts.push('체력 +' + it.hp); }
+    const ml = skillLv('medic');
+    gainSkill('medic', 2);
+    if (ml && myDoc.infection > 0 && it.inf) myDoc.infection = Math.max(0, myDoc.infection - ml);
+    if (it.hp || ml) { const hh = (it.hp || 0) + 2 * ml; myDoc.hp = clamp(myDoc.hp + hh); parts.push('체력 +' + hh + (ml ? ' (의술)' : '')); }
     if (it.fat) { myDoc.fat = clamp(myDoc.fat + it.fat); parts.push('피로 감소'); }
     const text = what + ' (' + it.n + ' -1' + (parts.length ? ', ' + parts.join(', ') : '') + ')';
     addLog(text);
@@ -4526,7 +4834,9 @@
     let fireNote = '';
     if (r.fire && inv('lighter') <= 0) { addItem('matches', -1); fireNote = ', 성냥 -1'; }
     const got = {};
-    Object.keys(r.out).forEach(k => { const g = gainItem(k, r.out[k]); if (g) got[k] = g; });
+    const dbl = r.fire && ch(0.08 * skillLv('cook'));
+    if (r.fire) gainSkill('cook', 2);
+    Object.keys(r.out).forEach(k => { const g = gainItem(k, r.out[k] * (dbl ? 2 : 1)); if (g) got[k] = g; });
     addLog(r.ic + ' ' + r.n + ' 완료. (' + (lootText(got) || '들 공간이 없어 버렸다') + fireNote + ')');
   }
 
