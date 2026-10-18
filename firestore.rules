@@ -1,29 +1,129 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
+    // ---------- 공통 ----------
     function signedIn() { return request.auth != null; }
-
-    // 게임 데이터: 로그인한 생존자는 모두 읽고 쓸 수 있다 (약탈, 쉘터 내보내기 때문에 남의 문서도 고친다)
-    match /{coll}/{docId} {
-      allow read: if signedIn();
-      allow write: if signedIn() && coll != 'users' && coll != 'notices';
+    // 내 캐릭터 문서 id (Firebase 가입 시 'uid-' + 인증 uid)
+    function myKey() { return 'uid-' + request.auth.uid; }
+    function isMe(key) { return signedIn() && key == myKey(); }
+    function isAdmin() {
+      return signedIn() && exists(/databases/$(database)/documents/users/$(request.auth.uid))
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.id.lower() == 'akdma0528';
     }
+    function d() { return request.resource.data; }
+    function str(v, max) { return v is string && v.size() <= max; }
+    function nowMs() { return request.time.toMillis(); }
 
-    // 공지사항: 관리자 아이디만 쓸 수 있다
-    match /notices/{docId} {
-      allow read: if signedIn();
-      allow write: if signedIn() && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.id.lower() == 'akdma0528';
-    }
-
-    // 캐릭터별 일지 (survivors/{key}/private/log)
-    match /{coll}/{docId}/{sub}/{subId} {
-      allow read, write: if signedIn();
-    }
-
-    // 계정 ↔ 캐릭터 연결 정보: 본인만 쓸 수 있다
+    // ---------- 계정 ↔ 캐릭터 연결: 본인만 ----------
     match /users/{uid} {
       allow read: if signedIn();
-      allow write: if signedIn() && request.auth.uid == uid;
+      allow create, update: if signedIn() && request.auth.uid == uid
+        && str(d().id, 32) && str(d().name, 24) && d().key == 'uid-' + uid;
+      allow delete: if false;
     }
+
+    // ---------- 캐릭터: 내 것만 고친다 (관리자는 예외) ----------
+    match /survivors/{key} {
+      allow read: if signedIn();
+      allow create, update: if isAdmin() || (isMe(key)
+        && str(d().name, 24)
+        && (!('bio' in d()) || str(d().bio, 600))
+        && (!('epitaph' in d()) || d().epitaph == null || str(d().epitaph, 80))
+        && (!('party' in d()) || str(d().party, 24))
+        && d().hp is number && d().hp >= 0 && d().hp <= 100);
+      allow delete: if isMe(key) || isAdmin();
+      // 일지: 본인과 관리자만
+      match /private/{doc} {
+        allow read, write: if isMe(key) || isAdmin();
+      }
+    }
+
+    // ---------- 프로필 사진: 본인만, 크기 제한 ----------
+    match /avatars/{key} {
+      allow read: if signedIn();
+      allow create, update: if (isMe(key) || isAdmin()) && str(d().data, 70000) && d().data.matches('data:image/jpeg;base64,.*');
+      allow delete: if isMe(key) || isAdmin();
+    }
+
+    // ---------- 무전·같은 곳 대화·쉘터 채팅 ----------
+    // 글쓴이는 나, 글자 수 제한, 고치기 불가. 지우기는 글쓴이·관리자 또는 3일 지난 글(자동 정리)
+    match /{coll}/{msg} {
+      allow read: if signedIn() && (coll == 'radio' || coll.matches('radio-ch[0-9.]+') || coll.matches('talk-.+') || coll.matches('shelter-.+'));
+      allow create: if signedIn() && (coll == 'radio' || coll.matches('radio-ch[0-9.]+') || coll.matches('talk-.+') || coll.matches('shelter-.+'))
+        && d().authorKey == myKey() && str(d().author, 24) && str(d().text, 210) && d().ts is number;
+      allow update: if false;
+      allow delete: if signedIn() && (coll == 'radio' || coll.matches('radio-ch[0-9.]+') || coll.matches('talk-.+') || coll.matches('shelter-.+'))
+        && (resource.data.authorKey == myKey() || isAdmin() || resource.data.ts < nowMs() - 3 * 24 * 3600 * 1000);
+    }
+
+    // ---------- 메모 ----------
+    match /memos/{id} {
+      allow read: if signedIn();
+      allow create: if signedIn() && ((d().authorKey == myKey() && str(d().text, 140) && str(d().author, 24) && d().ts is number) || isAdmin());
+      allow update: if isAdmin();
+      allow delete: if signedIn() && (resource.data.authorKey == myKey() || isAdmin());
+    }
+
+    // ---------- 물물교환: 올린 사람만 만들고, 수락·취소·받기는 정해진 칸만 바꾼다 ----------
+    match /trades/{id} {
+      allow read: if signedIn();
+      allow create: if signedIn() && d().fromKey == myKey() && d().status == 'open'
+        && d().give.n is int && d().give.n > 0 && d().give.n <= 99 && d().want.n is int && d().want.n > 0 && d().want.n <= 99;
+      allow update: if signedIn()
+        && d().diff(resource.data).affectedKeys().hasOnly(['status', 'claimed', 'acceptKey', 'acceptName', 'doneTs'])
+        && (
+          // 취소·받기: 올린 사람만
+          (resource.data.fromKey == myKey() && d().status in ['cancel', 'done'])
+          // 수락: 열린 제안을 다른 사람이 내 이름으로
+          || (resource.data.status == 'open' && d().status == 'done' && d().acceptKey == myKey() && resource.data.fromKey != myKey())
+        );
+      allow delete: if isAdmin();
+    }
+
+    // ---------- 쉘터: 만들기는 누구나, 고치기는 그 쉘터 사람(캐릭터의 party가 이 쉘터)만 ----------
+    match /shelters/{id} {
+      allow read: if signedIn();
+      allow create: if signedIn() && str(d().name, 24);
+      allow update: if signedIn() && (isAdmin()
+        || get(/databases/$(database)/documents/survivors/$(myKey())).data.party == resource.data.name)
+        && d().name == resource.data.name;
+      allow delete: if isAdmin();
+    }
+
+    // ---------- 묘비: 내 묘비만 새긴다 ----------
+    match /graves/{id} {
+      allow read: if signedIn();
+      allow create: if signedIn() && ((d().key == myKey() && str(d().name, 24) && (!('epitaph' in d()) || str(d().epitaph, 80))) || isAdmin());
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // ---------- 공지사항: 관리자만 ----------
+    match /notices/{id} {
+      allow read: if signedIn();
+      allow write: if isAdmin();
+    }
+
+    // ---------- 지역 상태 (모든 접속자가 하루 정산을 나눠 맡는다) ----------
+    match /world/{id} {
+      allow read: if signedIn();
+      allow write: if signedIn() && id == 'state' && d().keys().hasOnly(['v', 'tick', 'r']) && d().tick is number && d().r is map;
+    }
+    match /regionEvents/{id} {
+      allow read: if signedIn();
+      allow create: if signedIn() && d().by == myKey() && d().kind in ['noise', 'dep', 'kill', 'clear', 'resupply']
+        && d().a is int && d().a >= 0 && d().a <= 20 && d().day is number && str(d().loc, 20);
+      allow update: if false;
+      allow delete: if signedIn();
+    }
+
+    // ---------- 오류 기록: 누구나 남기고, 관리자만 본다 ----------
+    match /errors/{id} {
+      allow create: if signedIn() && str(d().msg, 300) && (!('stack' in d()) || str(d().stack, 800)) && d().keys().size() <= 10;
+      allow read, delete: if isAdmin();
+      allow update: if false;
+    }
+
+    // 그 밖의 모든 경로는 막는다
   }
 }

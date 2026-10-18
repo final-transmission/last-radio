@@ -949,6 +949,17 @@
         <h2>📌 메모 정리</h2>
         <div id="adminMemos"></div>
       </div>
+      <div class="card">
+        <h2>🐞 오류 기록</h2>
+        <div class="muted" style="margin:0 0 8px">유저 화면에서 난 오류가 자동으로 모여요 (한 사람당 접속마다 최대 5건).</div>
+        <div class="pol-row"><button class="secondary" type="button" id="errLoadBtn">불러오기</button><button class="secondary" type="button" id="errClearBtn">불러온 기록 지우기</button></div>
+        <div id="adminErrors"></div>
+      </div>
+      <div class="card">
+        <h2>📦 백업 · 복원</h2>
+        <div class="muted" style="margin:0 0 8px">전체 게임 데이터를 JSON 파일로 내려받아 보관하세요. 복원은 파일 속 문서를 그대로 다시 써요(파일에 없는 문서는 지우지 않음). 로그인 계정 정보는 Firebase 인증에 따로 있어 복원 대상이 아니에요.</div>
+        <div class="pol-row"><button class="secondary" type="button" id="backupBtn">⬇️ 전체 내보내기</button><label class="file-btn"><button class="secondary" type="button" tabindex="-1">⬆️ 파일로 복원</button><input type="file" id="restoreInput" accept="application/json,.json" aria-label="백업 파일 고르기"></label></div>
+      </div>
       <div class="char-msg" id="adminMsg" role="status"></div>
     </div>
 
@@ -1330,7 +1341,8 @@
 
   function partyAliveCount(partyName) {
     if (!partyName) return 0;
-    return latestDocs.filter(d => d.party === partyName && d.status !== 'dead').length;
+    const kicked = shelterDoc && shelterDoc.name === partyName && Array.isArray(shelterDoc.kicked) ? shelterDoc.kicked : [];
+    return latestDocs.filter(d => d.party === partyName && d.status !== 'dead' && !kicked.includes(keyOf(d))).length;
   }
   function partyBonusActive() { return myDoc.party && partyAliveCount(myDoc.party) >= 2; }
 
@@ -1493,7 +1505,7 @@
       const D = DISTRICTS[d.loc];
       return `<div class="pol${isMe(d) ? ' me' : ''}" style="--tilt:${tilt(d)}">${polPhoto(d)}
         <div class="cap">${escapeHtml(d.name)}</div>
-        <div class="tag">LAST SEEN ${D && (isMe(d) || (myDoc.visited || []).includes(d.loc)) ? escapeHtml(D.n) : '???'}<br>생존 ${survDays(d)}일 · 처치 ${d.zombieKills || 0}${d.party ? '<br>🏚️ ' + escapeHtml(d.party) : ''}</div>
+        <div class="tag">LAST SEEN ${D && (isMe(d) || (myDoc.visited || []).includes(d.loc)) ? escapeHtml(D.n) : '???'}<br>생존 ${survDays(d)}일 · 처치 ${+d.zombieKills || 0}${d.party ? '<br>🏚️ ' + escapeHtml(d.party) : ''}</div>
         ${polBio(d)}</div>`;
     };
     const deadPol = d => `<div class="pol dead" style="--tilt:${tilt(d)}">${polPhoto(d)}
@@ -1527,7 +1539,7 @@
       if (logDirty) { logDirty = false; await logRef(myKey).set({ entries: myDoc.log.slice(-300) }); }
       permNotice.style.display = 'none';
     }
-    catch(e) { permNotice.style.display = 'block'; }
+    catch(e) { permNotice.style.display = 'block'; reportError('saveDoc: ' + (e && e.message || e), 'saveDoc', 0, e && e.stack); }
   }
   // 다른 생존자의 일지에 한 줄 남긴다 (약탈당함, 쉘터에서 쫓겨남 등)
   async function appendLogTo(key, entry) {
@@ -2536,7 +2548,7 @@
   // ---------- 물물교환 ----------
   let trades = [], tradeUnsub = null, tradeBusy = false;
   function sameRoom(t) { return t.loc === myDoc.loc && (t.spot == null ? null : t.spot) === mySpot(); }
-  function tItem(x) { return ITEMS[x.id] ? ITEMS[x.id].ic + ' ' + ITEMS[x.id].n + ' ×' + x.n : '?'; }
+  function tItem(x) { return x && ITEMS[x.id] ? ITEMS[x.id].ic + ' ' + ITEMS[x.id].n + ' ×' + (Math.floor(+x.n) || 0) : '?'; }
   function tradeMsg(t, ok) { const m = $('tradeMsg'); m.textContent = t; m.className = 'char-msg ' + (ok ? 'ok' : 'err'); }
   function renderTrades() {
     if (!myDoc || $('talkCard').hidden) return;
@@ -2581,7 +2593,8 @@
       if (!t || t.status !== 'open') { tradeMsg('이미 끝난 교환이에요.'); return; }
       if (cb) {
         if (t.fromKey !== myKey) return;
-        await db.doc('trades/' + id).set(Object.assign({}, t, { status: 'cancel', claimed: true }));
+        const ok = await txUpdate('trades/' + id, cur => cur && cur.status === 'open' ? Object.assign(cur, { status: 'cancel', claimed: true }) : null);
+        if (!ok) { tradeMsg('이미 끝난 교환이에요.'); return; }
         addItem(t.give.id, t.give.n);
         addLog('🤝 교환 제안을 거둬들였다. (' + ITEMS[t.give.id].n + ' ×' + t.give.n + ' 돌려받음)');
         tradeMsg('제안을 취소했어요.', true);
@@ -2590,7 +2603,8 @@
         if (inv(t.want.id) < t.want.n) { tradeMsg('상대가 원하는 물건이 모자라요.'); return; }
         const extra = (ITEMS[t.give.id].wt || 0) * t.give.n - (ITEMS[t.want.id].wt || 0) * t.want.n;
         if (!canCarry(Math.max(0, extra))) { tradeMsg('가방이 꽉 차서 받을 수 없어요.'); return; }
-        await db.doc('trades/' + id).set(Object.assign({}, t, { status: 'done', acceptKey: myKey, acceptName: myName, doneTs: Date.now(), claimed: false }));
+        const ok = await txUpdate('trades/' + id, cur => cur && cur.status === 'open' ? Object.assign(cur, { status: 'done', acceptKey: myKey, acceptName: myName, doneTs: Date.now(), claimed: false }) : null);
+        if (!ok) { tradeMsg('한발 늦었어요. 다른 사람이 먼저 교환했어요.'); return; }
         addItem(t.want.id, -t.want.n); addItem(t.give.id, t.give.n);
         addLog('🤝 ' + String(t.from || '누군가').slice(0, 12) + '님과 교환했다. (' + ITEMS[t.want.id].n + ' ×' + t.want.n + ' 주고 ' + ITEMS[t.give.id].n + ' ×' + t.give.n + ' 받음)');
         tradeMsg('교환했어요!', true); sfx('done');
@@ -2608,10 +2622,9 @@
     claiming = true;
     try {
       for (const t of done) {
-        const snap = await db.doc('trades/' + t.id).get();
-        const cur = snap && snap.exists ? snap.data() : null;
-        if (!cur || cur.claimed) continue;
-        await db.doc('trades/' + t.id).set(Object.assign({}, cur, { claimed: true }));
+        let cur = null;
+        const ok = await txUpdate('trades/' + t.id, c => c && !c.claimed && c.status === 'done' ? (cur = Object.assign(c, { claimed: true })) : null);
+        if (!ok || !cur) continue;
         addItem(cur.want.id, cur.want.n);
         addLog('🤝 ' + String(cur.acceptName || '누군가').slice(0, 12) + '님이 교환에 응했다. (' + ITEMS[cur.want.id].n + ' ×' + cur.want.n + ' 받음)');
       }
@@ -2691,7 +2704,8 @@
   // ---------- 쉘터: 같은 이름을 고른 동료들의 모임과 전용 대화방 ----------
   function shelterMembers() {
     if (!myDoc || !myDoc.party) return [];
-    const list = latestDocs.filter(d => d.party === myDoc.party && !isMe(d));
+    const kicked = shelterDoc && Array.isArray(shelterDoc.kicked) ? shelterDoc.kicked : [];
+    const list = latestDocs.filter(d => d.party === myDoc.party && !isMe(d) && !kicked.includes(keyOf(d)));
     return [myDoc].concat(list);
   }
   function subscribeShelter() {
@@ -2715,6 +2729,13 @@
     try {
       shelterDocUnsub = db.doc('shelters/' + docId(k)).onSnapshot((snap) => {
         shelterDoc = snap && snap.exists ? snap.data() : null;
+        // 대장이 나를 내보냈으면 내 화면이 스스로 쉘터를 나간다
+        if (shelterDoc && Array.isArray(shelterDoc.kicked) && shelterDoc.kicked.includes(myKey) && myDoc.party === k) {
+          myDoc.party = '';
+          addLog('「' + k + '」 쉘터에서 쫓겨났다. 짐을 챙겨 문밖으로 나왔다.');
+          renderStatus(); saveDoc();
+          return;
+        }
         // 대장 기록이 없는 예전 쉘터는 지금 들어와 있는 사람이 대장을 맡는다
         if (!shelterDoc && myDoc.party === k) db.doc('shelters/' + docId(k)).set({ name: k, founder: myName, founderKey: myKey, notice: '', createdAt: Date.now() }).catch(() => {});
         renderShelterCard();
@@ -2761,14 +2782,31 @@
     renderBuilds();
   }
   // ---------- 쉘터 가입 방식 / 초대 ----------
-  async function updateShelter(mutate) {
-    const ref = db.doc('shelters/' + docId(myDoc.party));
+  // 두 사람이 동시에 같은 문서를 고쳐도 덮어쓰지 않도록 Firestore 트랜잭션으로 읽고 쓴다 (트랜잭션이 없는 환경은 읽고 쓰기)
+  // mutate는 재시도될 수 있으니 바깥 상태는 바꾸지 말고 값만 계산한다. null/false를 돌려주면 쓰지 않는다
+  async function txUpdate(path, mutate) {
+    const ref = db.doc(path);
+    if (typeof db.runTransaction === 'function') {
+      return db.runTransaction(async (tx) => {
+        const snap = await tx.get(ref);
+        const next = mutate(snap.exists ? JSON.parse(JSON.stringify(snap.data())) : null);
+        if (!next) return false;
+        tx.set(ref, next);
+        return true;
+      });
+    }
     const snap = await ref.get();
-    const cur = snap && snap.exists ? JSON.parse(JSON.stringify(snap.data())) : { name: myDoc.party, founder: myName, founderKey: myKey, notice: '', createdAt: Date.now() };
-    const ok = mutate(cur);
-    if (ok === false) return false;
-    await ref.set(cur);
+    const next = mutate(snap && snap.exists ? JSON.parse(JSON.stringify(snap.data())) : null);
+    if (!next) return false;
+    await ref.set(next);
     return true;
+  }
+  async function updateShelter(mutate) {
+    const party = myDoc.party;
+    return txUpdate('shelters/' + docId(party), (cur) => {
+      cur = cur || { name: party, founder: myName, founderKey: myKey, notice: '', createdAt: Date.now() };
+      return mutate(cur) === false ? null : cur;
+    });
   }
   function renderPolicy() {
     const box = $('shelterPolicyBox');
@@ -2803,7 +2841,7 @@
       const n = $('inviteInput').value;
       if (!n) return;
       $('inviteInput').blur();
-      try { await updateShelter(d => { d.invited = Array.isArray(d.invited) ? d.invited : []; if (!d.invited.includes(n)) d.invited.push(n); }); msg.textContent = (nameOfKey(n) || '그 생존자') + '님을 초대했어요. 쉘터 이름을 알려주면 들어올 수 있어요.'; msg.className = 'char-msg ok'; }
+      try { await updateShelter(d => { d.invited = Array.isArray(d.invited) ? d.invited : []; if (!d.invited.includes(n)) d.invited.push(n); d.kicked = (Array.isArray(d.kicked) ? d.kicked : []).filter(x => x !== n); }); msg.textContent = (nameOfKey(n) || '그 생존자') + '님을 초대했어요. 쉘터 이름을 알려주면 들어올 수 있어요.'; msg.className = 'char-msg ok'; }
       catch(err) { msg.textContent = '초대하지 못했어요.'; msg.className = 'char-msg err'; }
       return;
     }
@@ -2992,17 +3030,11 @@
     let name = nameOfKey(kkey) || '누군가';
     b.disabled = true;
     try {
-      const snap = await db.doc('survivors/' + kkey).get();
-      const t = snap && snap.exists ? JSON.parse(JSON.stringify(snap.data())) : null;
-      if (t && t.party === myDoc.party) {
-        t.party = '';
-        delete t.log; delete t.avatar;
-        await appendLogTo(kkey, { day: t.day, text: '「' + myDoc.party + '」 쉘터에서 쫓겨났다. 짐을 챙겨 문밖으로 나왔다.', ts: Date.now() });
-        t.updatedAt = Date.now();
-        name = t.name || name;
-        await db.doc('survivors/' + kkey).set(t);
-        await shelterSys(myDoc.party, ' → ' + name + '님을 쉘터에서 내보냈다');
-      }
+      await updateShelter(d => {
+        d.kicked = (Array.isArray(d.kicked) ? d.kicked : []).filter(x => x !== kkey).concat(kkey).slice(-100);
+        d.invited = (Array.isArray(d.invited) ? d.invited : []).filter(x => x !== kkey);
+      });
+      await shelterSys(myDoc.party, ' → ' + name + '님을 쉘터에서 내보냈다');
     } catch(err) { $('partyMsg').textContent = '내보내지 못했어요.'; $('partyMsg').className = 'char-msg err'; b.disabled = false; }
   });
 
@@ -4243,7 +4275,7 @@
     const r = reg(id), E = Object.keys(r.env);
     let h = `<div class="reg-box"><div class="reg-row"><span>🧟 좀비 밀도 <b>${r.z}</b> · ${zWord(r.z)}</span><span>📦 물자 <b>${depWord(r.dep)}</b> (고갈 ${r.dep})</span>${r.noise >= 10 ? '<span>🔊 소음 여파 ' + r.noise + '</span>' : ''}</div>`;
     if (E.length) h += '<div class="reg-env">' + E.map(k => { const e = r.env[k], left = e.until != null ? Math.max(1, e.until - worldDay()) : null; return `<span class="pill reg-${k}" title="${REG_ENV[k].d}">${REG_ENV[k].ic} ${REG_ENV[k].n}${k === 'roadblocked' && DISTRICTS[e.to] ? ' → ' + DISTRICTS[e.to].n : ''}${left ? ' · ' + left + '일' : k === 'blackout' || k === 'roadblocked' ? ' · 복구 필요' : ''}</span>`; }).join('') + '</div>';
-    if (r.log.length) h += '<div class="reg-log">' + r.log.slice(0, 3).map(l => `<div><span>D${l.d}</span> ${escapeHtml(l.t)}</div>`).join('') + '</div>';
+    if (r.log.length) h += '<div class="reg-log">' + r.log.slice(0, 3).map(l => `<div><span>D${+l.d || 0}</span> ${escapeHtml(l.t)}</div>`).join('') + '</div>';
     return h + '</div>';
   }
   function regionCondText(loc) {
@@ -4770,6 +4802,84 @@
     renderStatus();
   }
 
+
+  // ---------- 오류 기록: 유저 화면에서 난 오류를 모아 관리자 탭에서 본다 ----------
+  let errCount = 0;
+  const errSeen = new Set();
+  function reportError(msg, src, line, stack) {
+    try {
+      const m = String(msg || '').slice(0, 300);
+      if (!db || !m || errCount >= 5 || errSeen.has(m) || /ResizeObserver loop/.test(m)) return;
+      errSeen.add(m); errCount++;
+      db.collection('errors').add({ msg: m, src: String(src || '').slice(-120), line: +line || 0, stack: String(stack || '').slice(0, 800), ua: String(navigator.userAgent || '').slice(0, 160), key: myKey || '', name: String(myName || '').slice(0, 24), ts: Date.now() }).catch(() => {});
+    } catch(e) {}
+  }
+  window.addEventListener('error', (e) => reportError(e.message, e.filename, e.lineno, e.error && e.error.stack));
+  // 보안 정책(CSP)이 막은 것이 있으면 기록한다 (배포 후 정책이 너무 좁은지 확인용)
+  document.addEventListener('securitypolicyviolation', (e) => reportError('CSP 차단: ' + e.violatedDirective + ' ' + String(e.blockedURI || '').slice(0, 120), e.sourceFile, e.lineNumber, ''));
+  window.addEventListener('unhandledrejection', (e) => { const r = e.reason; reportError((r && r.message) || String(r), 'promise', 0, r && r.stack); });
+  let loadedErrors = [];
+  $('errLoadBtn').addEventListener('click', async () => {
+    if (!isAdmin() || !db) return;
+    try {
+      const q = db.collection('errors').orderBy('ts', 'desc').limit(30);
+      if (typeof q.get !== 'function') { adminMsg('이 환경에서는 오류 기록을 불러올 수 없어요.', false); return; }
+      const snap = await q.get();
+      loadedErrors = snap.docs.map(d => Object.assign({ id: d.id }, d.data()));
+      $('adminErrors').innerHTML = loadedErrors.length ? loadedErrors.map(e => `<div class="adm"><div class="ainfo"><b>${escapeHtml(e.msg)}</b><small>${new Date(+e.ts || 0).toLocaleString('ko-KR')} · ${escapeHtml(e.name || '-')} · ${escapeHtml(e.src || '')}:${+e.line || 0}</small>${e.stack ? `<small style="white-space:pre-wrap">${escapeHtml(e.stack)}</small>` : ''}</div></div>`).join('') : '<div class="muted">기록된 오류가 없어요. 👍</div>';
+    } catch(err) { adminMsg('오류 기록을 불러오지 못했어요.', false); }
+  });
+  $('errClearBtn').addEventListener('click', async () => {
+    if (!isAdmin() || !db || !loadedErrors.length || !confirm('불러온 오류 기록 ' + loadedErrors.length + '건을 지울까요?')) return;
+    for (const e of loadedErrors) { try { await db.collection('errors').doc(e.id).delete(); } catch(err) {} }
+    loadedErrors = []; $('adminErrors').innerHTML = ''; adminMsg('오류 기록을 지웠어요.', true);
+  });
+
+  // ---------- 백업 · 복원 (관리자) ----------
+  const BACKUP_COLLS = ['survivors', 'users', 'avatars', 'shelters', 'memos', 'graves', 'notices', 'trades', 'world', 'radio'];
+  const RESTORE_COLLS = ['survivors', 'avatars', 'shelters', 'memos', 'graves', 'notices', 'world'];
+  $('backupBtn').addEventListener('click', async () => {
+    if (!isAdmin() || !db) return;
+    if (typeof db.collection('survivors').get !== 'function') { adminMsg('이 환경에서는 내보내기를 할 수 없어요.', false); return; }
+    adminMsg('내보내는 중...', true);
+    try {
+      const out = { app: 'last-radio', v: 1, ts: Date.now(), data: {}, logs: {} };
+      for (const c of BACKUP_COLLS) {
+        const snap = await db.collection(c).get();
+        out.data[c] = {};
+        snap.docs.forEach(d => { out.data[c][d.id] = d.data(); });
+      }
+      for (const k of Object.keys(out.data.survivors)) {
+        try { const l = await logRef(k).get(); if (l && l.exists) out.logs[k] = l.data(); } catch(e) {}
+      }
+      const blob = new Blob([JSON.stringify(out)], { type: 'application/json' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'last-radio-backup-' + new Date().toISOString().slice(0, 16).replace(/[:T]/g, '-') + '.json';
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(() => URL.revokeObjectURL(a.href), 5000);
+      const n = Object.keys(out.data).reduce((t, c) => t + Object.keys(out.data[c]).length, 0);
+      adminMsg('문서 ' + n + '개와 일지 ' + Object.keys(out.logs).length + '개를 내보냈어요.', true);
+    } catch(err) { adminMsg('내보내지 못했어요: ' + (err && err.message || err), false); }
+  });
+  $('restoreInput').addEventListener('change', async (e) => {
+    const f = e.target.files && e.target.files[0];
+    e.target.value = '';
+    if (!f || !isAdmin() || !db) return;
+    try {
+      const b = JSON.parse(await f.text());
+      if (!b || b.app !== 'last-radio' || !b.data) { adminMsg('최후의 무전 백업 파일이 아니에요.', false); return; }
+      const n = RESTORE_COLLS.reduce((t, c) => t + Object.keys(b.data[c] || {}).length, 0);
+      if (!confirm(new Date(b.ts).toLocaleString('ko-KR') + ' 백업에서 문서 ' + n + '개를 복원할까요? 같은 이름의 문서는 백업 내용으로 덮어써요.')) return;
+      let done = 0, fail = 0;
+      for (const c of RESTORE_COLLS) for (const id of Object.keys(b.data[c] || {})) {
+        try { await db.doc(c + '/' + id).set(b.data[c][id]); done++; } catch(err) { fail++; }
+      }
+      for (const k of Object.keys(b.logs || {})) { try { await logRef(k).set(b.logs[k]); done++; } catch(err) { fail++; } }
+      adminMsg('복원 완료: ' + done + '개' + (fail ? ', 실패 ' + fail + '개' : ''), !fail);
+    } catch(err) { adminMsg('복원하지 못했어요: ' + (err && err.message || err), false); }
+  });
+
   // ---------- 실시간 감시(구독): 켜고 끄기 ----------
   // 탭을 10분 넘게 안 보고 있으면 모든 구독을 잠시 끊어 Firestore 읽기를 아낀다. 다시 보면 이어 붙인다
   function startListeners() {
@@ -4995,18 +5105,21 @@
     const v = $('partyInput').value.trim();
     if (!v || v === myDoc.party) return;
     const old = myDoc.party;
-    let existed = latestDocs.some(d => d.party === v && !isMe(d)), blocked = false;
+    let existed = latestDocs.some(d => d.party === v && !isMe(d)), blocked = false, kickedOut = false;
     if (db) {
       try {
         const sd = await db.doc('shelters/' + docId(v)).get();
         if (sd && sd.exists) {
           existed = true;
           const S = sd.data() || {};
-          if (S.policy === 'invite' && !(S.founderKey ? S.founderKey === myKey : S.founder === myName) && !(Array.isArray(S.invited) && (S.invited.includes(myKey) || S.invited.includes(myName)))) blocked = true;
+          const invitedMe = Array.isArray(S.invited) && (S.invited.includes(myKey) || S.invited.includes(myName));
+          if (S.policy === 'invite' && !(S.founderKey ? S.founderKey === myKey : S.founder === myName) && !invitedMe) blocked = true;
+          if (Array.isArray(S.kicked) && S.kicked.includes(myKey) && !invitedMe) kickedOut = true;
         }
         else await db.doc('shelters/' + docId(v)).set({ name: v, founder: myName, founderKey: myKey, notice: '', policy: 'open', invited: [], storage: {}, createdAt: Date.now() });
       } catch(e) {}
     }
+    if (kickedOut) { $('partyMsg').textContent = '「' + v + '」 쉘터에서 내보내진 적이 있어요. 대장이 다시 초대해야 들어갈 수 있어요.'; $('partyMsg').className = 'char-msg err'; return; }
     if (blocked) { $('partyMsg').textContent = '「' + v + '」 쉘터는 초대받은 사람만 들어갈 수 있어요. 대장에게 초대를 부탁하세요.'; $('partyMsg').className = 'char-msg err'; return; }
     if (old) await shelterSys(old, '님이 쉘터를 떠났다');
     myDoc.party = v;
@@ -5080,6 +5193,7 @@
   // 업데이트할 때마다 맨 위에 추가한다
   const PATCH_NOTES = [
     { d:'10.18', items:[
+      '🔒 보안 강화: 남의 캐릭터·쉘터·공지 등을 고칠 수 없도록 서버 규칙을 좁혔어요. 쉘터·교환은 동시에 눌러도 꼬이지 않게 처리해요',
       '🩹 버그 수정: 새로 만든 캐릭터가 1일차부터 지난 날들을 한꺼번에 겪어 상처투성이로 시작하던 문제',
       '🧪 실험용 백신: 감염을 완전히 없애고 현실 5시간 동안 물려도 감염되지 않아요. 병동·약품 진열대·무기고, 방호복 좀비, 보급 투하, 치료 임무, 검역 검문소에서 드물게 얻어요',
       '🧹 3일 지난 무전은 자동으로 지워져요',

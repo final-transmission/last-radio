@@ -16,9 +16,7 @@ R('<title>최후의 무전</title>', '''<!doctype html>
 <title>최후의 무전</title>''')
 R('<style>\n', '<style>\n  [hidden] { display: none !important; }\n  #loginCard details, #linkCard { display: none !important; }\n', 1)
 R('</style>', '</style>\n</head>\n<body>')
-R('<script>\n(function(){', '''<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+R('<script>\n(function(){', '''__VENDOR_SCRIPTS__
 <script>
 // ===== 여기에 Firebase 콘솔의 웹 앱 설정값을 붙여 넣으세요 =====
 const FIREBASE_CONFIG = {
@@ -39,7 +37,7 @@ BUILD_ID = time.strftime('%Y%m%d%H%M%S')
 # 새 버전이 올라오면 열려 있는 화면에 새로고침 안내를 띄운다 (version.txt를 3분마다 확인)
 UPDATE_NOTICE = """<div id="updateBar" hidden style="position:fixed;left:50%;bottom:calc(16px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:50;background:#d1a32b;color:#17140d;padding:10px 14px;border-radius:4px;box-shadow:0 6px 18px rgba(0,0,0,.35);font:700 14px 'Noto Sans KR',sans-serif;display:flex;gap:10px;align-items:center;max-width:calc(100vw - 32px)">
   <span>📻 새 버전이 나왔어요. 새로고침해 주세요.</span>
-  <button type="button" onclick="location.reload()" style="background:#17140d;color:#f3e6b8;border:none;border-radius:3px;padding:6px 10px;font:inherit;cursor:pointer">새로고침</button>
+  <button type="button" id="updateReload" style="background:#17140d;color:#f3e6b8;border:none;border-radius:3px;padding:6px 10px;font:inherit;cursor:pointer">새로고침</button>
 </div>
 <script>
 (function(){
@@ -50,6 +48,7 @@ UPDATE_NOTICE = """<div id="updateBar" hidden style="position:fixed;left:50%;bot
       if (v && v !== BUILD_ID) document.getElementById('updateBar').hidden = false;
     }).catch(function(){});
   }
+  document.getElementById('updateReload').addEventListener('click', function(){ location.reload(); });
   setInterval(check, 180000);
   document.addEventListener('visibilitychange', function(){ if (!document.hidden) check(); });
 })();
@@ -61,7 +60,7 @@ open(os.path.join(os.path.dirname(os.path.abspath(out)), 'version.txt'), 'w').wr
 # 2) 저장소: claude 공유 DB → Firestore
 R("    try { db = await claude.use('db'); } catch(e) { db = null; }", """    try {
       if (!FIREBASE_CONFIG.projectId) throw new Error('no config');
-      if (!firebase.apps.length) { firebase.initializeApp(FIREBASE_CONFIG); firebase.firestore().settings({ ignoreUndefinedProperties: true }); }
+      if (!firebase.apps.length) { firebase.initializeApp(FIREBASE_CONFIG); firebase.firestore().settings({ ignoreUndefinedProperties: true });__EMULATOR__ }
       db = firebase.firestore();
     } catch(e) { db = null; }""")
 s = s.replace("claude.ai에 로그인되어 있는지 확인해보세요.", "index.html의 FIREBASE_CONFIG 설정을 확인해보세요.")
@@ -127,5 +126,33 @@ R("""  const session = loadSession();
     if (!db) { authMsg('Firebase에 연결하지 못했어요. index.html의 FIREBASE_CONFIG 설정을 확인해보세요.'); return; }
     firebase.auth().onAuthStateChanged(user => { if (user && !signingUp) enterFromAuth(user).catch(() => {}); });
   })();""")
+# 4) 보안: Firebase 라이브러리는 저장소에 넣어 둔 파일을 무결성 검사와 함께 불러온다 (외부 CDN이 바뀌어도 영향 없음)
+import hashlib, base64, re
+EMU = os.environ.get('LR_EMULATOR') == '1'
+root = os.path.dirname(os.path.abspath(out))
+tags = []
+for name in ['app', 'auth', 'firestore']:
+    rel = 'vendor/firebase-10.12.2/firebase-%s-compat.js' % name
+    data = open(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', rel), 'rb').read()
+    sri = 'sha384-' + base64.b64encode(hashlib.sha384(data).digest()).decode()
+    tags.append('<script src="%s" integrity="%s"></script>' % (rel, sri))
+R('__VENDOR_SCRIPTS__', '\n'.join(tags))
+R('__EMULATOR__', " firebase.firestore().useEmulator('127.0.0.1', 8085); firebase.auth().useEmulator('http://127.0.0.1:9099');" if EMU else '')
+# 클릭재킹 방지: 다른 사이트의 iframe 안에서는 화면을 숨기고 맨 위 창으로 빠져나간다
+R('<meta charset="utf-8">', '''<meta charset="utf-8">
+__CSP__
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<style id="antiClickjack">html{display:none !important}</style>
+<script>if (window.self === window.top) { var ack = document.getElementById('antiClickjack'); ack.parentNode.removeChild(ack); } else { try { window.top.location = window.self.location.href; } catch (e) {} }</script>''')
+# 콘텐츠 보안 정책: 페이지 안의 스크립트는 해시가 맞는 것만, 외부 스크립트는 같은 사이트 것만 실행된다
+hashes = []
+for m in re.finditer(r'<script>(.*?)</script>', s, re.S):
+    hashes.append("'sha256-" + base64.b64encode(hashlib.sha256(m.group(1).encode('utf-8')).digest()).decode() + "'")
+local = ' http://127.0.0.1:* ws://127.0.0.1:*' if EMU else ''
+csp = ("default-src 'self'; script-src 'self' " + ' '.join(hashes) + "; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; "
+       "font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob:; "
+       "connect-src 'self' https://*.googleapis.com https://*.firebaseapp.com https://*.firebaseio.com wss://*.firebaseio.com" + local + "; "
+       "frame-src https://*.firebaseapp.com; object-src 'none'; base-uri 'self'; form-action 'self'")
+R('__CSP__', '<meta http-equiv="Content-Security-Policy" content="' + csp + '">')
 open(out, 'w', encoding='utf-8').write(s)
 print('ok')

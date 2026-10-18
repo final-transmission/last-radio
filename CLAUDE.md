@@ -15,6 +15,12 @@ git add -A && git commit -m "..." && git push origin main
 ```
 푸시 후 1~2분 뒤 GitHub Pages에 반영된다. 같은 원본으로 claude.ai 아티팩트(https://claude.ai/artifact/VAfyFZvbWHwJxMn3UGZbMF)도 갱신할 수 있다.
 
+## 보안
+- `firestore.rules`: 내 캐릭터(`uid-` + 인증 uid)만 고치고, 관리자(akdma0528)는 예외. 바꾸면 사용자가 콘솔에 다시 붙여 넣어야 한다.
+- 새 기능이 남의 문서를 직접 쓰면 규칙에 막힌다. 그런 경우는 공유 문서(쉘터 `kicked`처럼)에 기록하고 당사자 화면이 스스로 처리하게 한다.
+- 빌드가 CSP(인라인 스크립트 해시), 클릭재킹 방지, Firebase SDK(`vendor/`) 무결성 값을 자동으로 넣는다.
+- 테스트: `tests/README.md` (에뮬레이터 규칙 테스트 + 종단 테스트). 규칙·저장 구조를 바꾸면 돌린다.
+
 ## 패치 노트
 기능을 바꿔 배포할 때마다 `src/game.html`의 `PATCH_NOTES` 맨 위(오늘 날짜 항목)에 한 줄씩 추가한다. 안내 탭(📜)의 게임 안내 문구도 바뀐 기능에 맞춰 고친다.
 
