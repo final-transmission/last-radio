@@ -105,6 +105,11 @@ await no('report self-answer', setDoc(doc(A, 'reports/r1'), { cat: 'bug', text: 
 await ok('report admin answer', setDoc(doc(ADM, 'reports/r1'), { cat: 'bug', text: '버그', author: '앨리스', authorKey: 'uid-alice', ts: 1, status: 'done', reply: '해결' }));
 await no('report delete other', deleteDoc(doc(B, 'reports/r1')));
 await ok('report delete own', deleteDoc(doc(A, 'reports/r1')));
+// 저장 번호(rev): 낮거나 없는 저장은 거절
+await ok('rev up', setDoc(doc(A, 'survivors/uid-alice'), { name: '앨리스', hp: 50, rev: 10 }));
+await no('rev stale', setDoc(doc(A, 'survivors/uid-alice'), { name: '앨리스', hp: 50, rev: 9 }));
+await no('rev missing', setDoc(doc(A, 'survivors/uid-alice'), { name: '앨리스', hp: 50 }));
+await ok('rev next', setDoc(doc(A, 'survivors/uid-alice'), { name: '앨리스', hp: 50, rev: 11 }));
 const ev = { kind: 'noise', loc: 'dtla', a: 15, day: 5, ts: now, cid: 'abc', by: 'uid-alice' };
 const e1 = await assertSucceeds(addDoc(collection(A, 'regionEvents'), ev)).catch(e => { bad.push('OK regionEvent ' + e.message); return null; }); if (e1) pass++; else fail++;
 await no('region a=100', addDoc(collection(A, 'regionEvents'), Object.assign({}, ev, { a: 100 })));

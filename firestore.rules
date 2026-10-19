@@ -30,7 +30,9 @@ service cloud.firestore {
         && (!('bio' in d()) || str(d().bio, 600))
         && (!('epitaph' in d()) || d().epitaph == null || str(d().epitaph, 80))
         && (!('party' in d()) || str(d().party, 24))
-        && d().hp is number && d().hp >= 0 && d().hp <= 100);
+        && d().hp is number && d().hp >= 0 && d().hp <= 100
+        // 저장 번호(rev)는 늘 올라가야 한다: 예전 화면(옛 버전)이 새 기록을 덮어쓰지 못하게
+        && (resource == null || !('rev' in resource.data) || (d().rev is number && d().rev > resource.data.rev)));
       allow delete: if isMe(key) || isAdmin();
       // 일지: 본인과 관리자만
       match /private/{doc} {

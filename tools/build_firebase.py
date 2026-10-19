@@ -50,7 +50,14 @@ UPDATE_NOTICE = """<div id="updateBar" hidden style="position:fixed;left:50%;bot
   }
   document.getElementById('updateReload').addEventListener('click', function(){ location.reload(); });
   setInterval(check, 180000);
-  document.addEventListener('visibilitychange', function(){ if (!document.hidden) check(); });
+  // 다른 탭·앱에 갔다가 돌아왔을 때 새 버전이 있으면 바로 새로고침한다 (옛 화면이 새 기록을 덮어쓰지 않도록)
+  document.addEventListener('visibilitychange', function(){
+    if (document.hidden) return;
+    fetch('version.txt?t=' + Date.now(), { cache: 'no-store' }).then(function(r){ return r.ok ? r.text() : ''; }).then(function(v){
+      v = (v || '').trim();
+      if (v && v !== BUILD_ID) location.reload();
+    }).catch(function(){});
+  });
 })();
 </script>
 """.replace("__BUILD_ID__", BUILD_ID)

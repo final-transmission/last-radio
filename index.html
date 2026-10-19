@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://apis.google.com 'sha256-NzWzSr/JJIt0kS48PXCsqUjn9/ALxUaH31f7sTmbH+s=' 'sha256-XBhYyYOXmyHU+rUeBJm1vZW172xgTyzDLX1SllyaCU8=' 'sha256-ed83/aXhg84ZX8bNEpzhf6DSU3X0JqUZj1XBfIFURlw=' 'sha256-8u0wAwMXnqP1BVKklDUFDOUxHqV6Q8Si+MkHO2q+Ogg='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://www.google.com; connect-src 'self' https://*.googleapis.com https://*.firebaseapp.com https://*.firebaseio.com wss://*.firebaseio.com; frame-src https://*.firebaseapp.com; object-src 'none'; base-uri 'self'; form-action 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://apis.google.com 'sha256-NzWzSr/JJIt0kS48PXCsqUjn9/ALxUaH31f7sTmbH+s=' 'sha256-XBhYyYOXmyHU+rUeBJm1vZW172xgTyzDLX1SllyaCU8=' 'sha256-Yj+yxDallF/kxYOHhegSjeBITCoqLi4RP0OoUr61Mr0=' 'sha256-casIuoLMWtUrAF0aNeJGEj7ZEQXE9fLTb/SSIkE/A9Y='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://www.google.com; connect-src 'self' https://*.googleapis.com https://*.firebaseapp.com https://*.firebaseio.com wss://*.firebaseio.com; frame-src https://*.firebaseapp.com; object-src 'none'; base-uri 'self'; form-action 'self'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <style id="antiClickjack">html{display:none !important}</style>
 <script>if (window.self === window.top) { var ack = document.getElementById('antiClickjack'); ack.parentNode.removeChild(ack); } else { try { window.top.location = window.self.location.href; } catch (e) {} }</script>
@@ -1666,14 +1666,18 @@ const FIREBASE_CONFIG = {
     try {
       let newer = null;
       const ok = await txUpdate('survivors/' + myKey, cur => {
-        if (cur && (+cur.rev || 0) > baseRev && cur.sess !== mySession) { newer = cur; return false; }
+        if (cur && (+cur.rev || 0) > baseRev) { if (cur.sess !== mySession) newer = cur; return false; } // 같은 화면이 이미 더 새로 저장했으면 건너뛴다
         return out;
       });
       if (!ok && newer) { await adoptServerDoc(newer, '📱 다른 기기에서 이어서 한 기록을 불러왔다.'); return; }
       if (logDirty) { logDirty = false; await logRef(myKey).set({ entries: myDoc.log.slice(-300) }); }
       permNotice.style.display = 'none';
     }
-    catch(e) { permNotice.style.display = 'block'; reportError('saveDoc: ' + (e && e.message || e), 'saveDoc', 0, e && e.stack); }
+    catch(e) {
+      // 거의 같은 순간 다른 기기가 먼저 저장해 저장 번호가 밀린 경우: 그쪽 기록을 불러온다
+      try { const sn = await db.doc('survivors/' + myKey).get(); const cur = sn && sn.exists ? sn.data() : null; if (cur && (+cur.rev || 0) >= (+myDoc.rev || 0)) { if (cur.sess !== mySession) await adoptServerDoc(cur, '📱 다른 기기에서 이어서 한 기록을 불러왔다.'); return; } } catch (e2) {}
+      permNotice.style.display = 'block'; reportError('saveDoc: ' + (e && e.message || e), 'saveDoc', 0, e && e.stack);
+    }
   }
   // 다른 생존자의 일지에 한 줄 남긴다 (약탈당함, 쉘터에서 쫓겨남 등)
   async function appendLogTo(key, entry) {
@@ -6704,6 +6708,7 @@ const FIREBASE_CONFIG = {
       '📢 패치나 공지가 생기면 처음 들어왔을 때 한 번 팝업으로 알려 줘요',
       '😴 잠자기 1시간 → 30분, 🌾 농사 30분 → 15분',
       '🔥 제작·수리 재료를 시작할 때 미리 챙겨 둬요. 진행 중에 재료를 먹거나 써 버려서 실패하던 문제를 고쳤어요 (그만두면 돌려받아요)',
+      '📱 기기 이동 보강: 예전 화면이 새 기록을 덮어쓰지 못하게 막고, 다른 앱에 갔다 돌아왔을 때 새 버전이 있으면 바로 새로고침해요',
       '📱 같은 아이디로 휴대폰·컴퓨터를 오갈 때 예전 상태로 되돌아가던 문제를 고쳤어요. 다른 기기에서 더 새로 저장한 기록이 있으면 그걸 불러와요',
       '🤝 동료 최대 10명. 이름 있는 동료는 한 명뿐이라 다른 생존자가 먼저 데려가면 영입 불가',
       '🐾 동물 동료 추가: 개 10품종(진돗개·시바견·골든 리트리버·저먼 셰퍼드·비글·허스키·보더 콜리·닥스훈트·웰시코기·도베르만), 고양이, 새끼 돼지, 햄스터, 아기 부엉이, 족제비, 애완 거북이',
@@ -7411,7 +7416,7 @@ const FIREBASE_CONFIG = {
 </div>
 <script>
 (function(){
-  var BUILD_ID = '20261019155405';
+  var BUILD_ID = '20261019170655';
   function check(){
     fetch('version.txt?t=' + Date.now(), { cache: 'no-store' }).then(function(r){ return r.ok ? r.text() : ''; }).then(function(v){
       v = (v || '').trim();
@@ -7420,7 +7425,14 @@ const FIREBASE_CONFIG = {
   }
   document.getElementById('updateReload').addEventListener('click', function(){ location.reload(); });
   setInterval(check, 180000);
-  document.addEventListener('visibilitychange', function(){ if (!document.hidden) check(); });
+  // 다른 탭·앱에 갔다가 돌아왔을 때 새 버전이 있으면 바로 새로고침한다 (옛 화면이 새 기록을 덮어쓰지 않도록)
+  document.addEventListener('visibilitychange', function(){
+    if (document.hidden) return;
+    fetch('version.txt?t=' + Date.now(), { cache: 'no-store' }).then(function(r){ return r.ok ? r.text() : ''; }).then(function(v){
+      v = (v || '').trim();
+      if (v && v !== BUILD_ID) location.reload();
+    }).catch(function(){});
+  });
 })();
 </script>
 </body>
