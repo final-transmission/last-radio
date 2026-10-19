@@ -6131,7 +6131,7 @@
   function reportError(msg, src, line, stack) {
     try {
       const m = String(msg || '').slice(0, 300);
-      if (!db || !m || errCount >= 5 || errSeen.has(m) || /ResizeObserver loop/.test(m)) return;
+      if (!db || !m || errCount >= 5 || errSeen.has(m) || /ResizeObserver loop|without an in-progress transaction|cleardot\.gif/.test(m)) return; // 브라우저 저장소(IndexedDB)·연결 확인 이미지처럼 게임과 무관한 소음은 빼고 기록한다
       errSeen.add(m); errCount++;
       db.collection('errors').add({ msg: m, src: String(src || '').slice(-120), line: +line || 0, stack: String(stack || '').slice(0, 800), ua: String(navigator.userAgent || '').slice(0, 160), key: myKey || '', name: String(myName || '').slice(0, 24), ts: Date.now() }).catch(() => {});
     } catch(e) {}

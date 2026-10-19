@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://apis.google.com 'sha256-NzWzSr/JJIt0kS48PXCsqUjn9/ALxUaH31f7sTmbH+s=' 'sha256-XBhYyYOXmyHU+rUeBJm1vZW172xgTyzDLX1SllyaCU8=' 'sha256-SLWMgqOZBTMvfo5+PLVszbrlN5NiU16oS8RMWdd8Ubw=' 'sha256-/jjHm4zDkQvvzSPyyLyblF2vPW3x/HQx189k0AfXhs4='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://www.google.com; connect-src 'self' https://*.googleapis.com https://*.firebaseapp.com https://*.firebaseio.com wss://*.firebaseio.com; frame-src https://*.firebaseapp.com; object-src 'none'; base-uri 'self'; form-action 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://apis.google.com 'sha256-NzWzSr/JJIt0kS48PXCsqUjn9/ALxUaH31f7sTmbH+s=' 'sha256-XBhYyYOXmyHU+rUeBJm1vZW172xgTyzDLX1SllyaCU8=' 'sha256-BiWIz2NOvAu/YMJuVmbrquioGmZpnq1KXJSvrASZ2Vk=' 'sha256-m09+SaSQdAbspC8olRTPojppEg8d/OCYAAL9PtnLyMo='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://www.google.com; connect-src 'self' https://*.googleapis.com https://*.firebaseapp.com https://*.firebaseio.com wss://*.firebaseio.com; frame-src https://*.firebaseapp.com; object-src 'none'; base-uri 'self'; form-action 'self'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <style id="antiClickjack">html{display:none !important}</style>
 <script>if (window.self === window.top) { var ack = document.getElementById('antiClickjack'); ack.parentNode.removeChild(ack); } else { try { window.top.location = window.self.location.href; } catch (e) {} }</script>
@@ -6164,7 +6164,7 @@ const FIREBASE_CONFIG = {
   function reportError(msg, src, line, stack) {
     try {
       const m = String(msg || '').slice(0, 300);
-      if (!db || !m || errCount >= 5 || errSeen.has(m) || /ResizeObserver loop/.test(m)) return;
+      if (!db || !m || errCount >= 5 || errSeen.has(m) || /ResizeObserver loop|without an in-progress transaction|cleardot\.gif/.test(m)) return; // 브라우저 저장소(IndexedDB)·연결 확인 이미지처럼 게임과 무관한 소음은 빼고 기록한다
       errSeen.add(m); errCount++;
       db.collection('errors').add({ msg: m, src: String(src || '').slice(-120), line: +line || 0, stack: String(stack || '').slice(0, 800), ua: String(navigator.userAgent || '').slice(0, 160), key: myKey || '', name: String(myName || '').slice(0, 24), ts: Date.now() }).catch(() => {});
     } catch(e) {}
@@ -7247,7 +7247,7 @@ const FIREBASE_CONFIG = {
 </div>
 <script>
 (function(){
-  var BUILD_ID = '20261019062751';
+  var BUILD_ID = '20261019063548';
   function check(){
     fetch('version.txt?t=' + Date.now(), { cache: 'no-store' }).then(function(r){ return r.ok ? r.text() : ''; }).then(function(v){
       v = (v || '').trim();
