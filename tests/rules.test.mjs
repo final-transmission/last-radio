@@ -99,6 +99,12 @@ await ok('npc claim', setDoc(doc(A, 'npcClaims/c1'), { by: 'uid-alice', name: '�
 await no('npc claim taken', setDoc(doc(B, 'npcClaims/c1'), { by: 'uid-bob', name: '사라 킴', kind: 'journalist', ts: 2 }));
 await no('npc claim delete other', deleteDoc(doc(B, 'npcClaims/c1')));
 await ok('npc claim delete own', deleteDoc(doc(A, 'npcClaims/c1')));
+await ok('report create', setDoc(doc(A, 'reports/r1'), { cat: 'bug', text: '버그', author: '앨리스', authorKey: 'uid-alice', ts: 1, status: 'open' }));
+await no('report fake author', setDoc(doc(B, 'reports/r2'), { cat: 'bug', text: 'x', author: '앨리스', authorKey: 'uid-alice', ts: 1, status: 'open' }));
+await no('report self-answer', setDoc(doc(A, 'reports/r1'), { cat: 'bug', text: '버그', author: '앨리스', authorKey: 'uid-alice', ts: 1, status: 'done', reply: '해결' }));
+await ok('report admin answer', setDoc(doc(ADM, 'reports/r1'), { cat: 'bug', text: '버그', author: '앨리스', authorKey: 'uid-alice', ts: 1, status: 'done', reply: '해결' }));
+await no('report delete other', deleteDoc(doc(B, 'reports/r1')));
+await ok('report delete own', deleteDoc(doc(A, 'reports/r1')));
 const ev = { kind: 'noise', loc: 'dtla', a: 15, day: 5, ts: now, cid: 'abc', by: 'uid-alice' };
 const e1 = await assertSucceeds(addDoc(collection(A, 'regionEvents'), ev)).catch(e => { bad.push('OK regionEvent ' + e.message); return null; }); if (e1) pass++; else fail++;
 await no('region a=100', addDoc(collection(A, 'regionEvents'), Object.assign({}, ev, { a: 100 })));

@@ -23,12 +23,15 @@ async function player(id, name) {
   await p.evaluate(() => document.addEventListener('securitypolicyviolation', e => { window.__csp = (window.__csp || []).concat(e.violatedDirective + ' ' + e.blockedURI); }));
   await p.click('#authTabSignup'); await p.fill('#suId', id); await p.fill('#suPw', 'abcdef12'); await p.fill('#suPw2', 'abcdef12'); await p.fill('#suName', name); await p.click('#signupBtn');
   await p.waitForSelector('#actionsCard', { state: 'visible', timeout: 20000 });
+  // 새 소식 팝업은 테스트 동작을 가리지 않게 바로 닫는다
+  await p.evaluate(() => setInterval(() => { const b = document.querySelector('#popupBox'); if (b && !b.hidden) document.querySelector('#popupClose').click(); }, 300));
   await p.waitForTimeout(1500);
   return { p, ctx };
 }
 const skip = async (p, min) => { await p.evaluate((m) => { const o = Date.now; Date.now = () => o() + m * 60000; }, min); await p.waitForTimeout(2500); };
 try {
   const A = await player('alice1', '앨리스'), B = await player('bob1', '밥'), C = await player('akdma0528', '관리자');
+  const closePops = async () => { for (const P of [A, B, C]) await P.p.evaluate(() => { const b = document.querySelector('#popupBox'); if (b && !b.hidden) document.querySelector('#popupClose').click(); }).catch(() => {}); await A.p.waitForTimeout(300); };
   const users = await admin(async db => (await getDocs(collection(db, 'users'))).docs.map(d => Object.assign({ uid: d.id }, d.data())));
   const ua = users.find(u => u.id === 'alice1'), ub = users.find(u => u.id === 'bob1');
   ok('세 명 가입·캐릭터 생성', users.length === 3 && (await admin(async db => (await getDocs(collection(db, 'survivors'))).size)) === 3);
@@ -46,6 +49,7 @@ try {
   const hack2 = await B.p.evaluate(async () => { try { await firebase.firestore().collection('notices').add({ title: 'x', body: 'y', ts: Date.now() }); return 'written'; } catch (e) { return e.code; } });
   ok('일반 유저 공지 차단', hack2 === 'permission-denied', hack2);
   // 4) 물물교환
+  await closePops();
   await A.p.click('#commTalk'); await B.p.click('#commTalk'); await A.p.waitForTimeout(1200);
   await A.p.selectOption('#tgGive', 'beans'); await A.p.selectOption('#tgWant', 'water'); await A.p.click('#tgPost'); await B.p.waitForTimeout(2500);
   const acc = await B.p.$('button[data-taccept]');
@@ -69,6 +73,7 @@ try {
   await A.p.click('.spot[data-spot="0"]'); await A.p.click('button[data-point="0"]'); await skip(A.p, 5);
   const aDoc = await admin(async db => (await getDoc(doc(db, 'survivors/' + ua.key))).data());
   ok('조사 후 저장(내 캐릭터)', aDoc && !aDoc.busy && Object.keys(aDoc.searched || {}).length > 0);
+  await closePops();
   // 5) 쉘터: 만들기·합류·창고·내보내기
   for (const P of [A.p, B.p]) { await P.click('#tabBtnShelter'); await P.fill('#partyInput', '피난처'); await P.click('#partyBtn'); await P.waitForTimeout(2000); }
   const sh = await admin(async db => (await getDocs(collection(db, 'shelters'))).docs.map(d => d.data()));
@@ -81,6 +86,7 @@ try {
   ok('내보내진 사람이 스스로 쉘터를 나감', bDoc.party === '', 'party=' + bDoc.party);
   await B.p.fill('#partyInput', '피난처'); await B.p.click('#partyBtn'); await B.p.waitForTimeout(1500);
   ok('내보내진 쉘터 재가입 차단', (await B.p.textContent('#partyMsg')).includes('내보내진'));
+  await closePops();
   // 9) 쉘터 창고 넣기 (트랜잭션 + 회원 확인 규칙)
   await A.p.click('#tabBtnShelter'); await A.p.waitForTimeout(800);
   await A.p.selectOption('#storageItem', 'i:beans').catch(() => {}); await A.p.waitForTimeout(300);
@@ -105,6 +111,7 @@ try {
   // 6) 관리자: 공지·백업·복원·오류 기록
   await C.p.click('#tabBtnGuide'); await C.p.fill('#noticeTitle', 'e2e 공지'); await C.p.fill('#noticeBody', '내용'); await C.p.click('#noticeBtn'); await C.p.waitForTimeout(1500);
   ok('관리자 공지 등록', (await admin(async db => (await getDocs(collection(db, 'notices'))).size)) === 1);
+  await closePops();
   await C.p.click('#tabBtnAdmin'); await C.p.waitForTimeout(800);
   const [dl] = await Promise.all([C.p.waitForEvent('download', { timeout: 20000 }), C.p.click('#backupBtn')]);
   const file = await dl.path(); const bk = JSON.parse(fs.readFileSync(file, 'utf8'));
@@ -126,11 +133,19 @@ try {
   const aLog = await A.p.evaluate(() => [...document.querySelectorAll('#myLog .txt')].slice(0, 6).map(x => x.textContent).join(' | '));
   ok('지급 받은 사람 일지', /관리자에게서/.test(aLog), aLog.slice(0, 160));
   await C.p.click('#errLoadBtn'); await C.p.waitForTimeout(1500);
+  await closePops();
+  // 문의 게시판: 앨리스가 글을 올리고 관리자가 답변
+  await A.p.click('#tabBtnAsk'); await A.p.fill('#askText', 'e2e 버그 제보'); await A.p.click('#askBtn'); await A.p.waitForTimeout(2000);
+  C.p.once('dialog', d => d.accept('확인했어요'));
+  await C.p.click('#tabBtnAsk'); await C.p.waitForTimeout(1500); await C.p.click('button[data-askreply]'); await C.p.waitForTimeout(2000);
+  const reps = await admin(async db => (await getDocs(collection(db, 'reports'))).docs.map(d => d.data()));
+  ok('문의 게시판 글·답변', reps.length === 1 && reps[0].reply === '확인했어요' && reps[0].status === 'done', JSON.stringify(reps).slice(0, 160));
+  await closePops();
   // 같은 아이디로 두 번째 기기: 두 번째 기기에서 휴식을 시작하면, 첫 기기가 그 기록을 덮어쓰지 않아야 한다
   { const ctx2 = await browser.newContext({ viewport: { width: 400, height: 800 } }); const A2 = await ctx2.newPage();
     A2.on('pageerror', e => pageErrs.push('A2: ' + e.message));
     await A2.goto('http://127.0.0.1:5050/'); await A2.click('#authTabLogin').catch(() => {}); await A2.fill('#loginId', 'alice1'); await A2.fill('#loginPw', 'abcdef12'); await A2.click('#loginBtn');
-    await A2.waitForSelector('#actionsCard', { state: 'visible', timeout: 20000 }); await A2.waitForTimeout(1500);
+    await A2.waitForSelector('#actionsCard', { state: 'visible', timeout: 20000 }); await A2.evaluate(() => setInterval(() => { const b = document.querySelector('#popupBox'); if (b && !b.hidden) document.querySelector('#popupClose').click(); }, 300)); await A2.waitForTimeout(1500);
     await A2.click('#tabBtnPlay').catch(() => {}); await A2.click('#restBtn'); await A2.waitForTimeout(2500);
     await A.p.click('#tabBtnPlay').catch(() => {}); await A.p.click('#forageBtn').catch(() => {}); await A.p.waitForTimeout(2500);
     const sv = await admin(async db => (await getDoc(doc(db, 'survivors/' + ua.key))).data());

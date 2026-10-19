@@ -138,6 +138,15 @@ service cloud.firestore {
       allow delete: if signedIn() && (resource.data.by == myKey() || isAdmin());
     }
 
+    // ---------- 문의·버그 제보: 글쓴이는 나, 답변·상태는 관리자만, 지우기는 글쓴이·관리자 ----------
+    match /reports/{id} {
+      allow read: if signedIn();
+      allow create: if signedIn() && d().authorKey == myKey() && d().keys().hasOnly(['cat', 'text', 'author', 'authorKey', 'ts', 'status'])
+        && d().cat in ['bug', 'ask', 'idea'] && str(d().text, 1000) && str(d().author, 24) && d().ts is number && d().status == 'open';
+      allow update: if isAdmin();
+      allow delete: if signedIn() && (resource.data.authorKey == myKey() || isAdmin());
+    }
+
     // ---------- 오류 기록: 누구나 남기고, 관리자만 본다 ----------
     match /errors/{id} {
       allow create: if signedIn() && str(d().msg, 300) && (!('stack' in d()) || str(d().stack, 800)) && d().keys().size() <= 10;

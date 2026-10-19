@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://apis.google.com 'sha256-NzWzSr/JJIt0kS48PXCsqUjn9/ALxUaH31f7sTmbH+s=' 'sha256-XBhYyYOXmyHU+rUeBJm1vZW172xgTyzDLX1SllyaCU8=' 'sha256-ZAtc1+EPpfg0m7He91DME+l+vJ8wkRfmGpbDHidGiIk=' 'sha256-eVbiLAtNsclDsvkKkXLzKqudjaf9OreNbtR6EFda+rI='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://www.google.com; connect-src 'self' https://*.googleapis.com https://*.firebaseapp.com https://*.firebaseio.com wss://*.firebaseio.com; frame-src https://*.firebaseapp.com; object-src 'none'; base-uri 'self'; form-action 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://apis.google.com 'sha256-NzWzSr/JJIt0kS48PXCsqUjn9/ALxUaH31f7sTmbH+s=' 'sha256-XBhYyYOXmyHU+rUeBJm1vZW172xgTyzDLX1SllyaCU8=' 'sha256-ed83/aXhg84ZX8bNEpzhf6DSU3X0JqUZj1XBfIFURlw=' 'sha256-8u0wAwMXnqP1BVKklDUFDOUxHqV6Q8Si+MkHO2q+Ogg='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://www.google.com; connect-src 'self' https://*.googleapis.com https://*.firebaseapp.com https://*.firebaseio.com wss://*.firebaseio.com; frame-src https://*.firebaseapp.com; object-src 'none'; base-uri 'self'; form-action 'self'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <style id="antiClickjack">html{display:none !important}</style>
 <script>if (window.self === window.top) { var ack = document.getElementById('antiClickjack'); ack.parentNode.removeChild(ack); } else { try { window.top.location = window.self.location.href; } catch (e) {} }</script>
@@ -261,6 +261,21 @@
   #tabGuide { max-width: 1100px; margin: 0 auto; }
   @media (min-width: 900px) { .guide-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 0 20px; align-items: start; } }
   .tab-dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: var(--danger); margin-left: 4px; vertical-align: top; }
+  .ask-item { border-top: 1px dashed var(--border); padding: 10px 0; font-size: 14px; }
+  .ask-item .ah { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; font-size: 12px; color: var(--text-dim); }
+  .ask-item .ab { white-space: pre-wrap; margin: 6px 0; }
+  .ask-item .ar { white-space: pre-wrap; margin: 6px 0 0; padding: 8px 10px; border-left: 3px solid var(--accent); background: var(--bg-elevated); font-size: 13px; }
+  .ask-item .st { padding: 1px 6px; border-radius: 3px; border: 1px solid var(--border); }
+  .ask-item .st.done { color: var(--ok, #4f9a4a); border-color: currentColor; }
+  .ask-item .acts { display: flex; gap: 6px; margin-top: 6px; flex-wrap: wrap; }
+  .ask-item .acts button { width: auto; padding: 3px 10px; font-size: 12px; }
+  .ask-item textarea { min-height: 60px; margin-top: 6px; }
+  #popupBox { position: fixed; inset: 0; z-index: 60; background: rgba(0,0,0,.55); display: flex; align-items: center; justify-content: center; padding: 16px; }
+  #popupBox[hidden] { display: none; }
+  #popupBox .pop { max-width: 520px; width: 100%; max-height: 80vh; overflow-y: auto; background: var(--bg-card, var(--bg)); border: 1px solid var(--border); border-radius: 6px; padding: 16px 18px; box-shadow: 0 10px 30px rgba(0,0,0,.4); }
+  #popupBox h3 { margin: 0 0 8px; }
+  #popupBox ul { margin: 4px 0 12px; padding-left: 18px; font-size: 14px; }
+  #popupBox li { margin: 3px 0; }
   .notice-item { border-top: 1px dashed var(--border); padding: 10px 0; }
   .notice-item:first-child { border-top: 0; padding-top: 0; }
   .ni-head { display: flex; align-items: baseline; gap: 8px; }
@@ -665,6 +680,7 @@
   </div>
 
   <div id="gameArea" style="display:none;">
+    <div id="popupBox" hidden role="dialog" aria-modal="true" aria-labelledby="popupTitle"><div class="pop"><h3 id="popupTitle">📢 새 소식</h3><div id="popupBody"></div><button class="primary" type="button" id="popupClose">확인</button></div></div>
 
     <nav class="tabs" role="tablist">
       <button class="tab active" role="tab" aria-selected="true" data-tab="play" id="tabBtnPlay">📻 생존</button>
@@ -672,6 +688,7 @@
       <button class="tab" role="tab" aria-selected="false" data-tab="board" id="tabBtnBoard">📋 생존자</button>
       <button class="tab" role="tab" aria-selected="false" data-tab="shelter" id="tabBtnShelter">🏚️ 쉘터</button>
       <button class="tab" role="tab" aria-selected="false" data-tab="char" id="tabBtnChar">👤 캐릭터</button>
+      <button class="tab" role="tab" aria-selected="false" data-tab="ask" id="tabBtnAsk">📮 문의</button>
       <button class="tab" role="tab" aria-selected="false" data-tab="guide" id="tabBtnGuide">📜 안내<span class="tab-dot" id="noticeDot" hidden></span></button>
       <button class="tab" role="tab" aria-selected="false" data-tab="admin" id="tabBtnAdmin" hidden>🛠 관리</button>
     </nav>
@@ -699,9 +716,9 @@
       <div class="action-grid">
         <button class="action" id="forageBtn"><span class="ic">🍄</span><span>채집</span><small>3분</small></button>
         <button class="action" id="huntBtn"><span class="ic">🔪</span><span>사냥</span><small>10분</small></button>
-        <button class="action" id="farmBtn"><span class="ic">🌾</span><span>농사</span><small>30분</small></button>
+        <button class="action" id="farmBtn"><span class="ic">🌾</span><span>농사</span><small>15분</small></button>
         <button class="action rest" id="restBtn"><span class="ic">🛌</span><span>휴식</span><small>10분</small></button>
-        <button class="action rest" id="sleepBtn"><span class="ic">😴</span><span>잠자기</span><small>1시간</small></button>
+        <button class="action rest" id="sleepBtn"><span class="ic">😴</span><span>잠자기</span><small>30분</small></button>
         <button class="action raid" id="raidBtn" hidden><span class="ic">⚔️</span><span>약탈</span><small>5분</small></button>
         <button class="action explore" id="exploreBtn" hidden><span class="ic">🏚️</span><span id="exploreLbl">선택한 구역 조사 · 파밍</span></button>
       </div>
@@ -915,6 +932,22 @@
       </div>
     </div>
 
+    <div id="tabAsk" hidden>
+      <div class="card">
+        <h2>📮 문의 · 버그 제보</h2>
+        <div class="muted" style="margin:0 0 8px">궁금한 점, 버그, 바라는 점을 남겨 주세요. 관리자가 확인하고 답을 달아요. 버그라면 어디서 무엇을 했을 때 생겼는지 적어 주면 고치기 쉬워요.</div>
+        <div class="st-pick" style="grid-template-columns: 120px minmax(0,1fr)"><select id="askCat" aria-label="종류"><option value="bug">🐞 버그 제보</option><option value="ask">❓ 문의</option><option value="idea">💡 건의</option></select><span></span></div>
+        <textarea id="askText" maxlength="1000" placeholder="내용을 적어 주세요 (최대 1000자)"></textarea>
+        <div class="bio-count" id="askCount">0 / 1000</div>
+        <button class="primary" type="button" id="askBtn">올리기</button>
+        <div class="char-msg" id="askMsg" role="status"></div>
+      </div>
+      <div class="card">
+        <h2>게시판 <button class="secondary" type="button" id="askReload" style="width:auto;padding:3px 10px;font-size:12px;margin-left:6px">새로고침</button></h2>
+        <div id="askList"></div>
+      </div>
+    </div>
+
     <div id="tabGuide" hidden>
       <div class="guide-grid">
       <div>
@@ -956,6 +989,7 @@
           <details><summary>📈 기술</summary><p>수색(조사), 근접전(사냥·몸싸움), 사격(총·활·석궁), 의술(의료품), 요리(굽기·끓이기), 정비(탈것·무기 수리)가 쓸수록 올라요. 최대 10레벨이고, 다시 시작하면 처음부터예요.</p></details>
           <details><summary>🤝 동료</summary><p>조사 중 만난 생존자나 동물을 돕거나, 무전 구조 요청에 응답하면 동료가 생길 수 있어요. 동료는 <b>최대 10명</b>까지 함께해요. 이름이 있는 동료는 세상에 한 명뿐이라, 다른 생존자가 먼저 데려간 동료는 영입할 수 없어요(헤어지거나 굶주려 떠나면 다시 만날 수 있어요).</p><p>사람 동료는 특성(간호사·사냥꾼·정비공·경비원·짐꾼·응급 구조사·정찰병·채집 전문가·사격 교관·식물학자·요리사·군인·약사·트럭 운전사·아이·기자·목사·전직 죄수·엔지니어)마다 효과가 있고, 쉴 때·싸울 때·밤·새 지방에서 말을 걸어요. 동물 동료(개 10품종·고양이·새끼 돼지·햄스터·아기 부엉이·족제비·애완 거북이)는 말 대신 행동으로 보여 줘요. 같은 특성 여럿은 효과가 한 번만 적용되고, 다른 특성끼리는 함께 적용돼요.</p><p>동료는 매일 음식을 나눠 먹고 사흘 굶으면 떠나요. 덩치 있는 동료는 싸움에서 대신 맞기도 하고, 체력이 0이 되면 죽어요. 하트(♥)는 신뢰도로, 동료와 함께하는 사건에서 오르내리고 0이 되면 떠나요.</p></details>
           <details><summary>🪂 서버 이벤트</summary><p>현실 6시간마다 한 번, 1시간 동안 모두에게 같은 사건이 일어나요. 군 보급 투하: 그 지역을 조사하면 상자를 한 번 얻어요. 대습격: 날이 바뀔 때 그 지역에 있으면 혼자선 다치지만, 다른 생존자나 동료와 함께면 막아내고 보상을 받아요. 예고는 오늘의 무전과 지도에 떠요.</p></details>
+          <details><summary>📮 문의 · 버그 제보</summary><p>캐릭터 탭 옆 「📮 문의」에서 버그·문의·건의를 남길 수 있어요. 관리자가 답을 달면 같은 글 아래에 보여요. 패치나 공지가 새로 생기면 들어왔을 때 한 번 팝업으로 알려 줘요.</p></details>
           <details><summary>🔔 알림</summary><p>상단의 종 버튼을 켜면, 다른 탭을 보고 있을 때 행동이 끝나거나 선택이 필요한 일이 생기면 알려줘요. 브라우저에서 알림을 허용해야 해요.</p></details>
           <details><summary>🏠 쉘터</summary><p>쉘터를 만들거나 들어가면 동료끼리 쉘터 채팅, 공용 창고, 시설을 함께 써요. 빗물 수집기·텃밭은 3단계까지 강화할 수 있고 날씨에 따라 수확이 달라져요(비 오는 날 더 많이, 폭염엔 줄어요). 약초 화단은 매일 녹색 허브를 줘요. 바리케이드는 무리 습격 피해를 줄여요. 같은 지역에 쉘터 동료가 있으면 조사와 사냥이 더 안전해져요.</p></details>
           <details><summary>💤 자리를 비우면</summary><p>현실 1시간 반 넘게 접속하지 않으면 잠든 것으로 쳐요. 소모는 1/4로 줄고 피로는 회복돼요. 감염도 1/4 속도로 진행되다가 95%(말기)에서 멈추니, 돌아오면 서둘러 치료하세요.</p></details>
@@ -1197,7 +1231,7 @@ const FIREBASE_CONFIG = {
   function defaultDoc(name) {
     return {
       name, day: worldDay(), born: worldDay(), worldClock: 1, hp: 100, sat: 80, hyd: 80, fat: 15,
-      inv: starterInv(), companions: [], weapons: ['야구방망이'], wdur: { '야구방망이': 20 }, equip: '야구방망이',
+      inv: starterInv(), companions: [], seenNotice: Date.now(), seenPatch: patchSig(), weapons: ['야구방망이'], wdur: { '야구방망이': 20 }, equip: '야구방망이',
       zombieKills: 0, weaponCounts: {}, party: '', epitaph: null,
       status: 'alive', actedToday: false, log: [], bio: '', loc: null, visited: [], searched: {}, items: { paper: 0, pages: 0, pencil: 0, pen: 0 }, injuries: [], infection: 0, infectionPart: null, turned: false, bornAt: Date.now(), updatedAt: Date.now()
     };
@@ -5834,10 +5868,11 @@ const FIREBASE_CONFIG = {
   function repairNeeded(w) { return w !== '맨손' && (myDoc.weapons || []).includes(w) && myDoc.wdur && myDoc.wdur[w] != null && myDoc.wdur[w] < WEAPON_DUR[w]; }
   function canRepair(w) { const c = repairCost(w); return repairNeeded(w) && Object.keys(c).every(k => inv(k) >= c[k]); }
   function repairMinutes(w) { return GUN_AMMO[w] ? 10 : 5; }
-  function doRepair(w) {
-    if (!canRepair(w)) { addLog('재료가 모자라 ' + josa(w, '을', '를') + ' 고치지 못했다.'); return; }
-    const c = repairCost(w), max = WEAPON_DUR[w], spare = ch(compFx('repair'));
-    if (!spare) Object.keys(c).forEach(k => addItem(k, -c[k]));
+  function doRepair(w, paid) {
+    if (paid ? !repairNeeded(w) : !canRepair(w)) { refundMaterials(paid); addLog(paid ? josa(w, '을', '를') + ' 고칠 수 없게 돼 재료를 다시 챙겼다.' : '재료가 모자라 ' + josa(w, '을', '를') + ' 고치지 못했다.'); return; }
+    const c = paid || repairCost(w), max = WEAPON_DUR[w], spare = ch(compFx('repair'));
+    if (paid) { if (spare) refundMaterials(paid); }
+    else if (!spare) Object.keys(c).forEach(k => addItem(k, -c[k]));
     const add = Math.max(1, Math.round(max * (0.4 + 0.04 * skillLv('mech'))));
     const before = myDoc.wdur[w];
     myDoc.wdur[w] = Math.min(max, before + add);
@@ -5967,8 +6002,8 @@ const FIREBASE_CONFIG = {
 
   // ---------- 시간이 걸리는 행동: 시작하면 실제 시간이 지나야 결과가 나온다 ----------
   const ACTIONS = {
-    forage: { n:'채집', ic:'🍄', min:3 }, hunt: { n:'사냥', ic:'🔪', min:10 }, farm: { n:'농사', ic:'🌾', min:30 },
-    rest: { n:'휴식', ic:'🛌', min:10 }, sleep: { n:'잠', ic:'😴', min:60 }, raid: { n:'약탈', ic:'⚔️', min:5 },
+    forage: { n:'채집', ic:'🍄', min:3 }, hunt: { n:'사냥', ic:'🔪', min:10 }, farm: { n:'농사', ic:'🌾', min:15 },
+    rest: { n:'휴식', ic:'🛌', min:10 }, sleep: { n:'잠', ic:'😴', min:30 }, raid: { n:'약탈', ic:'⚔️', min:5 },
     med: { n:'치료', ic:'🩺', min:1 }, craft: { n:'제작', ic:'🔨' }, repair: { n:'수리', ic:'🔧' }, explore: { n:'조사', ic:'🏚️' }, move: { n:'이동', ic:'🚶' }
   };
   const SMALL_SPOTS = ['burger','pizza','taco','cafe','pharmacy','gas','house'];
@@ -6023,6 +6058,8 @@ const FIREBASE_CONFIG = {
     if (!plan) return;
     const now = Date.now();
     myDoc.busy = { type, arg, label: plan.label, min: plan.min, start: now, until: now + plan.min * 60000, veh: plan.veh || null };
+    const paid = payMaterials(type, arg);
+    if (paid) myDoc.busy.paid = paid;
     if (type === 'explore') myDoc.spot = Number(String(arg).split(':')[0]);
     renderStatus();
     await saveDoc();
@@ -6058,8 +6095,8 @@ const FIREBASE_CONFIG = {
         else if (t === 'move') doMove(b.arg, b.veh);
         else if (t === 'raid') { if (RAID_ENABLED) await doRaid(b.arg); else addLog('누군가를 덮치려다 마음을 접었다.'); }
         else if (t === 'med') { if (canUseMed(b.arg)) useMed(b.arg); }
-        else if (t === 'craft') doCraft(b.arg);
-        else if (t === 'repair') doRepair(b.arg);
+        else if (t === 'craft') doCraft(b.arg, b.paid);
+        else if (t === 'repair') doRepair(b.arg, b.paid);
         else if (t === 'fixenv') doFixEnv(b.arg);
         const lb = Object.keys(leftBehind);
         if (lb.length) addLog('🎒 가방이 꽉 차서 두고 왔다: ' + lb.map(k => k + ' ' + leftBehind[k]).join(', '));
@@ -6080,7 +6117,8 @@ const FIREBASE_CONFIG = {
     const b = myDoc && myDoc.busy;
     if (!b) return;
     myDoc.busy = null;
-    addLog(b.label + '을(를) 도중에 그만두었다.');
+    refundMaterials(b.paid);
+    addLog(josa(b.label, '을', '를') + ' 도중에 그만두었다.' + (b.paid ? ' (재료는 다시 챙겼다)' : ''));
     activityCost(Math.min(b.min, (Date.now() - b.start) / 60000), b.type === 'rest' || b.type === 'sleep');
     renderStatus();
     await saveDoc();
@@ -6169,6 +6207,7 @@ const FIREBASE_CONFIG = {
       await saveDoc();
       docReady = true;
       startListeners();
+      setTimeout(checkPopup, 1500);
     } else {
       myDoc = defaultDoc(name);
       migrateWorld();
@@ -6661,6 +6700,10 @@ const FIREBASE_CONFIG = {
   // 업데이트할 때마다 맨 위에 추가한다
   const PATCH_NOTES = [
     { d:'10.19', items:[
+      '📮 문의·버그 제보 게시판 추가 (캐릭터 탭 옆)',
+      '📢 패치나 공지가 생기면 처음 들어왔을 때 한 번 팝업으로 알려 줘요',
+      '😴 잠자기 1시간 → 30분, 🌾 농사 30분 → 15분',
+      '🔥 제작·수리 재료를 시작할 때 미리 챙겨 둬요. 진행 중에 재료를 먹거나 써 버려서 실패하던 문제를 고쳤어요 (그만두면 돌려받아요)',
       '📱 같은 아이디로 휴대폰·컴퓨터를 오갈 때 예전 상태로 되돌아가던 문제를 고쳤어요. 다른 기기에서 더 새로 저장한 기록이 있으면 그걸 불러와요',
       '🤝 동료 최대 10명. 이름 있는 동료는 한 명뿐이라 다른 생존자가 먼저 데려가면 영입 불가',
       '🐾 동물 동료 추가: 개 10품종(진돗개·시바견·골든 리트리버·저먼 셰퍼드·비글·허스키·보더 콜리·닥스훈트·웰시코기·도베르만), 고양이, 새끼 돼지, 햄스터, 아기 부엉이, 족제비, 애완 거북이',
@@ -6757,6 +6800,7 @@ const FIREBASE_CONFIG = {
     const newest = notices.length ? +notices[0].ts || 0 : 0;
     if ($('tabGuide').hidden) $('noticeDot').hidden = !(newest > lastNoticeSeen());
     else { renderGuide(); markNoticesSeen(); }
+    checkPopup();
   }
   $('noticeBtn').addEventListener('click', async () => {
     if (!isAdmin() || !db) return;
@@ -6776,6 +6820,80 @@ const FIREBASE_CONFIG = {
     try { await db.collection('notices').doc(b.dataset.notice).delete(); notices = notices.filter(n => n.id !== b.dataset.notice); renderGuide(); } catch(err) {}
   });
 
+  // ---------- 문의·버그 제보 게시판: 탭을 열 때 최근 50개를 불러온다 (실시간 구독은 하지 않아 읽기를 아낀다) ----------
+  const ASK_CAT = { bug:'🐞 버그 제보', ask:'❓ 문의', idea:'💡 건의' };
+  let asks = [], askLoading = false;
+  async function loadAsks() {
+    if (!db || askLoading) return;
+    askLoading = true;
+    try { const snap = await db.collection('reports').orderBy('ts', 'desc').limit(50).get(); asks = (snap && snap.docs ? snap.docs : []).map(d => Object.assign({ id: d.id }, d.data())).filter(a => a && typeof a.text === 'string'); } catch (e) {}
+    askLoading = false;
+    renderAsks();
+  }
+  function renderAsks() {
+    const admin = isAdmin();
+    $('askList').innerHTML = asks.length ? asks.map(a => {
+      const mine = a.authorKey === myKey, done = a.status === 'done';
+      return `<div class="ask-item"><div class="ah"><b>${ASK_CAT[a.cat] || '❓ 문의'}</b><span>${escapeHtml(String(a.author || '').slice(0, 24))}</span><span>${new Date(+a.ts || 0).toLocaleString('ko-KR', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</span><span class="st${done ? ' done' : ''}">${done ? '답변 완료' : '확인 중'}</span></div>
+        <div class="ab">${escapeHtml(String(a.text).slice(0, 1000))}</div>
+        ${a.reply ? `<div class="ar">🛠 관리자: ${escapeHtml(String(a.reply).slice(0, 1000))}</div>` : ''}
+        <div class="acts">${admin ? `<button class="secondary" type="button" data-askreply="${escapeHtml(a.id)}">답변 달기</button>` : ''}${mine || admin ? `<button class="secondary" type="button" data-askdel="${escapeHtml(a.id)}">지우기</button>` : ''}</div></div>`;
+    }).join('') : '<div class="muted" style="margin:0">아직 글이 없어요.</div>';
+  }
+  $('askText').addEventListener('input', () => { $('askCount').textContent = $('askText').value.length + ' / 1000'; });
+  $('askReload').addEventListener('click', loadAsks);
+  $('askBtn').addEventListener('click', async () => {
+    const text = $('askText').value.trim().slice(0, 1000), msg = $('askMsg');
+    if (!text || !db || !myDoc) return;
+    $('askBtn').disabled = true;
+    try {
+      await db.collection('reports').add({ cat: $('askCat').value, text, author: String(myName).slice(0, 24), authorKey: myKey, ts: Date.now(), status: 'open' });
+      $('askText').value = ''; $('askCount').textContent = '0 / 1000';
+      msg.textContent = '올렸어요. 관리자가 확인하면 답이 달려요.'; msg.className = 'char-msg ok';
+      await loadAsks();
+    } catch (e) { msg.textContent = '올리지 못했어요. 잠시 후 다시 시도해 주세요.'; msg.className = 'char-msg err'; }
+    $('askBtn').disabled = false;
+  });
+  $('askList').addEventListener('click', async (e) => {
+    const del = e.target.closest('button[data-askdel]'), rep = e.target.closest('button[data-askreply]');
+    if (del && db && confirm('이 글을 지울까요?')) { try { await db.collection('reports').doc(del.dataset.askdel).delete(); asks = asks.filter(a => a.id !== del.dataset.askdel); renderAsks(); } catch (err) {} return; }
+    if (rep && db && isAdmin()) {
+      const a = asks.find(x => x.id === rep.dataset.askreply); if (!a) return;
+      const reply = prompt('답변 (비우면 답변을 지워요)', a.reply || ''); if (reply === null) return;
+      try { const v = Object.assign({}, a, { reply: reply.trim().slice(0, 1000), status: reply.trim() ? 'done' : 'open', replyTs: Date.now() }); delete v.id; await db.collection('reports').doc(a.id).set(v); Object.assign(a, v); renderAsks(); } catch (err) { alert('답변을 저장하지 못했어요.'); }
+    }
+  });
+
+  // ---------- 새 소식 팝업: 패치나 공지가 생긴 뒤 처음 들어오면 한 번 보여 준다 ----------
+  function patchSig() { return { d: PATCH_NOTES[0].d, n: PATCH_NOTES[0].items.length }; }
+  function newPatchItems() {
+    const seen = myDoc.seenPatch, out = [];
+    for (const p of PATCH_NOTES) {
+      if (seen && p.d === seen.d) { out.push(...p.items.slice(0, Math.max(0, p.items.length - (+seen.n || 0)))); break; }
+      out.push(...p.items);
+      if (!seen) break;
+    }
+    return out.slice(0, 20);
+  }
+  function checkPopup() {
+    if (!myDoc || !docReady || !$('popupBox').hidden) return;
+    const items = newPatchItems(), fresh = notices.filter(n => (+n.ts || 0) > (+myDoc.seenNotice || 0)).slice(0, 5);
+    if (!items.length && !fresh.length) return;
+    let h = '';
+    if (fresh.length) h += '<b>📢 공지</b>' + fresh.map(n => `<div class="notice-item"><b>${escapeHtml(String(n.title || '공지').slice(0, 60))}</b><div style="white-space:pre-wrap;font-size:14px;margin-top:4px">${escapeHtml(String(n.body || '').slice(0, 2000))}</div></div>`).join('') + '<div style="height:10px"></div>';
+    if (items.length) h += '<b>🛠 업데이트</b><ul>' + items.map(t => '<li>' + escapeHtml(revealText(t)) + '</li>').join('') + '</ul>';
+    $('popupTitle').textContent = fresh.length ? '📢 새 공지와 소식' : '🛠 업데이트 소식';
+    $('popupBody').innerHTML = h;
+    $('popupBox').hidden = false;
+  }
+  $('popupClose').addEventListener('click', async () => {
+    $('popupBox').hidden = true;
+    if (!myDoc) return;
+    myDoc.seenPatch = patchSig();
+    myDoc.seenNotice = notices.reduce((m, n) => Math.max(m, +n.ts || 0), +myDoc.seenNotice || 0);
+    await saveDoc();
+  });
+
   function showTab(t) {
     $('playGrid').hidden = t !== 'play';
     $('tabChar').hidden = t !== 'char';
@@ -6784,6 +6902,8 @@ const FIREBASE_CONFIG = {
     $('tabBoard').hidden = t !== 'board';
     $('tabAdmin').hidden = t !== 'admin';
     $('tabGuide').hidden = t !== 'guide';
+    $('tabAsk').hidden = t !== 'ask';
+    if (t === 'ask') loadAsks();
     if (t === 'guide') { renderGuide(); markNoticesSeen(); }
     if (t === 'admin') renderAdmin();
     if (t === 'play' && myDoc) renderMap();
@@ -7073,12 +7193,26 @@ const FIREBASE_CONFIG = {
   ];
   function hasFire() { return inv('lighter') > 0 || inv('matches') > 0; }
   function canCraft(r) { return Object.keys(r.need).every(k => inv(k) >= r.need[k]) && (!r.fire || hasFire()); }
-  function doCraft(id) {
+  // 제작·수리 재료는 시작할 때 미리 떼어 둔다 (진행 중에 자동으로 먹거나 써 버려 실패하지 않도록). 그만두면 돌려준다
+  function payMaterials(type, arg) {
+    let need = null;
+    if (type === 'craft') { const r = RECIPES.find(x => x.id === arg); if (r) { need = Object.assign({}, r.need); if (r.fire && inv('lighter') <= 0) need.matches = (need.matches || 0) + 1; } }
+    else if (type === 'repair') need = Object.assign({}, repairCost(arg));
+    if (!need) return null;
+    Object.keys(need).forEach(k => addItem(k, -need[k]));
+    return need;
+  }
+  function refundMaterials(paid) { if (paid) Object.keys(paid).forEach(k => addItem(k, paid[k])); }
+  function doCraft(id, paid) {
     const r = RECIPES.find(x => x.id === id);
-    if (!r || !canCraft(r)) { addLog('재료가 모자라 만들지 못했다.'); return; }
-    Object.keys(r.need).forEach(k => addItem(k, -r.need[k]));
+    if (!r) { refundMaterials(paid); return; }
     let fireNote = '';
-    if (r.fire && inv('lighter') <= 0) { addItem('matches', -1); fireNote = ', 성냥 -1'; }
+    if (paid) { if (paid.matches > (r.need.matches || 0)) fireNote = ', 성냥 -1'; }
+    else {
+      if (!canCraft(r)) { addLog('재료가 모자라 만들지 못했다.'); return; }
+      Object.keys(r.need).forEach(k => addItem(k, -r.need[k]));
+      if (r.fire && inv('lighter') <= 0) { addItem('matches', -1); fireNote = ', 성냥 -1'; }
+    }
     const got = {};
     const dbl = r.fire && ch(0.08 * skillLv('cook') + compFx('cook'));
     if (r.fire) gainSkill('cook', 2);
@@ -7277,7 +7411,7 @@ const FIREBASE_CONFIG = {
 </div>
 <script>
 (function(){
-  var BUILD_ID = '20261019125822';
+  var BUILD_ID = '20261019155405';
   function check(){
     fetch('version.txt?t=' + Date.now(), { cache: 'no-store' }).then(function(r){ return r.ok ? r.text() : ''; }).then(function(v){
       v = (v || '').trim();
