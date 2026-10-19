@@ -130,6 +130,14 @@ service cloud.firestore {
       allow delete: if isAdmin();
     }
 
+    // ---------- 고유 동료(NPC) 기록: 먼저 데려간 사람만 만들고, 본인·관리자만 지운다 ----------
+    match /npcClaims/{id} {
+      allow read: if signedIn();
+      allow create: if signedIn() && d().by == myKey() && d().keys().hasOnly(['by', 'name', 'kind', 'ts']) && str(d().name, 40) && str(d().kind, 20);
+      allow update: if false;
+      allow delete: if signedIn() && (resource.data.by == myKey() || isAdmin());
+    }
+
     // ---------- 오류 기록: 누구나 남기고, 관리자만 본다 ----------
     match /errors/{id} {
       allow create: if signedIn() && str(d().msg, 300) && (!('stack' in d()) || str(d().stack, 800)) && d().keys().size() <= 10;

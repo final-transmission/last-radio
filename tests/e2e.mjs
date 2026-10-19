@@ -129,7 +129,7 @@ try {
   const errs = await admin(async db => (await getDocs(collection(db, 'errors'))).docs.map(d => d.data().msg));
   ok('오류 기록 (권한·저장 오류 없음)', !errs.some(m => /permission|saveDoc/i.test(m)), JSON.stringify(errs).slice(0, 300));
   const ws = await admin(async db => (await getDoc(doc(db, 'world/state'))).data());
-  ok('지역 상태 문서 저장', ws && ws.tick > 0 && Object.keys(ws.r).length === 126, Object.keys(ws.r).length);
+  ok('지역 상태 문서 저장', ws && ws.tick > 0 && Object.keys(ws.r).length === 131, Object.keys(ws.r).length);
   // 7) 클릭재킹: 다른 사이트 iframe 안에서 열기
   const E = await browser.newPage();
   await E.goto('http://localhost:5051/'); await E.waitForTimeout(2500);
