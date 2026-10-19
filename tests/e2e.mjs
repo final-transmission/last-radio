@@ -126,6 +126,16 @@ try {
   const aLog = await A.p.evaluate(() => [...document.querySelectorAll('#myLog .txt')].slice(0, 6).map(x => x.textContent).join(' | '));
   ok('지급 받은 사람 일지', /관리자에게서/.test(aLog), aLog.slice(0, 160));
   await C.p.click('#errLoadBtn'); await C.p.waitForTimeout(1500);
+  // 같은 아이디로 두 번째 기기: 두 번째 기기에서 휴식을 시작하면, 첫 기기가 그 기록을 덮어쓰지 않아야 한다
+  { const ctx2 = await browser.newContext({ viewport: { width: 400, height: 800 } }); const A2 = await ctx2.newPage();
+    A2.on('pageerror', e => pageErrs.push('A2: ' + e.message));
+    await A2.goto('http://127.0.0.1:5050/'); await A2.click('#authTabLogin').catch(() => {}); await A2.fill('#loginId', 'alice1'); await A2.fill('#loginPw', 'abcdef12'); await A2.click('#loginBtn');
+    await A2.waitForSelector('#actionsCard', { state: 'visible', timeout: 20000 }); await A2.waitForTimeout(1500);
+    await A2.click('#tabBtnPlay').catch(() => {}); await A2.click('#restBtn'); await A2.waitForTimeout(2500);
+    await A.p.click('#tabBtnPlay').catch(() => {}); await A.p.click('#forageBtn').catch(() => {}); await A.p.waitForTimeout(2500);
+    const sv = await admin(async db => (await getDoc(doc(db, 'survivors/' + ua.key))).data());
+    ok('다른 기기 기록을 덮어쓰지 않음', sv.busy && /휴식/.test(sv.busy.label), JSON.stringify(sv.busy && sv.busy.label) + ' rev ' + sv.rev);
+    await ctx2.close(); }
   const errs = await admin(async db => (await getDocs(collection(db, 'errors'))).docs.map(d => d.data().msg));
   ok('오류 기록 (권한·저장 오류 없음)', !errs.some(m => /permission|saveDoc/i.test(m)), JSON.stringify(errs).slice(0, 300));
   const ws = await admin(async db => (await getDoc(doc(db, 'world/state'))).data());

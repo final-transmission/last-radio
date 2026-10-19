@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://apis.google.com 'sha256-NzWzSr/JJIt0kS48PXCsqUjn9/ALxUaH31f7sTmbH+s=' 'sha256-XBhYyYOXmyHU+rUeBJm1vZW172xgTyzDLX1SllyaCU8=' 'sha256-BiWIz2NOvAu/YMJuVmbrquioGmZpnq1KXJSvrASZ2Vk=' 'sha256-m09+SaSQdAbspC8olRTPojppEg8d/OCYAAL9PtnLyMo='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://www.google.com; connect-src 'self' https://*.googleapis.com https://*.firebaseapp.com https://*.firebaseio.com wss://*.firebaseio.com; frame-src https://*.firebaseapp.com; object-src 'none'; base-uri 'self'; form-action 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://apis.google.com 'sha256-NzWzSr/JJIt0kS48PXCsqUjn9/ALxUaH31f7sTmbH+s=' 'sha256-XBhYyYOXmyHU+rUeBJm1vZW172xgTyzDLX1SllyaCU8=' 'sha256-ZAtc1+EPpfg0m7He91DME+l+vJ8wkRfmGpbDHidGiIk=' 'sha256-eVbiLAtNsclDsvkKkXLzKqudjaf9OreNbtR6EFda+rI='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://www.google.com; connect-src 'self' https://*.googleapis.com https://*.firebaseapp.com https://*.firebaseio.com wss://*.firebaseio.com; frame-src https://*.firebaseapp.com; object-src 'none'; base-uri 'self'; form-action 'self'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <style id="antiClickjack">html{display:none !important}</style>
 <script>if (window.self === window.top) { var ack = document.getElementById('antiClickjack'); ack.parentNode.removeChild(ack); } else { try { window.top.location = window.self.location.href; } catch (e) {} }</script>
@@ -1604,13 +1604,38 @@ const FIREBASE_CONFIG = {
   // 일지는 본인만 보는 survivors/{key}/private/log, 프로필 사진은 avatars/{key}에 따로 저장한다.
   let logDirty = false;
   function logRef(key) { return db.doc('survivors/' + key + '/private/log'); }
+  // 기기마다 세션 id가 있고, 저장할 때마다 rev가 1씩 오른다.
+  // 다른 기기(또는 관리자)가 더 새로 저장해 둔 게 있으면 덮어쓰지 않고 그쪽을 불러온다 (기기를 오갈 때 되돌아가는 문제 방지)
+  const mySession = Math.random().toString(36).slice(2, 10);
+  let adopting = false;
+  async function adoptServerDoc(data, why) {
+    if (adopting) return;
+    adopting = true;
+    try {
+      let entries = myDoc && myDoc.log ? myDoc.log : [];
+      try { const ls = await logRef(myKey).get(); if (ls && ls.exists && Array.isArray(ls.data().entries)) entries = ls.data().entries.slice(); } catch (e) {}
+      myDoc = Object.assign(JSON.parse(JSON.stringify(data)), { key: myKey, log: entries });
+      normalizeItems();
+      logDirty = false;
+      if (why) addLog(why);
+      renderStatus();
+    } finally { adopting = false; }
+  }
   async function saveDoc() {
     if (!db) { permNotice.style.display = 'block'; return; }
+    if (adopting) return;
     myDoc.updatedAt = Date.now();
+    const baseRev = +myDoc.rev || 0;
+    myDoc.rev = baseRev + 1; myDoc.sess = mySession;
     const out = Object.assign({}, myDoc);
     delete out.log; delete out.avatar;
     try {
-      await db.doc('survivors/' + myKey).set(out);
+      let newer = null;
+      const ok = await txUpdate('survivors/' + myKey, cur => {
+        if (cur && (+cur.rev || 0) > baseRev && cur.sess !== mySession) { newer = cur; return false; }
+        return out;
+      });
+      if (!ok && newer) { await adoptServerDoc(newer, '📱 다른 기기에서 이어서 한 기록을 불러왔다.'); return; }
       if (logDirty) { logDirty = false; await logRef(myKey).set({ entries: myDoc.log.slice(-300) }); }
       permNotice.style.display = 'none';
     }
@@ -6228,7 +6253,9 @@ const FIREBASE_CONFIG = {
       if (!confirm(new Date(b.ts).toLocaleString('ko-KR') + ' 백업에서 문서 ' + n + '개를 복원할까요? 같은 이름의 문서는 백업 내용으로 덮어써요.')) return;
       let done = 0, fail = 0;
       for (const c of RESTORE_COLLS) for (const id of Object.keys(b.data[c] || {})) {
-        try { await db.doc(c + '/' + id).set(b.data[c][id]); done++; } catch(err) { fail++; }
+        // 복원한 캐릭터는 열려 있는 기기 화면이 옛 상태로 덮어쓰지 않도록 더 새로운 기록으로 표시한다
+        const v = c === 'survivors' ? Object.assign({}, b.data[c][id], { rev: Date.now(), sess: 'admin', adminTs: Date.now(), adminNote: '🛠 관리자가 백업에서 상태를 되돌렸다.' }) : b.data[c][id];
+        try { await db.doc(c + '/' + id).set(v); done++; } catch(err) { fail++; }
       }
       for (const k of Object.keys(b.logs || {})) { try { await logRef(k).set(b.logs[k]); done++; } catch(err) { fail++; } }
       adminMsg('복원 완료: ' + done + '개' + (fail ? ', 실패 ' + fail + '개' : ''), !fail);
@@ -6259,6 +6286,8 @@ const FIREBASE_CONFIG = {
           myDoc = Object.assign(JSON.parse(JSON.stringify(mine)), { log: keepLog, key: myKey });
           addLog(mine.adminNote || (mine.status === 'alive' && mine.hp >= 100 ? '🛠 관리자의 손길로 다시 일어섰다.' : '🛠 관리자가 내 상태를 바로잡았다.'));
           saveDoc();
+        } else if (mine && myDoc && docReady && (+mine.rev || 0) > (+myDoc.rev || 0) && mine.sess && mine.sess !== mySession) {
+          adoptServerDoc(mine, '📱 다른 기기에서 이어서 한 기록을 불러왔다.');
         }
         renderBoard(latestDocs);
         renderStatus();
@@ -6360,7 +6389,7 @@ const FIREBASE_CONFIG = {
             delete t.log; delete t.avatar; delete t.adminNote;
             if (act === 'revive') Object.assign(t, { status: 'alive', hp: 100, sat: 80, hyd: 80, fat: 15, infection: 0, infectionPart: null, turned: false, injuries: [], epitaph: null, busy: null });
             else t.party = '';
-            t.updatedAt = t.adminTs = Date.now();
+            t.updatedAt = t.adminTs = Date.now(); t.rev = (+t.rev || 0) + 1; t.sess = 'admin';
             await db.doc('survivors/' + k).set(t);
             if (act === 'revive') await appendLogTo(k, { day: t.day, text: '🛠 관리자의 손길로 다시 일어섰다.', ts: Date.now() });
           }
@@ -6403,7 +6432,7 @@ const FIREBASE_CONFIG = {
         delete t.log; delete t.avatar;
         giftApply(t, v, n);
         t.adminNote = text;
-        t.updatedAt = t.adminTs = Date.now();
+        t.updatedAt = t.adminTs = Date.now(); t.rev = (+t.rev || 0) + 1; t.sess = 'admin';
         await db.doc('survivors/' + k).set(t);
         await appendLogTo(k, { day: t.day, text, ts: Date.now() });
         ok++;
@@ -6632,6 +6661,7 @@ const FIREBASE_CONFIG = {
   // 업데이트할 때마다 맨 위에 추가한다
   const PATCH_NOTES = [
     { d:'10.19', items:[
+      '📱 같은 아이디로 휴대폰·컴퓨터를 오갈 때 예전 상태로 되돌아가던 문제를 고쳤어요. 다른 기기에서 더 새로 저장한 기록이 있으면 그걸 불러와요',
       '🤝 동료 최대 10명. 이름 있는 동료는 한 명뿐이라 다른 생존자가 먼저 데려가면 영입 불가',
       '🐾 동물 동료 추가: 개 10품종(진돗개·시바견·골든 리트리버·저먼 셰퍼드·비글·허스키·보더 콜리·닥스훈트·웰시코기·도베르만), 고양이, 새끼 돼지, 햄스터, 아기 부엉이, 족제비, 애완 거북이',
       '🧑‍🤝‍🧑 새 동료 특성 9종(요리사·군인·약사·트럭 운전사·아이·기자·목사·전직 죄수·엔지니어), 특성별 대사, 신뢰도(♥), 동료와 함께하는 사건 11종',
@@ -7247,7 +7277,7 @@ const FIREBASE_CONFIG = {
 </div>
 <script>
 (function(){
-  var BUILD_ID = '20261019063548';
+  var BUILD_ID = '20261019125822';
   function check(){
     fetch('version.txt?t=' + Date.now(), { cache: 'no-store' }).then(function(r){ return r.ok ? r.text() : ''; }).then(function(v){
       v = (v || '').trim();
