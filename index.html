@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://apis.google.com 'sha256-NzWzSr/JJIt0kS48PXCsqUjn9/ALxUaH31f7sTmbH+s=' 'sha256-XBhYyYOXmyHU+rUeBJm1vZW172xgTyzDLX1SllyaCU8=' 'sha256-Q6vPjC1Y9XoS9lpxtvCCYvTstH+FxWrDdQyHw9h9WmI=' 'sha256-47aFAWa9LcuDh/ezrjkUkeI5YrAv2U4wJouIVpZ4QC8='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://www.google.com; connect-src 'self' https://*.googleapis.com https://*.firebaseapp.com https://*.firebaseio.com wss://*.firebaseio.com; frame-src https://*.firebaseapp.com; object-src 'none'; base-uri 'self'; form-action 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://apis.google.com 'sha256-NzWzSr/JJIt0kS48PXCsqUjn9/ALxUaH31f7sTmbH+s=' 'sha256-XBhYyYOXmyHU+rUeBJm1vZW172xgTyzDLX1SllyaCU8=' 'sha256-SLWMgqOZBTMvfo5+PLVszbrlN5NiU16oS8RMWdd8Ubw=' 'sha256-/jjHm4zDkQvvzSPyyLyblF2vPW3x/HQx189k0AfXhs4='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://www.google.com; connect-src 'self' https://*.googleapis.com https://*.firebaseapp.com https://*.firebaseio.com wss://*.firebaseio.com; frame-src https://*.firebaseapp.com; object-src 'none'; base-uri 'self'; form-action 'self'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <style id="antiClickjack">html{display:none !important}</style>
 <script>if (window.self === window.top) { var ack = document.getElementById('antiClickjack'); ack.parentNode.removeChild(ack); } else { try { window.top.location = window.self.location.href; } catch (e) {} }</script>
@@ -4702,7 +4702,10 @@ const FIREBASE_CONFIG = {
     if (!db) return;
     npcClaims[c.id] = { by: myKey, name: c.name };
     db.doc('npcClaims/' + c.id).set({ by: myKey, name: String(c.name).slice(0, 40), kind: c.trait, ts: Date.now() }).catch(async () => {
-      // 거의 같은 순간 다른 생존자가 먼저 데려갔다
+      // 거의 같은 순간 다른 생존자가 먼저 데려갔는지 확인한다 (기록을 못 읽으면 그대로 둔다)
+      let other = false;
+      try { const sn = await db.doc('npcClaims/' + c.id).get(); other = !!(sn && sn.exists && sn.data().by !== myKey); } catch (e) {}
+      if (!other) return;
       const l = comps(), i = l.findIndex(x => x.id === c.id);
       if (i < 0) return;
       l.splice(i, 1);
@@ -7244,7 +7247,7 @@ const FIREBASE_CONFIG = {
 </div>
 <script>
 (function(){
-  var BUILD_ID = '20261019062738';
+  var BUILD_ID = '20261019062751';
   function check(){
     fetch('version.txt?t=' + Date.now(), { cache: 'no-store' }).then(function(r){ return r.ok ? r.text() : ''; }).then(function(v){
       v = (v || '').trim();

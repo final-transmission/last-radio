@@ -4669,7 +4669,10 @@
     if (!db) return;
     npcClaims[c.id] = { by: myKey, name: c.name };
     db.doc('npcClaims/' + c.id).set({ by: myKey, name: String(c.name).slice(0, 40), kind: c.trait, ts: Date.now() }).catch(async () => {
-      // 거의 같은 순간 다른 생존자가 먼저 데려갔다
+      // 거의 같은 순간 다른 생존자가 먼저 데려갔는지 확인한다 (기록을 못 읽으면 그대로 둔다)
+      let other = false;
+      try { const sn = await db.doc('npcClaims/' + c.id).get(); other = !!(sn && sn.exists && sn.data().by !== myKey); } catch (e) {}
+      if (!other) return;
       const l = comps(), i = l.findIndex(x => x.id === c.id);
       if (i < 0) return;
       l.splice(i, 1);
