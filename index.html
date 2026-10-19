@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://apis.google.com 'sha256-NzWzSr/JJIt0kS48PXCsqUjn9/ALxUaH31f7sTmbH+s=' 'sha256-XBhYyYOXmyHU+rUeBJm1vZW172xgTyzDLX1SllyaCU8=' 'sha256-hV2p3E5B2LNEAN3xGzJSkUaCRI4oRfTTz59e3/USvB8=' 'sha256-bVFTd95sy9qJBoXUKMYRpiS/7uz7Yg6vyfc27QLxzDI='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://www.google.com; connect-src 'self' https://*.googleapis.com https://*.firebaseapp.com https://*.firebaseio.com wss://*.firebaseio.com; frame-src https://*.firebaseapp.com; object-src 'none'; base-uri 'self'; form-action 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://apis.google.com 'sha256-NzWzSr/JJIt0kS48PXCsqUjn9/ALxUaH31f7sTmbH+s=' 'sha256-XBhYyYOXmyHU+rUeBJm1vZW172xgTyzDLX1SllyaCU8=' 'sha256-wXDCd1q46hrpoTdyRiMpkrb3hWduXUCNJauQw2o8etM=' 'sha256-+XSr0UQElLL0ycgetM2VjFriRLjcSoye4Ukv9Is74xg='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://www.google.com; connect-src 'self' https://*.googleapis.com https://*.firebaseapp.com https://*.firebaseio.com wss://*.firebaseio.com; frame-src https://*.firebaseapp.com; object-src 'none'; base-uri 'self'; form-action 'self'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <style id="antiClickjack">html{display:none !important}</style>
 <script>if (window.self === window.top) { var ack = document.getElementById('antiClickjack'); ack.parentNode.removeChild(ack); } else { try { window.top.location = window.self.location.href; } catch (e) {} }</script>
@@ -3032,14 +3032,15 @@ const FIREBASE_CONFIG = {
     { who:'전직 소방관', t:'{d}의 건물에 사람이 갇혔다. 불은 꺼졌지만 계단이 무너져서 혼자서는 못 들어간다.', m:'rescue' }
   ];
   const DISTRICT_KEYS = regionKeys('la');
+  // 한국 시간 저녁 6시~새벽 3시엔 60%, 그 밖엔 15% (평균 약 32%). 섞은 해시라 특정 시간대에 몰리지 않는다
+  function npcChance(k) { const hr = new Date(k * NPC_SLOT + 9 * 3600e3).getUTCHours(); return hr >= 18 || hr < 3 ? 60 : 15; }
   function npcAt(k) {
-    const h = hashStr('npc-slot-' + k);
-    if (h % 100 >= 35) return null;
-    const line = NPC_LINES[hashStr('npc-line-' + k) % NPC_LINES.length];
-    const dk = DISTRICT_KEYS[hashStr('npc-d-' + k) % DISTRICT_KEYS.length], d = DISTRICTS[dk];
-    const text = line.t.replace(/\{d\}로/g, josa(d.n, '으로', '로')).replace(/\{d\}/g, d.n).replace('{n}', 2 + hashStr('npc-n-' + k) % 4);
-    const noise = 0.06 + (hashStr('npc-z-' + k) % 20) / 100;
-    return { npc: true, ts: k * NPC_SLOT + (hashStr('npc-t-' + k) % (NPC_SLOT - 60000)), author: line.who, text, noise, bars: 1 + hashStr('npc-b-' + k) % 2, key: 'npc' + k, m: line.m || null, dk };
+    if (mixHash('npc-slot-' + k) % 100 >= npcChance(k)) return null;
+    const line = NPC_LINES[mixHash('npc-line-' + k) % NPC_LINES.length];
+    const dk = DISTRICT_KEYS[mixHash('npc-d-' + k) % DISTRICT_KEYS.length], d = DISTRICTS[dk];
+    const text = line.t.replace(/\{d\}로/g, josa(d.n, '으로', '로')).replace(/\{d\}/g, d.n).replace('{n}', 2 + mixHash('npc-n-' + k) % 4);
+    const noise = 0.06 + (mixHash('npc-z-' + k) % 20) / 100;
+    return { npc: true, ts: k * NPC_SLOT + (mixHash('npc-t-' + k) % (NPC_SLOT - 60000)), author: line.who, text, noise, bars: 1 + mixHash('npc-b-' + k) % 2, key: 'npc' + k, m: line.m || null, dk };
   }
   function npcRecent(sinceMs) {
     const now = Date.now(), out = [];
@@ -6048,6 +6049,9 @@ const FIREBASE_CONFIG = {
   // ---------- 안내 탭: 공지사항 · 패치 노트 ----------
   // 업데이트할 때마다 맨 위에 추가한다
   const PATCH_NOTES = [
+    { d:'10.19', items:[
+      '📻 NPC 무전이 특정 시간대에 몰리던 문제를 고쳤어요. 이제 저녁 6시~새벽 3시(한국 시간)에 주로 잡혀요',
+    ]},
     { d:'10.18', items:[
       '🎒 새 캐릭터(다시 시작 포함)는 야구방망이·붕대·주스·통조림(무작위) 1개씩을 더 들고 시작해요',
       '🗡️ 조사 중 무기를 찾을 확률 +5%',
@@ -6656,7 +6660,7 @@ const FIREBASE_CONFIG = {
 </div>
 <script>
 (function(){
-  var BUILD_ID = '20261018232543';
+  var BUILD_ID = '20261019055415';
   function check(){
     fetch('version.txt?t=' + Date.now(), { cache: 'no-store' }).then(function(r){ return r.ok ? r.text() : ''; }).then(function(v){
       v = (v || '').trim();
