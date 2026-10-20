@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://apis.google.com 'sha256-NzWzSr/JJIt0kS48PXCsqUjn9/ALxUaH31f7sTmbH+s=' 'sha256-XBhYyYOXmyHU+rUeBJm1vZW172xgTyzDLX1SllyaCU8=' 'sha256-aCvUbteuqpsN2Zb5bJAB7tt6uaCyMV+/AqArCZDCssQ=' 'sha256-+AvPbUCSO/jaD0g+nuY5QIKlWHV1AhrTYLpCc4UvVWE='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://www.google.com; connect-src 'self' https://*.googleapis.com https://*.firebaseapp.com https://*.firebaseio.com wss://*.firebaseio.com; frame-src https://*.firebaseapp.com; object-src 'none'; base-uri 'self'; form-action 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://apis.google.com 'sha256-NzWzSr/JJIt0kS48PXCsqUjn9/ALxUaH31f7sTmbH+s=' 'sha256-XBhYyYOXmyHU+rUeBJm1vZW172xgTyzDLX1SllyaCU8=' 'sha256-9EEROped9LcC+I1rYW7U8/4UIZdVaXC5B17KFPGDzWw=' 'sha256-ZJj7sHNxOWNejVqM4DFloYWDVZzWC7RCakua19Anqlc='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://www.google.com; connect-src 'self' https://*.googleapis.com https://*.firebaseapp.com https://*.firebaseio.com wss://*.firebaseio.com; frame-src https://*.firebaseapp.com; object-src 'none'; base-uri 'self'; form-action 'self'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <style id="antiClickjack">html{display:none !important}</style>
 <script>if (window.self === window.top) { var ack = document.getElementById('antiClickjack'); ack.parentNode.removeChild(ack); } else { try { window.top.location = window.self.location.href; } catch (e) {} }</script>
@@ -647,6 +647,8 @@
   .comp > div { flex: 1; min-width: 0; }
   .comp-ic { font-size: 26px; }
   .comp small { color: var(--text-dim); font-size: 11px; }
+  .comp-feed { display: flex; gap: 6px; margin-top: 4px; }
+  .comp-feed select { flex: 1; min-width: 0; font-size: 12px; padding: 4px; }
   .comp button { width: auto; padding: 5px 10px; font-size: 12px; }
   .reg-box { margin-top: 10px; padding: 8px 10px; border: 1px dashed var(--border); border-radius: 8px; font-size: 12.5px; }
   .reg-row { display: flex; flex-wrap: wrap; gap: 4px 14px; }
@@ -1014,7 +1016,7 @@
           <details><summary>🌆 지역 상태</summary><p>모든 생존자가 같은 LA를 공유하고, 지역은 시간이 지나며 변해요. 지도에서 지역을 누르면 기본 위험도와 지금 위험도, 좀비 밀도, 물자 상태, 환경 상태, 최근 사건이 보여요.</p><p>🔊 총·차·경보 같은 소음은 그 지역에 좀비를 끌어들여요. 좀비 밀도가 70을 넘는 군집은 이웃 지역으로 옮겨 가기도 해요. 좀비를 쓰러뜨리면 밀도가 조금 줄어요.</p><p>📦 많이 털린 지역은 음식·음료가 덜 나와요. 시간이 지나거나 보급 투하·물자 임무로 회복돼요.</p><p>🔥 산불(이동·조사 위험, 일부 지점 폐쇄) · 🌊 침수(지하·주차장 폐쇄, 피로) · ⚡ 정전(어둡고 냉장고 음식이 상함, 고철·휘발유로 직접 복구) · 🚧 도로 봉쇄(그 길로 못 감, 장애물을 치워야 함) · ☣️ 군사 검역(감염되면 못 들어감) · 🏴 대규모 약탈 · 🏕️ 생존자 점령(거래 가능). 상태에 따라 나오는 이벤트도 달라져요.</p></details>
           <details><summary>🧟 좀비 종류</summary><p>워커 말고도 러너(빠르고 아프다), 비명꾼(무리를 부른다), 방호복 좀비(의료품을 지님), 군인 좀비(탄약·전투식량을 지님), 부푼 시체(가스), 크롤러(바닥에서 발목을 잡는다), 브루트(덩치가 크고 아프다), 스피터(검은 액체를 뱉는다), 장갑 좀비(잘 안 쓰러진다), 잠복자(구석에 숨어 있다), 익사체(물가에 나온다)가 있어요. 장소마다 자주 나오는 종류가 달라요.</p></details>
           <details><summary>📈 기술</summary><p>수색(조사), 근접전(사냥·몸싸움), 사격(총·활·석궁), 의술(의료품), 요리(굽기·끓이기), 정비(탈것·무기 수리)가 쓸수록 올라요. 최대 10레벨이고, 다시 시작하면 처음부터예요.</p></details>
-          <details><summary>🤝 동료</summary><p>조사 중 만난 생존자나 동물을 돕거나, 무전 구조 요청에 응답하면 동료가 생길 수 있어요. 동료는 <b>최대 10명</b>까지 함께해요. 이름이 있는 동료는 세상에 한 명뿐이라, 다른 생존자가 먼저 데려간 동료는 영입할 수 없어요(헤어지거나 굶주려 떠나면 다시 만날 수 있어요).</p><p>사람 동료는 특성(간호사·사냥꾼·정비공·경비원·짐꾼·응급 구조사·정찰병·채집 전문가·사격 교관·식물학자·요리사·군인·약사·트럭 운전사·아이·기자·목사·전직 죄수·엔지니어)마다 효과가 있고, 쉴 때·싸울 때·밤·새 지방에서 말을 걸어요. 동물 동료(개 10품종·고양이·새끼 돼지·햄스터·아기 부엉이·족제비·애완 거북이)는 말 대신 행동으로 보여 줘요. 같은 특성 여럿은 효과가 한 번만 적용되고, 다른 특성끼리는 함께 적용돼요.</p><p>동료는 매일 음식을 나눠 먹고 사흘 굶으면 떠나요. 덩치 있는 동료는 싸움에서 대신 맞기도 하고, 체력이 0이 되면 죽어요. 하트(♥)는 신뢰도로, 동료와 함께하는 사건에서 오르내리고 0이 되면 떠나요.</p></details>
+          <details><summary>🤝 동료</summary><p>조사 중 만난 생존자나 동물을 돕거나, 무전 구조 요청에 응답하면 동료가 생길 수 있어요. 동료는 <b>최대 10명</b>까지 함께해요. 이름이 있는 동료는 세상에 한 명뿐이라, 다른 생존자가 먼저 데려간 동료는 영입할 수 없어요(헤어지거나 굶주려 떠나면 다시 만날 수 있어요).</p><p>사람 동료는 특성(간호사·사냥꾼·정비공·경비원·짐꾼·응급 구조사·정찰병·채집 전문가·사격 교관·식물학자·요리사·군인·약사·트럭 운전사·아이·기자·목사·전직 죄수·엔지니어)마다 효과가 있고, 쉴 때·싸울 때·밤·새 지방에서 말을 걸어요. 동물 동료(개 10품종·고양이·새끼 돼지·햄스터·아기 부엉이·족제비·애완 거북이)는 말 대신 행동으로 보여 줘요. 같은 특성 여럿은 효과가 한 번만 적용되고, 다른 특성끼리는 함께 적용돼요.</p><p>동료는 매일 배낭의 음식을 나눠 먹고 사흘 굶으면 떠나요. 자리를 비운 동안은 배고프지 않아요. 동료 칸에서 음식을 골라 직접 먹일 수도 있어요(배고픔이 사라지고 체력 +5, 좋아하는 음식 ★이면 하루 한 번 신뢰 +1). 신뢰가 꽉 찬(♥5) 동료는 굶어도 떠나지 않아요. 덩치 있는 동료는 싸움에서 대신 맞기도 하고, 체력이 0이 되면 죽어요. 하트(♥)는 신뢰도로, 동료와 함께하는 사건에서 오르내리고 0이 되면 떠나요.</p></details>
           <details><summary>🪂 서버 이벤트</summary><p>현실 6시간마다 한 번, 1시간 동안 모두에게 같은 사건이 일어나요. 군 보급 투하: 그 지역을 조사하면 상자를 한 번 얻어요. 대습격: 날이 바뀔 때 그 지역에 있으면 혼자선 다치지만, 다른 생존자나 동료와 함께면 막아내고 보상을 받아요. 예고는 오늘의 무전과 지도에 떠요.</p></details>
           <details><summary>📮 문의 · 버그 제보</summary><p>캐릭터 탭 옆 「📮 문의」에서 버그·문의·건의를 남길 수 있어요. 관리자가 답을 달면 같은 글 아래에 보여요. 패치나 공지가 새로 생기면 들어왔을 때 한 번 팝업으로 알려 줘요.</p></details>
           <details><summary>🔔 알림</summary><p>상단의 종 버튼을 켜면, 다른 탭을 보고 있을 때 행동이 끝나거나 선택이 필요한 일이 생기면 알려줘요. 브라우저에서 알림을 허용해야 해요.</p></details>
@@ -4995,24 +4997,42 @@ const FIREBASE_CONFIG = {
     const save = Math.min(0.5, compFx('hungerSave'));
     l.slice().forEach(c => {
       c.hp = Math.min(100, c.hp + 2);
-      if (!ch((away ? 0.12 : 0.5) * (1 - save))) return;
+      // 자리를 비운 동안은 동료도 배고프지 않다
+      if (away || !ch(0.5 * (1 - save))) return;
       const prefer = COMP_TRAITS[c.trait].food || [], gen = isAnimal(c) ? [] : ['beans','tuna','soup','crackers','chips','ramen','bread','jerky','mre','dogfood'];
       const f = prefer.concat(gen).find(x => ITEMS[x] && inv(x) > 0);
       if (f) { addItem(f, -1); c.hunger = 0; return; }
-      c.hunger = Math.min(away ? 2 : 3, (c.hunger || 0) + 1);
+      // 호감도가 꽉 찬(♥5) 동료는 굶주려도 떠나지 않는다
+      const loyal = c.trust >= 5;
+      c.hunger = Math.min(loyal ? 2 : 3, (c.hunger || 0) + 1);
       if (c.hunger >= 3) { removeComp(c); releaseNpc(c); addLog('🚪 ' + josa(c.name, '이', '가') + ' 굶주림을 못 견디고 떠났다.' + (compSay(c, 'leave') || '')); }
-      else if (!away) addLog('🍽️ ' + c.name + (isAnimal(c) ? '이(가)' + compSay(c, 'hungry') : ':' + compSay(c, 'hungry')) + ' 나눠줄 음식이 없다.');
+      else addLog('🍽️ ' + c.name + (isAnimal(c) ? '이(가)' + compSay(c, 'hungry') : ':' + compSay(c, 'hungry')) + ' 나눠줄 음식이 없다.');
     });
   }
   function compIcon(c) { return ({ dog:'🐕', cat:'🐈', piglet:'🐖', hamster:'🐹', owlet:'🦉', weasel:'🦦', turtle:'🐢', child:'🧒' })[c.trait] || '🧑'; }
   function renderComp() {
-    const l = comps(), el = $('compBox');
+    const l = comps(), el = $('compBox'), foods = Object.keys(invOf(myDoc)).filter(k => ITEMS[k] && ITEMS[k].cat === 'food' && inv(k) > 0);
+    // 먹일 음식을 고르는 중엔 다시 그리지 않는다
+    if (el.contains(document.activeElement) && document.activeElement.tagName === 'SELECT') return;
     el.innerHTML = l.length ? `<div class="muted" style="margin:0 0 6px">함께하는 동료 ${l.length}/${COMP_MAX}</div>` + l.map(c => {
       const T = COMP_TRAITS[c.trait], d = c.trait === 'dog' && DOG_BREEDS[c.breed] ? T.d + ' · ' + DOG_BREEDS[c.breed].d : T.d, tr = c.trust == null ? 2 : c.trust;
-      return `<div class="comp"><span class="comp-ic">${compIcon(c)}</span><div><b>${escapeHtml(c.name)}</b> <small>${escapeHtml(compKind(c))} · ${'♥'.repeat(tr)}${'♡'.repeat(5 - tr)}</small><div class="bar-bg" style="margin:4px 0"><div class="bar-fill${c.hp < 40 ? ' low' : ''}" style="width:${c.hp}%"></div></div><small>${d}${c.hunger ? ' · 🍽️ 배고픔 ' + c.hunger + '/3' : ''}</small></div><button class="secondary" type="button" data-bye="${escapeHtml(c.id)}">헤어지기</button></div>`;
+      return `<div class="comp"><span class="comp-ic">${compIcon(c)}</span><div><b>${escapeHtml(c.name)}</b> <small>${escapeHtml(compKind(c))} · ${'♥'.repeat(tr)}${'♡'.repeat(5 - tr)}</small><div class="bar-bg" style="margin:4px 0"><div class="bar-fill${c.hp < 40 ? ' low' : ''}" style="width:${c.hp}%"></div></div><small>${d}${c.hunger ? ' · 🍽️ 배고픔 ' + c.hunger + '/3' : ''}${tr >= 5 ? ' · 💞 굶어도 떠나지 않아요' : ''}</small>${foods.length ? `<div class="comp-feed"><select data-feedsel="${escapeHtml(c.id)}" aria-label="먹일 음식">${foods.map(k => `<option value="${k}"${(T.food || []).includes(k) ? ' selected' : ''}>${ITEMS[k].ic} ${ITEMS[k].n} ${inv(k)}${(T.food || []).includes(k) ? ' ★' : ''}</option>`).join('')}</select><button class="secondary" type="button" data-feed="${escapeHtml(c.id)}"${myDoc.status === 'dead' ? ' disabled' : ''}>먹이기</button></div>` : ''}</div><button class="secondary" type="button" data-bye="${escapeHtml(c.id)}">헤어지기</button></div>`;
     }).join('') : '<div class="muted" style="margin:0">함께하는 동료가 없어요. 무전 구조 요청에 응답하거나, 조사 중 만난 생존자·동물을 도우면 동료가 생길 수 있어요. 최대 10명까지 함께할 수 있어요.</div>';
   }
   $('compBox').addEventListener('click', async (e) => {
+    // 고른 음식을 먹인다: 배고픔이 사라지고 체력 +5, 좋아하는 음식(★)이면 하루 한 번 호감도 +1
+    const fb = e.target.closest('button[data-feed]');
+    if (fb) {
+      const c = comps().find(x => x.id === fb.dataset.feed), sel = $('compBox').querySelector('select[data-feedsel="' + fb.dataset.feed + '"]'), k = sel && sel.value;
+      if (!c || !k || !ITEMS[k] || inv(k) <= 0 || myDoc.status === 'dead') return;
+      addItem(k, -1);
+      c.hunger = 0; c.hp = Math.min(100, c.hp + 5);
+      const fav = (COMP_TRAITS[c.trait].food || []).includes(k), up = fav && c.fedDay !== myDoc.day;
+      if (up) c.fedDay = myDoc.day;
+      addLog('🍽️ ' + c.name + '에게 ' + josa(ITEMS[k].n, '을', '를') + ' 먹였다.' + (ITEMS[k].sick && !isAnimal(c) ? ' 표정이 조금 일그러졌다.' : '') + (up ? compTrust(c, 1) : ''));
+      renderStatus(); await saveDoc();
+      return;
+    }
     const b = e.target.closest('button[data-bye]'); if (!b) return;
     const c = comps().find(x => x.id === b.dataset.bye);
     if (!c || !confirm(josa(c.name, '과', '와') + ' 헤어질까요?')) return;
@@ -7073,6 +7093,9 @@ const FIREBASE_CONFIG = {
   // 업데이트할 때마다 맨 위에 추가한다
   const PATCH_NOTES = [
     { d:'10.20', items:[
+      '🍽️ 동료에게 음식을 골라 먹일 수 있어요 (좋아하는 음식 ★이면 신뢰 +1)',
+      '💤 자리를 비운 동안 동료는 배고프지 않고 떠나지 않아요',
+      '💞 신뢰가 꽉 찬(♥5) 동료는 굶어도 떠나지 않아요',
       '👥 친구 기능: 캐릭터 탭에서 친구 신청·수락, 접속 상태·위치 보기',
       '💕 친구와 관계 정하기: 가족·친구·연인·배우자·웬수 (배우자는 💍 반지 2개)',
       '🪙 떠돌이 상인에게 모든 물건·무기를 팔고 은화를 받아요 · 은화로 💍 반지 구매',
@@ -7799,7 +7822,7 @@ const FIREBASE_CONFIG = {
 </div>
 <script>
 (function(){
-  var BUILD_ID = '20261020050447';
+  var BUILD_ID = '20261020053415';
   function check(){
     fetch('version.txt?t=' + Date.now(), { cache: 'no-store' }).then(function(r){ return r.ok ? r.text() : ''; }).then(function(v){
       v = (v || '').trim();
