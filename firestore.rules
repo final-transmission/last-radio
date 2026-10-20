@@ -34,9 +34,11 @@ service cloud.firestore {
         // 저장 번호(rev)는 늘 올라가야 한다: 예전 화면(옛 버전)이 새 기록을 덮어쓰지 못하게
         && (resource == null || !('rev' in resource.data) || (d().rev is number && d().rev > resource.data.rev)));
       allow delete: if isMe(key) || isAdmin();
-      // 일지: 본인과 관리자만
+      // 일지(log)·내 전체 상태(state): 본인과 관리자만. state의 저장 번호(rev)도 늘 올라가야 한다
       match /private/{doc} {
-        allow read, write: if isMe(key) || isAdmin();
+        allow read, delete: if isMe(key) || isAdmin();
+        allow create, update: if isAdmin() || (isMe(key)
+          && (doc != 'state' || resource == null || !('rev' in resource.data) || (request.resource.data.rev is number && request.resource.data.rev > resource.data.rev)));
       }
     }
 

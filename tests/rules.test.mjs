@@ -99,6 +99,12 @@ await ok('npc claim', setDoc(doc(A, 'npcClaims/c1'), { by: 'uid-alice', name: '�
 await no('npc claim taken', setDoc(doc(B, 'npcClaims/c1'), { by: 'uid-bob', name: '사라 킴', kind: 'journalist', ts: 2 }));
 await no('npc claim delete other', deleteDoc(doc(B, 'npcClaims/c1')));
 await ok('npc claim delete own', deleteDoc(doc(A, 'npcClaims/c1')));
+await ok('state create', setDoc(doc(A, 'survivors/uid-alice/private/state'), { name: '앨리스', hp: 50, rev: 5 }));
+await ok('state next rev', setDoc(doc(A, 'survivors/uid-alice/private/state'), { name: '앨리스', hp: 50, rev: 6 }));
+await no('state stale rev', setDoc(doc(A, 'survivors/uid-alice/private/state'), { name: '앨리스', hp: 50, rev: 6 }));
+await no('state other user', setDoc(doc(B, 'survivors/uid-alice/private/state'), { name: 'x', hp: 50, rev: 99 }));
+await no('state read other', getDoc(doc(B, 'survivors/uid-alice/private/state')));
+await ok('state admin', setDoc(doc(ADM, 'survivors/uid-alice/private/state'), { name: '앨리스', hp: 50, rev: 1 }));
 const F = 'friends/f_uid-alice_uid-bob', fr = { m: ['uid-alice', 'uid-bob'], st: 'wait', from: 'uid-alice', rel: 'friend', req: null, ts: 1 };
 await ok('friend request', setDoc(doc(A, F), fr));
 await no('friend fake from', setDoc(doc(B, 'friends/f_uid-alice_uid-bob2'), { m: ['uid-alice', 'uid-bob2'], st: 'wait', from: 'uid-alice', rel: 'friend', req: null, ts: 1 }));
