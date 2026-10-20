@@ -141,6 +141,37 @@ try {
   const reps = await admin(async db => (await getDocs(collection(db, 'reports'))).docs.map(d => d.data()));
   ok('문의 게시판 글·답변', reps.length === 1 && reps[0].reply === '확인했어요' && reps[0].status === 'done', JSON.stringify(reps).slice(0, 160));
   await closePops();
+  // 친구: 앨리스가 밥에게 신청 → 밥 수락 → 반지 1개씩으로 배우자
+  await A.p.click('#tabBtnChar'); await A.p.click('#friendCard button[data-frv="find"]'); await A.p.waitForTimeout(500);
+  await A.p.click('#friendBody button[data-fradd="' + ub.key + '"]'); await A.p.waitForTimeout(2000);
+  const fid = 'f_' + [ua.key, ub.key].sort().join('_');
+  let fd = await admin(async db => (await getDoc(doc(db, 'friends/' + fid))).data());
+  ok('친구 신청', fd && fd.st === 'wait' && fd.from === ua.key, JSON.stringify(fd));
+  await B.p.click('#tabBtnChar'); await B.p.waitForTimeout(800);
+  const dot = await B.p.isVisible('#friendDot');
+  await B.p.click('#friendCard button[data-frv="req"]'); await B.p.waitForTimeout(500); await B.p.click('#friendBody button[data-frok]'); await B.p.waitForTimeout(2000);
+  fd = await admin(async db => (await getDoc(doc(db, 'friends/' + fid))).data());
+  ok('친구 수락 (알림 점 표시)', fd && fd.st === 'ok' && dot, JSON.stringify(fd) + ' dot ' + dot);
+  await admin(async db => { for (const u of [ua, ub]) { const r = doc(db, 'survivors/' + u.key); const d = (await getDoc(r)).data(); d.inv = Object.assign({}, d.inv, { ring: 1 }); d.rev = (+d.rev || 0) + 1; d.sess = 'admin'; await setDoc(r, d); } });
+  await A.p.waitForTimeout(2500); await B.p.waitForTimeout(500);
+  await A.p.click('#friendCard button[data-frv="list"]'); await A.p.waitForTimeout(500);
+  await A.p.evaluate(() => { document.querySelector('#friendBody details').open = true; });
+  await A.p.selectOption('#friendBody select[data-frsel]', 'spouse');
+  A.p.once('dialog', d => d.accept());
+  await A.p.click('#friendBody button[data-frrel]'); await A.p.waitForTimeout(2500);
+  fd = await admin(async db => (await getDoc(doc(db, 'friends/' + fid))).data());
+  ok('배우자 신청 (반지 맡김)', fd.req && fd.req.type === 'spouse' && fd.req.ring === 1, JSON.stringify(fd.req) + ' ' + await A.p.textContent('#friendMsg'));
+  await B.p.click('#friendCard button[data-frv="list"]'); await B.p.waitForTimeout(800); await B.p.click('#friendBody button[data-frrel-ok]'); await B.p.waitForTimeout(3000);
+  fd = await admin(async db => (await getDoc(doc(db, 'friends/' + fid))).data());
+  const sA = await admin(async db => (await getDoc(doc(db, 'survivors/' + ua.key))).data()), sB = await admin(async db => (await getDoc(doc(db, 'survivors/' + ub.key))).data());
+  ok('배우자 성사 (반지 소모)', fd.rel === 'spouse' && !fd.req && !(+sA.inv.ring) && !(+sB.inv.ring) && sA.spouse === ub.key && sB.spouse === ua.key, JSON.stringify([fd.rel, sA.inv.ring, sB.inv.ring, sA.spouse, sB.spouse]));
+  // 무기 분해: 야구방망이 → 고철 1
+  const scrap0 = +sA.inv.scrap || 0;
+  A.p.once('dialog', d => d.accept());
+  await A.p.click('#scrapList button[data-scrap="야구방망이"]'); await A.p.waitForTimeout(2000);
+  const sA2 = await admin(async db => (await getDoc(doc(db, 'survivors/' + ua.key))).data());
+  ok('무기 분해', !sA2.weapons.includes('야구방망이') && (+sA2.inv.scrap || 0) === scrap0 + 1, JSON.stringify([sA2.weapons, sA2.inv.scrap]));
+  await closePops();
   // 같은 아이디로 두 번째 기기: 두 번째 기기에서 휴식을 시작하면, 첫 기기가 그 기록을 덮어쓰지 않아야 한다
   { const ctx2 = await browser.newContext({ viewport: { width: 400, height: 800 } }); const A2 = await ctx2.newPage();
     A2.on('pageerror', e => pageErrs.push('A2: ' + e.message));

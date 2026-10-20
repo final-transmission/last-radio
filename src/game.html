@@ -78,6 +78,9 @@
   .action-grid button.action { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 14px 8px; }
   .action-grid button.action .ic { font-size: 20px; }
   .action-grid button.action.rest { background: var(--bg-elevated); color: var(--text); border: 1px solid var(--border); }
+  .st-auto { display: flex; gap: 8px; align-items: center; font-size: 13px; margin: 0 0 10px; color: var(--text-dim); }
+  .st-auto input { width: auto; }
+  .end-btn { margin-top: 14px; width: 100%; color: var(--danger); border-color: var(--danger); font-size: 13px; padding: 8px; }
   .action-grid button.action.raid { background: var(--bg-elevated); color: var(--danger); border: 1px solid var(--danger); grid-column: 1 / -1; }
   .weapon-row, .raid-row, .party-row { margin-top: 12px; display: flex; align-items: center; gap: 8px; }
   .weapon-row label, .raid-row label, .party-row label { font-size: 13px; color: var(--text-dim); white-space: nowrap; }
@@ -339,6 +342,24 @@
   .sh-mem.gone { opacity: .5; }
   .sh-mem button { width: auto; padding: 6px 10px; font-size: 12px; }
   .pol-row { display: flex; gap: 6px; margin-top: 6px; }
+  .fr-sum { font-size: 12px; color: var(--text-dim); margin: 0 0 4px; }
+  .fr-row { display: flex; align-items: flex-start; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--border); }
+  .fr-row:last-child { border-bottom: none; }
+  .fr-row.gone { opacity: .55; }
+  .fr-row .info { flex: 1; min-width: 0; }
+  .fr-row .info b { font-weight: 700; }
+  .fr-row .info small { display: block; font-size: 12px; color: var(--text-dim); margin-top: 2px; }
+  .fr-row > button, .fr-req button { width: auto; padding: 6px 10px; font-size: 12px; margin-left: 4px; }
+  .fr-rel { display: inline-block; font-size: 11px; padding: 1px 7px; border-radius: 10px; border: 1px solid var(--border); color: var(--text-dim); white-space: nowrap; }
+  .fr-rel.r-family { border-color: #c9973a; color: #c9973a; } .fr-rel.r-lover { border-color: #d0507a; color: #d0507a; }
+  .fr-rel.r-spouse { border-color: var(--accent); color: var(--accent); } .fr-rel.r-enemy { border-color: var(--danger); color: var(--danger); }
+  .fr-req { font-size: 12px; margin-top: 6px; display: flex; flex-wrap: wrap; align-items: center; gap: 4px; }
+  .fr-more { margin-top: 6px; font-size: 12px; }
+  .fr-more summary { cursor: pointer; color: var(--text-dim); }
+  .fr-acts { display: flex; gap: 6px; margin-top: 6px; flex-wrap: wrap; }
+  .fr-acts select { flex: 1; min-width: 110px; }
+  .fr-acts button { width: auto; padding: 6px 10px; font-size: 12px; }
+  .fr-badge { display: inline-block; min-width: 16px; padding: 0 4px; border-radius: 8px; background: var(--danger); color: #fff; font-size: 11px; line-height: 16px; }
   .pol-row button { flex: 1; padding: 9px; font-size: 13px; }
   .pol-row button[aria-pressed="true"] { border-color: var(--accent); color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
   .inv-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
@@ -599,6 +620,10 @@
   .mission-line button { margin-left: auto; width: auto; padding: 3px 10px; font-size: 11px; }
   .merchant-box { margin-bottom: 10px; padding: 8px 12px; border: 1px dashed var(--accent); border-radius: 8px; font-size: 13px; }
   .merchant-box .mc-head { margin-bottom: 4px; }
+  .mc-sell { display: flex; gap: 6px; align-items: center; margin: 6px 0; }
+  .mc-sell select { flex: 1; min-width: 0; }
+  .mc-sell input { width: 64px; }
+  .mc-sell button { width: auto; white-space: nowrap; }
   .rd-ans { margin-top: 4px; background: #2a2c23; color: #e7c34a; border: 1px solid #5b5a40; border-radius: 4px; padding: 3px 8px; font: 700 11px var(--font-mono); cursor: pointer; }
   .rd-ans.on { display: inline-block; cursor: default; opacity: .8; }
   .sk { display: flex; gap: 10px; align-items: center; padding: 6px 0; }
@@ -674,7 +699,7 @@
       <button class="tab" role="tab" aria-selected="false" data-tab="journal" id="tabBtnJournal">📔 일지</button>
       <button class="tab" role="tab" aria-selected="false" data-tab="board" id="tabBtnBoard">📋 생존자</button>
       <button class="tab" role="tab" aria-selected="false" data-tab="shelter" id="tabBtnShelter">🏚️ 쉘터</button>
-      <button class="tab" role="tab" aria-selected="false" data-tab="char" id="tabBtnChar">👤 캐릭터</button>
+      <button class="tab" role="tab" aria-selected="false" data-tab="char" id="tabBtnChar">👤 캐릭터<span class="tab-dot" id="friendDot" hidden></span></button>
       <button class="tab" role="tab" aria-selected="false" data-tab="ask" id="tabBtnAsk">📮 문의</button>
       <button class="tab" role="tab" aria-selected="false" data-tab="guide" id="tabBtnGuide">📜 안내<span class="tab-dot" id="noticeDot" hidden></span></button>
       <button class="tab" role="tab" aria-selected="false" data-tab="admin" id="tabBtnAdmin" hidden>🛠 관리</button>
@@ -719,6 +744,7 @@
       <div class="loc-line" id="locLine"></div>
       <div class="veh-line" id="vehLine"></div>
       <div class="owned" id="exploreInfo"></div>
+      <button class="secondary end-btn" id="suicideBtn" type="button">☠️ 스스로 생을 마감하기</button>
       </div>
     </div>
 
@@ -735,7 +761,7 @@
           <button class="secondary" id="epitaphBtn" type="button">묘비에 새기기</button>
         </div>
         <button class="primary" id="rebirthBtn" type="button" style="margin-top:10px">🔄 같은 이름으로 다시 시작하기</button>
-        <div class="muted">이름·사진·캐릭터 설정·쉘터·지도는 그대로, 몸과 배낭은 처음부터. 어딘가 낯선 곳에서 다시 눈을 떠요.</div>
+        <div class="muted">이름·사진·캐릭터 설정·쉘터·지도는 그대로, 몸과 배낭은 처음부터. 죽은 지방 안의 낯선 곳에서 다시 눈을 떠요.</div>
       </div>
       <div class="mission-line" id="missionLine" hidden></div>
       <div class="merchant-box" id="merchantBox" hidden></div>
@@ -906,6 +932,7 @@
       </div>
       <div class="card" id="storageCard" hidden>
         <h2>📦 쉘터 창고</h2>
+        <label class="st-auto"><input type="checkbox" id="stAutoChk"> 🍽️ 배낭에 먹을 것·마실 것이 없으면 창고에서 알아서 꺼내 먹기</label>
         <div id="storageList"></div>
         <div class="section-lbl" style="margin-top:16px">최근 창고 기록</div>
         <div id="storageLog" class="st-log"></div>
@@ -966,10 +993,10 @@
           <details><summary>🚗 탈것</summary><p>주차장·차고·주유소·터미널 등에서 자전거, 오토바이, 승용차, 스포츠카, 트럭, 버스를 발견할 수 있어요. 시동은 30% 확률로만 걸려요. 자전거 말고는 연료가 필요하고, 휘발유 통 1개 = 연료 5예요. 탈것이 같은 지역에 있으면 이동 시간이 20~60%로 줄어요. 트럭·버스는 가방 한도도 늘려줘요.</p></details>
           <details><summary>🍖 배고픔·갈증·피로</summary><p>시간이 지나면 포만감·수분이 줄고 피로가 쌓여요. 배낭의 음식과 물은 필요할 때 알아서 꺼내 먹어요. 피로는 휴식·잠으로 풀어요. 굶주림·갈증·피로만으로는 죽지 않고 체력 1에서 버텨요. 음식을 먹으면 체력도 조금 차고, 다쳤을 때 포만감을 100까지 채우면 상처가 하루 빨리 아물어요.</p></details>
           <details><summary>🩸 부상과 감염</summary><p>워커와 싸우면 부위별로 타박상·할큄·열상·물림을 입어요. 물리면 감염이 시작되고, 머리·목을 물리면 더 빨리 퍼져요. 감염이 100%가 되면 워커가 돼요. 항생제·혼합 허브로 감염을, 붕대·소독약·봉합 키트로 상처를 치료해요. 아주 드물게 나오는 🧪 실험용 백신은 감염을 완전히 없애고 게임 10일(현실 5시간) 동안 물려도 감염되지 않게 해 줘요. 병동·약품 진열대·무기고, 방호복 좀비, 보급 투하, 치료 임무, 검역 검문소에서 얻을 수 있어요. 캐릭터 탭의 신체 검진표에서 상태를 볼 수 있어요.</p></details>
-          <details><summary>🎒 아이템과 제작</summary><p>배낭은 기본 15kg, 등산 배낭이 있으면 25kg까지 들 수 있어요. 신선식품은 하루마다 조금씩 상해요. 좀비와 마주치면 「장착 무기」로 싸워요. 좋은 무기일수록 덜 다치고(상처 없이 넘길 확률 맨손 20% ~ 총 68%) 더 잘 쓰러뜨리며, 가장 많이 쓴 무기가 선호 무기로 기록돼요. 무기는 쓸수록 닳고, 배낭 아래 「무기 수리」에서 고철·못·천 조각으로 고칠 수 있어요. 총(권총·산탄총·사냥용 소총)은 각자 맞는 탄(권총 탄약·산탄·소총탄)이 필요하고 총소리가 좀비를 불러요. 탄이 없으면 개머리로 내려쳐요. 활·석궁은 탄 없이 쏠 수 있어요. 라이터·성냥이 있으면 고기를 굽고 빗물을 끓일 수 있고, 천 조각으로 붕대를 만들 수 있어요.</p></details>
+          <details><summary>🎒 아이템과 제작</summary><p>배낭은 기본 15kg, 등산 배낭이 있으면 25kg까지 들 수 있어요. 신선식품은 하루마다 조금씩 상해요. 좀비와 마주치면 「장착 무기」로 싸워요. 좋은 무기일수록 덜 다치고(상처 없이 넘길 확률 맨손 20% ~ 총 68%) 더 잘 쓰러뜨리며, 가장 많이 쓴 무기가 선호 무기로 기록돼요. 무기는 쓸수록 닳고, 배낭 아래 「무기 수리」에서 고철·못·천 조각으로 고칠 수 있어요. 총(권총·산탄총·사냥용 소총)은 각자 맞는 탄(권총 탄약·산탄·소총탄)이 필요하고 총소리가 좀비를 불러요. 탄이 없으면 개머리로 내려쳐요. 활·석궁은 탄 없이 쏠 수 있어요. 라이터·성냥이 있으면 고기를 굽고 빗물을 끓일 수 있고, 천 조각으로 붕대를 만들 수 있어요. 「무기 분해」로 무기를 부수면 그 무기를 고칠 때 쓰는 재료를 돌려받아요(3단계 이상은 두 배, 반 넘게 닳았으면 절반).</p></details>
           <details><summary>📻 무전기와 소통</summary><p>무전기는 전체 채널과 숫자 채널(100.1처럼 소수점 가능)이 있어요. 멀리 있는 사람의 무전일수록 잡음이 섞여요. 가끔 미확인 구조 신호가 잡히기도 해요. 「같은 곳」은 같은 건물에 있는 생존자끼리 얼굴을 보며 대화하는 곳이고, 물물교환도 할 수 있어요. 지역에 종이와 필기구로 메모를 남길 수도 있어요. 메모 한 장에 종이(또는 노트 1쪽)와 볼펜(또는 연필)이 1개씩 들어요.</p></details>
           <details><summary>🗽 LA 밖으로</summary><p>처음엔 LA 밖으로 나가는 길이 막혀 있어요. 누군가 LA의 모든 지역을 탐사하면 전체 무전이 잡히고, 모두에게 15번 고속도로 너머 <span data-rg="mojave">???</span>(으)로 가는 길이 열려요.</p><p>길은 <span data-rg="mojave">???</span> → <span data-rg="vegas">???</span> → <span data-rg="denver">???</span> → <span data-rg="chicago">???</span> → <span data-rg="ny">???</span> 순서로 이어지고, 지금 열린 마지막 지방의 모든 지역을 누군가 탐사할 때마다 다음 길이 열려요. 지도 가장자리의 ➜ 표시가 다른 지방으로 가는 출구예요(🔒는 아직 막힌 길). 지방 사이 이동은 60분이 걸리고, 탈것은 연료를 세 배로 써요.</p><p>지방마다 기후가 달라 갈증이나 배고픔이 빨리 오는 곳이 있어요. 마지막 목적지의 쉘터에 도착하면 생존자 탭에 🗽가 남아요.</p></details>
-          <details><summary>🧳 떠돌이 상인</summary><p>가끔 떠돌이 상인이 한 지역에 하루 동안 머물러요. 오늘의 무전에서 어디 있는지 알려줘요. 그 지역에 가면 행동 카드에 상인이 나타나고, 정해진 값으로 물건을 바꿀 수 있어요(한 가지당 하루 2번). 탄약·약품·백신처럼 귀한 물건을 구할 기회예요. 백신은 지방마다 하루 1개뿐이라 먼저 바꾼 사람이 가져가고, 그 뒤엔 품절로 보여요.</p></details>
+          <details><summary>🧳 떠돌이 상인</summary><p>가끔 떠돌이 상인이 한 지역에 하루 동안 머물러요. 오늘의 무전에서 어디 있는지 알려줘요. 그 지역에 가면 행동 카드에 상인이 나타나고, 정해진 값으로 물건을 바꿀 수 있어요(한 가지당 하루 2번). 탄약·약품·백신처럼 귀한 물건을 구할 기회예요. 백신은 지방마다 하루 1개뿐이라 먼저 바꾼 사람이 가져가고, 그 뒤엔 품절로 보여요.</p><p>상인에게 배낭의 모든 물건·무기·필기구를 팔아 🪙 은화를 받을 수 있어요. 은화 20닢으로 💍 반지를 살 수 있어요.</p></details>
           <details><summary>📻 무전 임무</summary><p>무전기에 구조 요청이 잡히면 「📍 응답하기」 버튼이 붙어요. 응답하면 그 지역이 지도에 📻로 표시되고, 게임 6일(현실 3시간) 안에 그 지역의 아무 지점이나 조사하면 임무 이벤트가 열려요. 구조, 치료, 물 교환, 남겨진 물자… 그리고 가끔은 함정도 있어요.</p></details>
           <details><summary>🌆 지역 상태</summary><p>모든 생존자가 같은 LA를 공유하고, 지역은 시간이 지나며 변해요. 지도에서 지역을 누르면 기본 위험도와 지금 위험도, 좀비 밀도, 물자 상태, 환경 상태, 최근 사건이 보여요.</p><p>🔊 총·차·경보 같은 소음은 그 지역에 좀비를 끌어들여요. 좀비 밀도가 70을 넘는 군집은 이웃 지역으로 옮겨 가기도 해요. 좀비를 쓰러뜨리면 밀도가 조금 줄어요.</p><p>📦 많이 털린 지역은 음식·음료가 덜 나와요. 시간이 지나거나 보급 투하·물자 임무로 회복돼요.</p><p>🔥 산불(이동·조사 위험, 일부 지점 폐쇄) · 🌊 침수(지하·주차장 폐쇄, 피로) · ⚡ 정전(어둡고 냉장고 음식이 상함, 고철·휘발유로 직접 복구) · 🚧 도로 봉쇄(그 길로 못 감, 장애물을 치워야 함) · ☣️ 군사 검역(감염되면 못 들어감) · 🏴 대규모 약탈 · 🏕️ 생존자 점령(거래 가능). 상태에 따라 나오는 이벤트도 달라져요.</p></details>
           <details><summary>🧟 좀비 종류</summary><p>워커 말고도 러너(빠르고 아프다), 비명꾼(무리를 부른다), 방호복 좀비(의료품을 지님), 군인 좀비(탄약·전투식량을 지님), 부푼 시체(가스), 크롤러(바닥에서 발목을 잡는다), 브루트(덩치가 크고 아프다), 스피터(검은 액체를 뱉는다), 장갑 좀비(잘 안 쓰러진다), 잠복자(구석에 숨어 있다), 익사체(물가에 나온다)가 있어요. 장소마다 자주 나오는 종류가 달라요.</p></details>
@@ -978,10 +1005,11 @@
           <details><summary>🪂 서버 이벤트</summary><p>현실 6시간마다 한 번, 1시간 동안 모두에게 같은 사건이 일어나요. 군 보급 투하: 그 지역을 조사하면 상자를 한 번 얻어요. 대습격: 날이 바뀔 때 그 지역에 있으면 혼자선 다치지만, 다른 생존자나 동료와 함께면 막아내고 보상을 받아요. 예고는 오늘의 무전과 지도에 떠요.</p></details>
           <details><summary>📮 문의 · 버그 제보</summary><p>캐릭터 탭 옆 「📮 문의」에서 버그·문의·건의를 남길 수 있어요. 관리자가 답을 달면 같은 글 아래에 보여요. 패치나 공지가 새로 생기면 들어왔을 때 한 번 팝업으로 알려 줘요.</p></details>
           <details><summary>🔔 알림</summary><p>상단의 종 버튼을 켜면, 다른 탭을 보고 있을 때 행동이 끝나거나 선택이 필요한 일이 생기면 알려줘요. 브라우저에서 알림을 허용해야 해요.</p></details>
-          <details><summary>🏠 쉘터</summary><p>쉘터를 만들거나 들어가면 동료끼리 쉘터 채팅, 공용 창고, 시설을 함께 써요. 빗물 수집기·텃밭은 3단계까지 강화할 수 있고 날씨에 따라 수확이 달라져요(비 오는 날 더 많이, 폭염엔 줄어요). 약초 화단은 매일 녹색 허브를 줘요. 바리케이드는 무리 습격 피해를 줄여요. 같은 지역에 쉘터 동료가 있으면 조사와 사냥이 더 안전해져요.</p></details>
+          <details><summary>🏠 쉘터</summary><p>쉘터를 만들거나 들어가면 동료끼리 쉘터 채팅, 공용 창고, 시설을 함께 써요. 빗물 수집기·텃밭은 3단계까지 강화할 수 있고 날씨에 따라 수확이 달라져요(비 오는 날 더 많이, 폭염엔 줄어요). 약초 화단은 매일 녹색 허브를 줘요. 바리케이드는 무리 습격 피해를 줄여요. 같은 지역에 쉘터 동료가 있으면 조사와 사냥이 더 안전해져요. 창고의 「알아서 꺼내 먹기」를 켜 두면 배고프거나 목마른데 배낭에 먹을 게 없을 때 창고에서 하나씩 꺼내 먹어요(어디에 있든).</p></details>
           <details><summary>💤 자리를 비우면</summary><p>현실 1시간 반 넘게 접속하지 않으면 잠든 것으로 쳐요. 소모는 1/4로 줄고 피로는 회복돼요. 감염도 1/4 속도로 진행되다가 95%(말기)에서 멈추니, 돌아오면 서둘러 치료하세요.</p></details>
           <details><summary>🛡️ 신참 보호</summary><p>캐릭터를 만든 뒤 현실 14일 동안은 체력이 0이 돼도 죽지 않고 체력 1로 버텨요. 남은 기간은 맨 위 상단바에 보여요.</p></details>
-          <details><summary>🪦 죽음과 다시 시작</summary><p>죽으면 묘비명을 새기고, 죽은 자리에 묘비를 남긴 채 같은 이름으로 다시 시작할 수 있어요. 이름·사진·설정·쉘터·일지·지도는 그대로, 몸과 배낭은 처음부터예요. 묘비는 그 지역 메모 칸과 생존자 탭에 남아요.</p></details>
+          <details><summary>🪦 죽음과 다시 시작</summary><p>죽으면 묘비명을 새기고, 죽은 자리에 묘비를 남긴 채 같은 이름으로 다시 시작할 수 있어요. 이름·사진·설정·쉘터·일지·지도·친구는 그대로, 몸과 배낭은 처음부터예요. 다시 눈을 뜨는 곳은 죽은 지방 안의 아무 곳이에요. 묘비는 그 지역 메모 칸과 생존자 탭에 남아요. 행동 카드 맨 아래 「스스로 생을 마감하기」로 바로 죽을 수도 있어요(한 번 더 물어봐요).</p></details>
+          <details><summary>👥 친구와 관계</summary><p>캐릭터 탭의 「친구」 창에서 생존자를 찾아 친구 신청을 보내고, 받은 신청은 「요청」에서 수락해요. 친구는 50명까지, 접속 중인지·어디 있는지·체력이 보여요.</p><p>친구의 「관리」에서 관계를 가족·친구·연인·배우자·웬수로 바꿀 수 있어요. 웬수는 바로 바뀌고, 나머지는 상대가 수락해야 해요. 배우자는 한 사람만, 떠돌이 상인에게 산 💍 반지 2개가 필요해요(신청하는 사람이 2개, 또는 두 사람이 1개씩). 신청할 때 반지를 맡기고, 거절·취소되면 돌려받아요.</p></details>
         </div>
       </div>
       </div>
@@ -1069,6 +1097,16 @@
         <div class="muted">이름을 바꿔도 로그인은 지금 아이디로 그대로 해요. 다른 생존자와 같은 이름도 쓸 수 있어요.</div>
         <div class="char-msg" id="charMsg" role="status"></div>
       </div>
+      <div class="card" id="friendCard">
+        <h2>👥 친구 <span class="muted" id="friendCount" style="font-size:12px; margin:0"></span></h2>
+        <div class="pol-row fr-tabs" style="margin:0 0 10px">
+          <button class="secondary" type="button" data-frv="list" aria-pressed="true">친구</button>
+          <button class="secondary" type="button" data-frv="req" aria-pressed="false">요청 <span class="fr-badge" id="frReqN" hidden></span></button>
+          <button class="secondary" type="button" data-frv="find" aria-pressed="false">찾기</button>
+        </div>
+        <div id="friendBody"></div>
+        <div class="char-msg" id="friendMsg" role="status"></div>
+      </div>
       <div class="card">
         <h2>캐릭터 설정</h2>
         <textarea id="bioInput" maxlength="500" style="min-height:140px" placeholder="나이, 직업, 감염 전의 삶, 성격, 지키고 싶은 사람… 자유롭게 적어보세요."></textarea>
@@ -1139,6 +1177,8 @@
       <div id="craftList"></div>
       <div class="bag-cat" style="margin-top:14px">🔧 무기 수리</div>
       <div id="repairList"></div>
+      <div class="bag-cat" style="margin-top:14px">🪓 무기 분해</div>
+      <div id="scrapList"></div>
       <div class="muted">배고프거나 목마르면 배낭에서 알아서 꺼내 먹어요. 신선식품은 하루마다 조금씩 상해요. 가방이 꽉 차면 더 챙길 수 없으니 쉘터 창고를 쓰세요.</div>
       </div>
       </div>
@@ -1444,12 +1484,14 @@
     $('deadBox').hidden = !dead;
     const busy = !!myDoc.busy;
     ['farmBtn','forageBtn','huntBtn','restBtn','sleepBtn','exploreBtn','raidBtn'].forEach(id => $(id).disabled = dead || busy);
+    $('suicideBtn').hidden = dead;
     $('weaponSelect').disabled = dead || busy;
     renderBusy();
     renderVehicle();
     renderSavedCh();
     renderMission();
     renderComp();
+    renderFriends();
     renderSkills();
     renderMerchant();
     renderFrontier();
@@ -1764,11 +1806,14 @@
     if (myDoc) renderMerchant();
   }
   function merchantUsed(k) { const m = myDoc.merch; return m && m.day === worldDay() ? +(m.n || {})[k] || 0 : 0; }
-  function renderMerchant() {
+  function renderMerchant(force) {
     const box = $('merchantBox'), mc = merchantOf(worldDay(), rgOf(myDoc.loc));
     if (!box) return;
     box.hidden = !mc || mc.loc !== myDoc.loc || myDoc.status === 'dead';
     if (box.hidden) return;
+    // 팔 물건을 고르거나 수량을 적는 중엔 다시 그리지 않는다
+    const ae = document.activeElement;
+    if (!force && ae && box.contains(ae) && (ae.id === 'mSellItem' || ae.id === 'mSellQty')) return;
     const sk = soldKey(rgOf(myDoc.loc), worldDay());
     if (mc.offers.some(k => MERCHANT_OFFERS[k].once)) fetchSold(sk);
     const busy = !!myDoc.busy, items = o => Object.keys(o).map(k => ITEMS[k].ic + ' ' + ITEMS[k].n + ' ' + o[k]).join(', ');
@@ -1777,8 +1822,63 @@
       const ok = left > 0 && !busy && Object.keys(O.give).every(id => inv(id) >= O.give[id]);
       const note = O.once ? (mSold[sk] === true ? '오늘 1개뿐 · <b>품절</b>' : mSold[sk] === false ? '오늘 1개뿐 · 먼저 바꾸는 사람이 가져가요' : '재고 확인 중…') : '남은 횟수 ' + left;
       return `<div class="bag-row"><div class="bnm">${items(O.give)} → <b>${items(O.get)}</b><small>가진 것: ${Object.keys(O.give).map(id => ITEMS[id].n + ' ' + inv(id)).join(' · ')} · ${note}</small></div><button class="secondary" type="button" data-mtrade="${k}"${ok ? '' : ' disabled'}>${O.once && mSold[sk] === true ? '품절' : '바꾸기'}</button></div>`;
-    }).join('') + '<div class="char-msg" id="merchantMsg" role="status"></div>';
+    }).join('') + merchantShopHtml(busy) + '<div class="char-msg" id="merchantMsg" role="status"></div>';
   }
+  // ---------- 상인에게 팔기 · 반지 사기 (은화) ----------
+  const RING_PRICE = 20;
+  const SELL_FIX = { mre:4, whiskey:3, bandage:2, disinfectant:3, suture:4, painkillers:2, vaccine:30, antibiotics:5, green_herb:2, mixed_herb:4, first_aid:6, vitamins:1, lighter:3, fuel:3, pack:5, ring:10 };
+  const STATIONERY_PRICE = { paper:1, pages:1, pencil:1, pen:1 };
+  // 파는 값(1개, 은화): 음식·음료는 배를 채우는 만큼, 무기는 단계와 남은 내구도만큼
+  function sellPrice(v) {
+    const [t, k] = [v.slice(0, 1), v.slice(2)];
+    if (t === 's') return STATIONERY_PRICE[k] || 0;
+    if (t === 'w') { const f = myDoc.wdur && myDoc.wdur[k] != null ? myDoc.wdur[k] / WEAPON_DUR[k] : 1; return Math.max(1, Math.round((WEAPON_TIER[k] * 3 + 1) * Math.max(0.3, f))); }
+    const it = ITEMS[k];
+    if (!it || k === 'coin') return 0;
+    if (SELL_FIX[k] != null) return SELL_FIX[k];
+    if (it.cat === 'food' || it.cat === 'drink') return Math.max(1, Math.round(((it.sat || 0) + (it.hyd || 0)) / 12));
+    return 1;
+  }
+  function sellOptions() {
+    const out = [];
+    Object.keys(invOf(myDoc)).forEach(k => { if (ITEMS[k] && inv(k) > 0 && sellPrice('i:' + k) > 0) out.push({ v: 'i:' + k, label: ITEMS[k].ic + ' ' + ITEMS[k].n, have: inv(k) }); });
+    (myDoc.weapons || []).filter(w => WEAPON_TIER[w]).forEach(w => out.push({ v: 'w:' + w, label: '🗡️ ' + w, have: 1 }));
+    STATIONERY_ITEMS.forEach(x => { const n = Math.max(0, +(myDoc.items || {})[x.k] || 0); if (n) out.push({ v: 's:' + x.k, label: x.ic + ' ' + x.n, have: n }); });
+    return out;
+  }
+  let sellSel = '';
+  function merchantShopHtml(busy) {
+    const opts = sellOptions();
+    if (!opts.some(o => o.v === sellSel)) sellSel = (opts[0] || {}).v || '';
+    const cur = opts.find(o => o.v === sellSel);
+    const ring = `<div class="bag-row"><div class="bnm">🪙 은화 ${RING_PRICE} → <b>💍 반지 1</b><small>가진 은화 ${inv('coin')} · 반지 ${inv('ring')} · 배우자 신청에 반지 2개(두 사람이 1개씩도 가능)</small></div><button class="secondary" type="button" data-mring="1"${busy || inv('coin') < RING_PRICE ? ' disabled' : ''}>사기</button></div>`;
+    const sell = opts.length ? `<div class="mc-sell"><select id="mSellItem" aria-label="팔 물건">${opts.map(o => `<option value="${escapeHtml(o.v)}"${o.v === sellSel ? ' selected' : ''}>${escapeHtml(o.label)} · ${o.have}개 · 개당 🪙${sellPrice(o.v)}</option>`).join('')}</select><input type="number" id="mSellQty" min="1" max="${cur ? cur.have : 1}" value="1" aria-label="팔 수량"${cur && cur.v.startsWith('w:') ? ' disabled' : ''}><button class="secondary" type="button" data-msell="1"${busy || !cur ? ' disabled' : ''}>팔기</button></div>` : '<div class="muted" style="margin:4px 0">팔 물건이 없어요.</div>';
+    return '<div class="bag-cat" style="margin-top:10px">🪙 팔기 · 사기</div>' + sell + ring;
+  }
+  document.addEventListener('change', (e) => { if (e.target.id === 'mSellItem') { sellSel = e.target.value; renderMerchant(true); } });
+  document.addEventListener('click', async (e) => {
+    const sb = e.target.closest('button[data-msell], button[data-mring]');
+    if (!sb || sb.disabled || !myDoc || myDoc.busy || myDoc.status === 'dead') return;
+    const mc = merchantOf(worldDay(), rgOf(myDoc.loc));
+    if (!mc || mc.loc !== myDoc.loc) return;
+    if (sb.dataset.mring) {
+      if (inv('coin') < RING_PRICE) return;
+      addItem('coin', -RING_PRICE); addItem('ring', 1);
+      addLog('💍 떠돌이 상인에게서 은화 ' + RING_PRICE + '닢으로 반지를 샀다. 누구 손가락에 끼워질까.');
+    } else {
+      const v = $('mSellItem') ? $('mSellItem').value : '', t = v.slice(0, 1), k = v.slice(2), o = sellOptions().find(x => x.v === v);
+      if (!o) return;
+      const n = t === 'w' ? 1 : Math.max(1, Math.min(o.have, parseInt($('mSellQty').value, 10) || 1)), price = sellPrice(v) * n;
+      if (t === 'w') {
+        if (!confirm(k + '을(를) 은화 ' + price + '닢에 팔까요?')) return;
+        myDoc.weapons = myDoc.weapons.filter(x => x !== k); if (myDoc.wdur) delete myDoc.wdur[k];
+      } else if (t === 's') myDoc.items[k] = Math.max(0, (+myDoc.items[k] || 0) - n);
+      else addItem(k, -n);
+      addItem('coin', price);
+      addLog('🪙 떠돌이 상인에게 ' + o.label.replace(/^\S+ /, '') + ' ' + n + '개를 팔고 은화 ' + price + '닢을 받았다.');
+    }
+    sfx('done'); renderStatus(); await saveDoc();
+  });
   document.addEventListener('click', async (e) => {
     const b = e.target.closest('button[data-mtrade]');
     if (!b || b.disabled || !myDoc || myDoc.busy || myDoc.status === 'dead') return;
@@ -1937,6 +2037,7 @@
       if (changed) await saveDoc();
     }
     if (myDoc.busy && Date.now() >= myDoc.busy.until) await completeAction();
+    shelterAutoEat();
     renderBusy();
     updateClock();
   }, 1000);
@@ -2463,10 +2564,11 @@
     '{w}의 유리창 너머로 사람들이 달리고 있었다. 한 사람은 넘어졌고, 아무도 돌아보지 않았다.',
     '{w}에 남은 시계는 멈춰 있었다. 휴대전화에는 발신자 없는 부재중 전화가 열일곱 통 남아 있었다.'
   ];
-  function ensureLocation() {
+  function ensureLocation(rg) {
     if (!DISTRICTS[myDoc.loc]) {
-      const pool = regionKeys('la').filter(k => DISTRICTS[k].danger < 0.4);
-      myDoc.loc = pick(pool);
+      // 다시 시작하면 마지막으로 있던 지방 안의 아무 곳(위험 낮은 곳)에서 눈을 뜬다
+      const keys = regionKeys(REGIONS[rg] ? rg : 'la').filter(k => DISTRICTS[k]), safe = keys.filter(k => DISTRICTS[k].danger < 0.4);
+      myDoc.loc = pick(safe.length ? safe : keys);
       // 다시 시작한 캐릭터는 예전에 밝힌 지도를 그대로 기억한다
       myDoc.visited = Array.isArray(myDoc.visited) ? myDoc.visited : [];
       addLog(fmt(pick(BIRTH_TEXT), DISTRICTS[myDoc.loc].n, ''));
@@ -3064,15 +3166,26 @@
     { who:'전직 소방관', t:'{d}의 건물에 사람이 갇혔다. 불은 꺼졌지만 계단이 무너져서 혼자서는 못 들어간다.', m:'rescue' }
   ];
   const DISTRICT_KEYS = regionKeys('la');
+  // 뉴욕 쉘터의 반복 호출 ({ny}: 첫 전체 무전 전에는 지명이 가려진다)
+  const NY_CALL_LINES = [
+    { who:'뉴욕 쉘터 통신실', t:'여기는 {ny} 생존자 쉘터. 루스벨트섬에 쉘터가 있다. 살아 있다면 동쪽으로, 이곳으로 와라.' },
+    { who:'뉴욕 쉘터 통신실', t:'반복한다. {ny} 쉘터는 아직 문을 열어 두고 있다. 다리를 건너는 사람에게 물과 침대가 있다.' },
+    { who:'뉴욕 쉘터 통신실', t:'서쪽에서 이 방송을 듣는 사람에게. 길은 멀지만 끊기지 않았다. {ny} 쉘터로 와라. 기다리고 있다.' },
+    { who:'사라 킴', t:'…들리면 응답해. 여긴 {ny} 쉘터야. 사막을 건너온 사람도, 눈길을 넘어온 사람도 있었어. 너도 올 수 있어.' },
+    { who:'토머스 리드', t:'{ny} 쉘터 책임자 토머스 리드다. 혼자라도 좋다. 다친 몸이라도 좋다. 살아서 이 섬까지만 와라.' },
+    { who:'자동 송출', t:'…이 방송은 {ny} 루스벨트섬에서 자동으로 반복됩니다. 생존자는 동쪽으로 이동하십시오. 이 방송은…' }
+  ];
   // 한국 시간 저녁 6시~새벽 3시엔 60%, 그 밖엔 15% (평균 약 32%). 섞은 해시라 특정 시간대에 몰리지 않는다
   function npcChance(k) { const hr = new Date(k * NPC_SLOT + 9 * 3600e3).getUTCHours(); return hr >= 18 || hr < 3 ? 60 : 15; }
   function npcAt(k) {
     if (mixHash('npc-slot-' + k) % 100 >= npcChance(k)) return null;
     // 지방에 있거나 뉴욕 쉘터에 도착한 사람에게는 그곳 무전이 섞여 들린다 (임무 없는 대사)
     const here = typeof REGION_RADIO !== 'undefined' && myDoc ? REGION_RADIO.filter(l => l.ny ? !!myDoc.ny : l.rg === rgOf(myDoc.loc)) : [];
-    const line = here.length && mixHash('npc-rg-' + k) % 100 < 40 ? here[mixHash('npc-rl-' + k) % here.length] : NPC_LINES[mixHash('npc-line-' + k) % NPC_LINES.length];
+    // 뉴욕 쉘터의 호출은 어디서나 가끔(20%) 섞여 들린다
+    const call = mixHash('npc-ny-' + k) % 100 < 20;
+    const line = call ? NY_CALL_LINES[mixHash('npc-nl-' + k) % NY_CALL_LINES.length] : here.length && mixHash('npc-rg-' + k) % 100 < 40 ? here[mixHash('npc-rl-' + k) % here.length] : NPC_LINES[mixHash('npc-line-' + k) % NPC_LINES.length];
     const dk = DISTRICT_KEYS[mixHash('npc-d-' + k) % DISTRICT_KEYS.length], d = DISTRICTS[dk];
-    const text = line.t.replace(/\{d\}로/g, josa(d.n, '으로', '로')).replace(/\{d\}/g, d.n).replace('{n}', 2 + mixHash('npc-n-' + k) % 4);
+    const text = line.t.replace(/\{ny\}/g, frontier() >= 1 ? '뉴욕' : '동쪽 끝').replace(/\{d\}로/g, josa(d.n, '으로', '로')).replace(/\{d\}/g, d.n).replace('{n}', 2 + mixHash('npc-n-' + k) % 4);
     const noise = 0.06 + (mixHash('npc-z-' + k) % 20) / 100;
     return { npc: true, ts: k * NPC_SLOT + (mixHash('npc-t-' + k) % (NPC_SLOT - 60000)), author: line.who, text, noise, bars: 1 + mixHash('npc-b-' + k) % 2, key: 'npc' + k, m: line.m || null, dk };
   }
@@ -3494,6 +3607,7 @@
     if (!has) return;
     const st = normalizeStorage(shelterDoc && shelterDoc.storage), sw = st.weapons || {};
     const dead = myDoc.status === 'dead';
+    $('stAutoChk').checked = myDoc.stAuto !== false;
     // 목록에서 물건을 고르고 넣기·꺼내기 (값: i:아이템 / w:무기)
     const opts = [], groups = { food:'음식', drink:'음료', med:'의료품', tool:'도구·재료', st:'필기구', weapon:'무기' };
     storeItems().forEach(it => {
@@ -3524,6 +3638,34 @@
     $('storageLog').innerHTML = log.length ? log.map(l => `<div>${hhmm(l.ts)} · <b>${escapeHtml(String(l.who || '').slice(0, 12))}</b> ${escapeHtml(String(l.text || '').slice(0, 60))}</div>`).join('') : '아직 기록이 없어요.';
   }
   let storageBusy = false, storageSel = '';
+  $('stAutoChk').addEventListener('change', async () => { if (!myDoc) return; myDoc.stAuto = $('stAutoChk').checked; await saveDoc(); });
+  // 배고프거나 목마른데 배낭에 먹을 게 없으면 쉘터 창고에서 하나 꺼내 먹는다 (어디서든, 상하기 쉬운 것·배탈 안 나는 것부터)
+  let stEating = false, stEatAt = 0;
+  async function shelterAutoEat() {
+    if (stEating || Date.now() - stEatAt < 15000 || !db || !myDoc || myDoc.status === 'dead' || !myDoc.party || !shelterDoc || myDoc.stAuto === false) return;
+    const need = ['food', 'drink'].filter(cat => { const ks = cat === 'food' ? 'sat' : 'hyd'; return myDoc[ks] < 35 && !Object.keys(invOf(myDoc)).some(k => ITEMS[k] && ITEMS[k].cat === cat && inv(k) > 0 && (ITEMS[k][ks] || 0) > 0); });
+    if (!need.length) return;
+    const st = normalizeStorage(shelterDoc.storage);
+    const best = cat => { const ks = cat === 'food' ? 'sat' : 'hyd'; return Object.keys(st).filter(k => ITEMS[k] && ITEMS[k].cat === cat && (+st[k] || 0) > 0 && (ITEMS[k][ks] || 0) > 0).sort((a, b) => (ITEMS[a].sick ? 1 : 0) - (ITEMS[b].sick ? 1 : 0) || (ITEMS[b].fresh ? 1 : 0) - (ITEMS[a].fresh ? 1 : 0) || (ITEMS[b][ks] || 0) - (ITEMS[a][ks] || 0))[0]; };
+    const want = need.map(best).filter(Boolean);
+    if (!want.length) return;
+    stEating = true; stEatAt = Date.now();
+    try {
+      const took = [];
+      const ok = await updateShelter(d => {
+        d.storage = normalizeStorage(d.storage);
+        took.length = 0;
+        want.forEach(k => { if ((+d.storage[k] || 0) > 0) { d.storage[k] -= 1; if (d.storage[k] <= 0) delete d.storage[k]; took.push(k); } });
+        if (!took.length) return false;
+        d.storageLog = (Array.isArray(d.storageLog) ? d.storageLog : []).concat({ who: myName, text: took.map(k => ITEMS[k].n).join(', ') + '을(를) 꺼내 먹었다', ts: Date.now() }).slice(-20);
+      });
+      if (ok && took.length && myDoc.status !== 'dead') {
+        took.forEach(k => { addItem(k, 1); const t = consumeItem(k, true, true); if (t) addLog('🏚️ 쉘터 창고에서 꺼내 ' + t.replace(/^(허기가 져서|목이 말라) /, '')); });
+        renderStatus(); await saveDoc();
+      }
+    } catch (e) {}
+    stEating = false;
+  }
   $('storageList').addEventListener('change', (e) => { if (e.target.id === 'storageItem') { storageSel = e.target.value; renderStorage(true); } });
   $('storageList').addEventListener('click', async (e) => {
     const pk = e.target.closest('button[data-stpick]');
@@ -5865,6 +6007,32 @@
     if (b && !b.disabled) startAction('repair', b.dataset.repair);
   });
 
+  // 무기 분해: 바로 끝난다. 그 무기를 고칠 때 드는 재료를 돌려준다 (3단계 이상은 두 배, 반 넘게 닳았으면 절반)
+  function scrapYield(w) {
+    const c = repairCost(w), k = WEAPON_TIER[w] >= 3 ? 2 : 1, worn = myDoc.wdur && myDoc.wdur[w] != null && myDoc.wdur[w] < WEAPON_DUR[w] / 2, out = {};
+    Object.keys(c).forEach(id => { out[id] = Math.max(1, Math.floor(c[id] * k / (worn ? 2 : 1))); });
+    return out;
+  }
+  function renderScrap() {
+    const el = $('scrapList');
+    if (!el) return;
+    const dead = myDoc.status === 'dead', busy = !!myDoc.busy, list = (myDoc.weapons || []).filter(w => WEAPON_TIER[w]);
+    el.innerHTML = list.length ? list.map(w => `<div class="bag-row"><span class="bic">🪓</span><div class="bnm">${w}<small>→ ${lootText(scrapYield(w))}${myDoc.wdur && myDoc.wdur[w] != null ? ' · 내구 ' + myDoc.wdur[w] + '/' + WEAPON_DUR[w] : ''}</small></div><button class="secondary" type="button" data-scrap="${w}"${dead || busy ? ' disabled' : ''}>분해</button></div>`).join('') : '<div class="muted" style="padding:4px 0">분해할 무기가 없어요.</div>';
+  }
+  $('scrapList').addEventListener('click', async (e) => {
+    const b = e.target.closest('button[data-scrap]');
+    if (!b || b.disabled || !myDoc || myDoc.busy || myDoc.status === 'dead') return;
+    const w = b.dataset.scrap;
+    if (!(myDoc.weapons || []).includes(w) || !confirm(w + '을(를) 분해할까요? 무기는 사라지고 ' + lootText(scrapYield(w)) + '을(를) 얻어요.')) return;
+    const got = scrapYield(w);
+    myDoc.weapons = myDoc.weapons.filter(x => x !== w);
+    if (myDoc.wdur) delete myDoc.wdur[w];
+    Object.keys(got).forEach(id => addItem(id, got[id]));
+    gainSkill('mech', 1);
+    addLog('🪓 ' + josa(w, '을', '를') + ' 분해했다. (' + lootText(got) + ')');
+    sfx('done'); renderStatus(); await saveDoc();
+  });
+
   // 무기는 쓸수록 닳고, 다 닳으면 부러진다
   function wearWeapon(w) {
     myDoc.wdur = myDoc.wdur || {};
@@ -6096,6 +6264,18 @@
   }
   $('busyCancel').addEventListener('click', cancelAction);
 
+  // 스스로 생을 마감한다: 바로 죽는다 (하던 일은 그만두고 재료는 돌려받는다, 신참 보호도 듣지 않는다)
+  $('suicideBtn').addEventListener('click', async () => {
+    if (!myDoc || myDoc.status === 'dead' || !confirm('정말 스스로 생을 마감할까요?\n바로 죽고, 되돌릴 수 없어요. (묘비를 남기고 같은 이름으로 다시 시작할 수는 있어요)')) return;
+    if (myDoc.busy) { refundMaterials(myDoc.busy.paid); myDoc.busy = null; }
+    myDoc.event = null;
+    myDoc.hp = 0; myDoc.status = 'dead';
+    addLog('☠️ ' + myName + '님은 더는 버티지 않기로 했다. 무전기를 끄고, 조용히 눈을 감았다.');
+    sfx('break');
+    renderStatus();
+    await saveDoc();
+  });
+
   function renderBusy() {
     renderEvent();
     const b = myDoc && myDoc.busy;
@@ -6274,9 +6454,197 @@
 
   // ---------- 실시간 감시(구독): 켜고 끄기 ----------
   // 탭을 10분 넘게 안 보고 있으면 모든 구독을 잠시 끊어 Firestore 읽기를 아낀다. 다시 보면 이어 붙인다
+  // ---------- 친구 · 관계 ----------
+  // 두 사람이 함께 쓰는 friends/f_키_키 문서 하나: m(두 사람 키, 정렬), st('wait' 신청 중 · 'ok' 친구), from(친구 신청한 사람), rel(관계), req(관계 바꾸기 신청 {type, from, ring, ts})
+  // 남의 캐릭터 문서는 고칠 수 없으니, 반지처럼 내 배낭이 걸린 일은 이 문서를 보고 내 화면이 스스로 처리한다
+  const RELS = { friend:{ n:'친구', ic:'🤝' }, family:{ n:'가족', ic:'🏠' }, lover:{ n:'연인', ic:'💕' }, spouse:{ n:'배우자', ic:'💍' }, enemy:{ n:'웬수', ic:'⚔️' } };
+  const FRIEND_MAX = 50, ONLINE_MS = 10 * 60 * 1000;
+  let friendDocs = {}, friendUnsub = null, friendLoaded = false, friendView = 'list', friendBusy = false, friendQuery = '';
+  function pairId(a, b) { return 'f_' + [a, b].sort().join('_'); }
+  function otherOf(f) { return f.m[0] === myKey ? f.m[1] : f.m[0]; }
+  function frDocOf(k) { return latestDocs.find(x => keyOf(x) === k) || null; }
+  function frName(k) { const d = frDocOf(k); return d ? d.name : '떠난 생존자'; }
+  function frList() { return Object.values(friendDocs); }
+  function friendSubscribe() {
+    if (friendUnsub) { try { friendUnsub(); } catch (e) {} friendUnsub = null; }
+    if (!db || !myKey) return;
+    try {
+      const c = db.collection('friends'), q = typeof c.where === 'function' ? c.where('m', 'array-contains', myKey) : c;
+      friendUnsub = q.onSnapshot(snap => {
+        const n = {};
+        (snap && snap.docs ? snap.docs : []).forEach(d => { const v = d.data(); if (v && Array.isArray(v.m) && v.m.includes(myKey)) n[d.id] = Object.assign({ id: d.id }, v); });
+        const prev = friendDocs, first = !friendLoaded;
+        friendDocs = n; friendLoaded = true;
+        friendSync(prev, first);
+        renderFriends();
+      }, () => {});
+    } catch (e) {}
+  }
+  function friendStop() { if (friendUnsub) { try { friendUnsub(); } catch (e) {} } friendUnsub = null; friendDocs = {}; friendLoaded = false; }
+  // 바뀐 관계를 일지에 남기고, 배우자 표시와 맡겨 둔 반지를 정리한다
+  function friendSync(prev, first) {
+    if (!myDoc) return;
+    let dirty = false;
+    if (!first) frList().forEach(f => {
+      const p = prev[f.id], nm = frName(otherOf(f));
+      if (f.st === 'ok' && (!p || p.st !== 'ok')) { addLog('🤝 ' + nm + '님과 친구가 되었다.'); dirty = true; }
+      else if (f.st === 'ok' && p && p.rel !== f.rel) { const R = RELS[f.rel] || RELS.friend; addLog(R.ic + ' ' + nm + '님과의 관계가 「' + R.n + '」(으)로 바뀌었다.'); dirty = true; }
+      if (f.st === 'wait' && f.from !== myKey && !p) notify('👥 친구 신청', nm + '님이 친구 신청을 보냈어요.');
+      if (f.req && f.req.from !== myKey && (!p || !p.req || p.req.ts !== f.req.ts)) notify('👥 관계 신청', nm + '님이 「' + (RELS[f.req.type] || RELS.friend).n + '」이(가) 되자고 해요.');
+    });
+    const sp = frList().find(f => f.st === 'ok' && f.rel === 'spouse'), spKey = sp ? otherOf(sp) : '';
+    if ((myDoc.spouse || '') !== spKey) { myDoc.spouse = spKey; dirty = true; }
+    const esc = myDoc.ringEsc && typeof myDoc.ringEsc === 'object' ? myDoc.ringEsc : {};
+    Object.keys(esc).forEach(id => {
+      const f = friendDocs[id];
+      if (f && f.req && f.req.type === 'spouse' && f.req.from === myKey) return;
+      if (!(f && f.st === 'ok' && f.rel === 'spouse')) { addItem('ring', +esc[id] || 0); addLog('💍 배우자 신청이 이뤄지지 않아 맡겨 둔 반지 ' + esc[id] + '개를 돌려받았다.'); }
+      delete esc[id]; dirty = true;
+    });
+    myDoc.ringEsc = esc;
+    if (dirty) { renderStatus(); saveDoc(); }
+  }
+  function frIncoming() { return frList().filter(f => (f.st === 'wait' && f.from !== myKey) || (f.st === 'ok' && f.req && f.req.from !== myKey)).length; }
+  function agoText(ts) {
+    const m = Math.floor((Date.now() - (+ts || 0)) / 60000);
+    return !ts ? '오래 전' : m < 60 ? m + '분 전' : m < 1440 ? Math.floor(m / 60) + '시간 전' : Math.floor(m / 1440) + '일 전';
+  }
+  function frStatus(d) {
+    if (!d) return '⚫ 기록 없음';
+    if (d.status === 'dead') return '🪦 사망';
+    return Date.now() - (+d.updatedAt || 0) < ONLINE_MS ? '🟢 접속 중' : '⚫ ' + agoText(d.updatedAt);
+  }
+  function frInfo(d) { return d ? frStatus(d) + (d.status === 'dead' ? '' : ' · 📍 ' + (DISTRICTS[d.loc] ? knownName(d.loc) : '위치 불명') + ' · ♥' + Math.max(0, +d.hp || 0)) + ' · 생존 ' + survDays(d) + '일' : ''; }
+  function frMsg(t, ok) { const m = $('friendMsg'); if (m) { m.textContent = t; m.className = 'char-msg ' + (ok ? 'ok' : 'err'); } }
+  function renderFriends() {
+    if (!myDoc || !$('friendBody')) return;
+    const all = frList(), friends = all.filter(f => f.st === 'ok'), inc = frIncoming();
+    $('friendCount').textContent = friends.length + ' / ' + FRIEND_MAX;
+    $('frReqN').hidden = !inc; $('frReqN').textContent = inc;
+    $('friendDot').hidden = !inc;
+    document.querySelectorAll('#friendCard [data-frv]').forEach(b => b.setAttribute('aria-pressed', b.dataset.frv === friendView ? 'true' : 'false'));
+    let h = '';
+    const dead = myDoc.status === 'dead';
+    if (friendView === 'list') {
+      const on = d => d && d.status !== 'dead' && Date.now() - (+d.updatedAt || 0) < ONLINE_MS;
+      const rows = friends.map(f => ({ f, d: frDocOf(otherOf(f)) })).sort((a, b) => (b.f.req && b.f.req.from !== myKey ? 1 : 0) - (a.f.req && a.f.req.from !== myKey ? 1 : 0) || (on(b.d) ? 1 : 0) - (on(a.d) ? 1 : 0) || (+(b.d && b.d.updatedAt) || 0) - (+(a.d && a.d.updatedAt) || 0));
+      const nOn = rows.filter(r => on(r.d)).length;
+      h = rows.length ? `<div class="fr-sum">🟢 접속 중 ${nOn} · 전체 ${rows.length}</div>` + rows.map(({ f, d }) => {
+        const k = otherOf(f), R = RELS[f.rel] || RELS.friend, rq = f.req;
+        let extra = '';
+        if (rq && rq.from !== myKey) extra = `<div class="fr-req">💌 「${(RELS[rq.type] || R).ic} ${(RELS[rq.type] || R).n}」이(가) 되자고 해요${rq.type === 'spouse' ? ' · 반지 ' + (2 - (+rq.ring || 0)) + '개 필요 (가진 반지 ' + inv('ring') + ')' : ''} <button class="primary" type="button" data-frrel-ok="${f.id}">수락</button><button class="secondary" type="button" data-frrel-no="${f.id}">거절</button></div>`;
+        else if (rq) extra = `<div class="fr-req">⏳ 「${(RELS[rq.type] || R).n}」 신청 중${rq.type === 'spouse' ? ' (반지 ' + (+rq.ring || 0) + '개 맡김)' : ''} <button class="secondary" type="button" data-frrel-no="${f.id}">취소</button></div>`;
+        const sel = `<select data-frsel="${f.id}" aria-label="관계 고르기">${Object.keys(RELS).map(r => `<option value="${r}"${r === f.rel ? ' selected' : ''}>${RELS[r].ic} ${RELS[r].n}</option>`).join('')}</select>`;
+        return `<div class="fr-row${d && d.status === 'dead' ? ' gone' : ''}">${avatarHtml(d || { name: '?' })}<div class="info"><b>${escapeHtml(d ? d.name : '떠난 생존자')}</b> <span class="fr-rel r-${f.rel}">${R.ic} ${R.n}</span><small>${frInfo(d)}</small>${extra}
+          <details class="fr-more" data-fid="${f.id}"><summary>관리</summary><div class="fr-acts">${sel}<button class="secondary" type="button" data-frrel="${f.id}"${dead ? ' disabled' : ''}>관계 신청</button><button class="secondary" type="button" data-frdel="${f.id}">친구 삭제</button></div><div class="muted" style="margin:4px 0 0">웬수는 바로 바뀌고, 나머지는 상대가 수락해야 해요. 배우자는 반지 2개(나 2개, 또는 두 사람이 1개씩) · 한 사람만.</div></details></div></div>`;
+      }).join('') : '<div class="muted" style="margin:6px 0">아직 친구가 없어요. 「찾기」에서 생존자에게 친구 신청을 보내 보세요.</div>';
+    } else if (friendView === 'req') {
+      const inR = all.filter(f => f.st === 'wait' && f.from !== myKey), outR = all.filter(f => f.st === 'wait' && f.from === myKey), relR = all.filter(f => f.st === 'ok' && f.req && f.req.from !== myKey);
+      const row = (f, btns) => { const d = frDocOf(otherOf(f)); return `<div class="fr-row">${avatarHtml(d || { name: '?' })}<div class="info"><b>${escapeHtml(frName(otherOf(f)))}</b><small>${frInfo(d)}</small></div>${btns}</div>`; };
+      h = `<div class="section-lbl">받은 친구 신청 ${inR.length}</div>` + (inR.length ? inR.map(f => row(f, `<button class="primary" type="button" data-frok="${f.id}">수락</button><button class="secondary" type="button" data-frdel="${f.id}" data-quiet="1">거절</button>`)).join('') : '<div class="muted" style="margin:4px 0">없어요.</div>')
+        + (relR.length ? `<div class="section-lbl" style="margin-top:12px">받은 관계 신청 ${relR.length}</div>` + relR.map(f => row(f, `<span class="fr-rel">${RELS[f.req.type].ic} ${RELS[f.req.type].n}</span><button class="primary" type="button" data-frrel-ok="${f.id}">수락</button><button class="secondary" type="button" data-frrel-no="${f.id}">거절</button>`)).join('') : '')
+        + `<div class="section-lbl" style="margin-top:12px">보낸 친구 신청 ${outR.length}</div>` + (outR.length ? outR.map(f => row(f, `<button class="secondary" type="button" data-frdel="${f.id}" data-quiet="1">취소</button>`)).join('') : '<div class="muted" style="margin:4px 0">없어요.</div>');
+    } else {
+      const q = friendQuery.trim().toLowerCase();
+      const cand = latestDocs.filter(d => !isMe(d) && d.name && !friendDocs[pairId(myKey, keyOf(d))] && (!q || String(d.name).toLowerCase().includes(q)))
+        .sort((a, b) => (+b.updatedAt || 0) - (+a.updatedAt || 0)).slice(0, 20);
+      const ae = document.activeElement;
+      if (ae && ae.id === 'frFind') return;
+      h = `<input type="text" id="frFind" placeholder="이름으로 찾기" maxlength="12" value="${escapeHtml(friendQuery)}" aria-label="생존자 이름으로 찾기"><div class="muted" style="margin:4px 0 6px">${q ? '찾은 생존자' : '최근 접속한 생존자'}</div>`
+        + (cand.length ? cand.map(d => `<div class="fr-row${d.status === 'dead' ? ' gone' : ''}">${avatarHtml(d)}<div class="info"><b>${escapeHtml(d.name)}</b><small>${frInfo(d)}</small></div><button class="primary" type="button" data-fradd="${escapeHtml(keyOf(d))}"${dead ? ' disabled' : ''}>친구 신청</button></div>`).join('') : '<div class="muted" style="margin:4px 0">없어요.</div>');
+    }
+    // 다시 그려도 펼친 「관리」와 고른 관계는 그대로 둔다
+    const body = $('friendBody'), opened = Array.from(body.querySelectorAll('details[open]')).map(x => x.dataset.fid), sels = {};
+    body.querySelectorAll('select[data-frsel]').forEach(x => { sels[x.dataset.frsel] = x.value; });
+    if (body.contains(document.activeElement) && document.activeElement.tagName === 'SELECT') return;
+    body.innerHTML = h;
+    opened.forEach(id => { const x = body.querySelector('details[data-fid="' + id + '"]'); if (x) x.open = true; });
+    Object.keys(sels).forEach(id => { const x = body.querySelector('select[data-frsel="' + id + '"]'); if (x) x.value = sels[id]; });
+  }
+  async function frTx(id, mutate) {
+    if (!db || friendBusy) return false;
+    friendBusy = true;
+    try { return await txUpdate('friends/' + id, mutate); } catch (e) { frMsg('처리하지 못했어요. 잠시 후 다시 해보세요.'); return false; } finally { friendBusy = false; }
+  }
+  $('friendCard').addEventListener('input', (e) => { if (e.target.id === 'frFind') { friendQuery = e.target.value; const pos = e.target.selectionStart; e.target.blur(); renderFriends(); const n = $('frFind'); if (n) { n.focus(); try { n.setSelectionRange(pos, pos); } catch (er) {} } } });
+  $('friendCard').addEventListener('click', async (e) => {
+    const b = e.target.closest('button');
+    if (!b || b.disabled || !myDoc) return;
+    if (b.dataset.frv) { friendView = b.dataset.frv; frMsg(''); renderFriends(); return; }
+    if (b.dataset.fradd) {
+      const k = b.dataset.fradd, id = pairId(myKey, k);
+      if (frList().filter(f => f.st === 'ok').length >= FRIEND_MAX) { frMsg('친구는 ' + FRIEND_MAX + '명까지예요.'); return; }
+      let accepted = false;
+      const ok = await frTx(id, cur => {
+        accepted = false;
+        if (cur) { if (cur.st === 'wait' && cur.from !== myKey) { cur.st = 'ok'; cur.ts = Date.now(); accepted = true; return cur; } return false; }
+        return { m: [myKey, k].sort(), st: 'wait', from: myKey, rel: 'friend', req: null, ts: Date.now() };
+      });
+      frMsg(ok ? (accepted ? frName(k) + '님도 신청을 보냈었어요. 바로 친구가 되었어요.' : frName(k) + '님에게 친구 신청을 보냈어요.') : '이미 신청했거나 친구예요.', ok);
+      return;
+    }
+    if (b.dataset.frok) {
+      const ok = await frTx(b.dataset.frok, cur => cur && cur.st === 'wait' && cur.from !== myKey ? Object.assign(cur, { st: 'ok', ts: Date.now() }) : false);
+      if (ok) frMsg('친구가 되었어요.', true);
+      return;
+    }
+    if (b.dataset.frdel) {
+      const f = friendDocs[b.dataset.frdel];
+      if (!f || (!b.dataset.quiet && !confirm(frName(otherOf(f)) + '님을 친구에서 삭제할까요? 관계도 함께 사라져요.'))) return;
+      try { await db.doc('friends/' + f.id).delete(); frMsg(b.dataset.quiet ? '정리했어요.' : '친구에서 삭제했어요.', true); } catch (er) { frMsg('삭제하지 못했어요.'); }
+      return;
+    }
+    if (b.dataset.frrel) {
+      const f = friendDocs[b.dataset.frrel], sel = document.querySelector('select[data-frsel="' + b.dataset.frrel + '"]'), type = sel ? sel.value : '';
+      if (!f || f.st !== 'ok' || !RELS[type]) return;
+      if (type === f.rel) { frMsg('이미 「' + RELS[type].n + '」 관계예요.'); return; }
+      const k = otherOf(f), od = frDocOf(k);
+      if (type === 'enemy') {
+        if (!confirm(frName(k) + '님을 웬수로 정할까요? 상대의 수락 없이 바로 바뀌어요.')) return;
+        const ok = await frTx(f.id, cur => cur && cur.st === 'ok' ? Object.assign(cur, { rel: 'enemy', req: null, ts: Date.now() }) : false);
+        if (ok) frMsg('⚔️ 웬수가 되었어요.', true);
+        return;
+      }
+      let ring = 0;
+      if (type === 'spouse') {
+        if (myDoc.spouse) { frMsg('이미 배우자가 있어요.'); return; }
+        if (od && od.spouse && od.spouse !== myKey) { frMsg(frName(k) + '님에게는 이미 배우자가 있어요.'); return; }
+        if (inv('ring') < 1) { frMsg('💍 반지가 필요해요. 떠돌이 상인에게서 살 수 있어요. (나 2개, 또는 두 사람이 1개씩)'); return; }
+        ring = Math.min(2, inv('ring'));
+        if (!confirm(frName(k) + '님에게 배우자 신청을 할까요? 반지 ' + ring + '개를 맡겨 두고, 거절·취소되면 돌려받아요.' + (ring < 2 ? '\n상대도 반지 1개가 있어야 수락할 수 있어요.' : ''))) return;
+      }
+      const ts = Date.now();
+      const ok = await frTx(f.id, cur => cur && cur.st === 'ok' ? Object.assign(cur, { req: { type, from: myKey, ring, ts } }) : false);
+      if (ok && ring) { addItem('ring', -ring); myDoc.ringEsc = Object.assign({}, myDoc.ringEsc || {}, { [f.id]: ring }); addLog('💍 ' + frName(k) + '님에게 반지를 내밀었다. 대답을 기다린다.'); renderStatus(); await saveDoc(); }
+      frMsg(ok ? frName(k) + '님에게 「' + RELS[type].n + '」 신청을 보냈어요.' : '신청하지 못했어요.', ok);
+      return;
+    }
+    if (b.dataset.frrelOk) {
+      const f = friendDocs[b.dataset.frrelOk], rq = f && f.req;
+      if (!rq || rq.from === myKey || !RELS[rq.type]) return;
+      let need = 0;
+      if (rq.type === 'spouse') {
+        if (myDoc.spouse && myDoc.spouse !== otherOf(f)) { frMsg('이미 배우자가 있어요.'); return; }
+        need = Math.max(0, 2 - (+rq.ring || 0));
+        if (inv('ring') < need) { frMsg('💍 반지 ' + need + '개가 있어야 수락할 수 있어요. 떠돌이 상인에게서 살 수 있어요.'); return; }
+      }
+      const ok = await frTx(f.id, cur => cur && cur.req && cur.req.ts === rq.ts ? Object.assign(cur, { rel: rq.type, req: null, ts: Date.now() }) : false);
+      if (ok && need) { addItem('ring', -need); addLog('💍 ' + frName(otherOf(f)) + '님의 손에 반지를 끼워 주었다.'); renderStatus(); await saveDoc(); }
+      if (ok) frMsg((RELS[rq.type].ic) + ' 「' + RELS[rq.type].n + '」이(가) 되었어요.', true);
+      return;
+    }
+    if (b.dataset.frrelNo) {
+      const f = friendDocs[b.dataset.frrelNo], rq = f && f.req;
+      if (!rq) return;
+      const ok = await frTx(f.id, cur => cur && cur.req && cur.req.ts === rq.ts ? Object.assign(cur, { req: null }) : false);
+      if (ok) frMsg(rq.from === myKey ? '신청을 취소했어요.' : '거절했어요.', true);
+    }
+  });
+
   function startListeners() {
     if (!db) return;
     npcClaimSubscribe();
+    friendSubscribe();
     try {
       if (unsub) unsub();
       if (avatarUnsub) avatarUnsub();
@@ -6334,6 +6702,7 @@
   function stopListeners() {
     [unsub, avatarUnsub, chatUnsub, memoUnsub, tradeUnsub, noticeUnsub, graveUnsub, regUnsub, regEvUnsub, talkUnsub, shelterUnsub].forEach(u => { if (u) { try { u(); } catch(e) {} } });
     if (npcClaimUnsub) { try { npcClaimUnsub(); } catch(e) {} npcClaimUnsub = null; }
+    friendStop();
     unsub = avatarUnsub = chatUnsub = memoUnsub = tradeUnsub = noticeUnsub = graveUnsub = regUnsub = regEvUnsub = talkUnsub = shelterUnsub = null;
     talkLoc = null; shelterKey = null;
   }
@@ -6606,10 +6975,10 @@
       if (db) await db.collection('graves').add({ loc: myDoc.loc, name: myName, key: myKey, epitaph: myDoc.epitaph || '', turned: !!myDoc.turned, days: survDays(myDoc), kills: myDoc.zombieKills || 0, day: myDoc.day, ts: Date.now() });
     } catch(e) {}
     comps().forEach(releaseNpc);
-    const keep = { name: myDoc.name, key: myDoc.key, account: myDoc.account, bio: myDoc.bio, party: myDoc.party, bornAt: myDoc.bornAt, log: myDoc.log, lives: (myDoc.lives || 1) + 1, visited: (myDoc.visited || []).slice(), frSeen: myDoc.frSeen };
+    const keep = { name: myDoc.name, key: myDoc.key, account: myDoc.account, bio: myDoc.bio, party: myDoc.party, bornAt: myDoc.bornAt, log: myDoc.log, lives: (myDoc.lives || 1) + 1, visited: (myDoc.visited || []).slice(), frSeen: myDoc.frSeen, spouse: myDoc.spouse || '', ringEsc: myDoc.ringEsc || {}, stAuto: myDoc.stAuto };
     const prev = myDoc.loc;
     myDoc = Object.assign(defaultDoc(myName), keep, { day: worldDay(), born: worldDay(), loc: null });
-    ensureLocation();
+    ensureLocation(DISTRICTS[prev] ? rgOf(prev) : 'la');
     normalizeItems();
     addLog('── ' + keep.lives + '번째 삶 ── ' + (DISTRICTS[prev] ? DISTRICTS[prev].n + '에 묘비를 남겼다. ' : '') + DISTRICTS[myDoc.loc].n + '에서 다시 눈을 떴다. 이전의 기억은 흐릿하지만, 지도에 적어 둔 길만은 또렷하다.');
     logDirty = true;
@@ -6653,6 +7022,16 @@
   // ---------- 안내 탭: 공지사항 · 패치 노트 ----------
   // 업데이트할 때마다 맨 위에 추가한다
   const PATCH_NOTES = [
+    { d:'10.20', items:[
+      '👥 친구 기능: 캐릭터 탭에서 친구 신청·수락, 접속 상태·위치 보기',
+      '💕 친구와 관계 정하기: 가족·친구·연인·배우자·웬수 (배우자는 💍 반지 2개)',
+      '🪙 떠돌이 상인에게 모든 물건·무기를 팔고 은화를 받아요 · 은화로 💍 반지 구매',
+      '🪓 무기 분해: 무기를 부수고 수리 재료를 돌려받아요',
+      '🍽️ 쉘터 창고 음식·음료 자동으로 꺼내 먹기 (창고에서 켜고 끄기)',
+      '🪦 다시 시작하면 죽은 지방 안에서 눈을 떠요',
+      '☠️ 스스로 생을 마감하기 추가 (행동 카드 맨 아래)',
+      '📻 동쪽 쉘터의 호출 무전이 계속 들려와요'
+    ] },
     { d:'10.19', items:[
       '📮 문의·버그 제보 게시판 추가 (캐릭터 탭 옆)',
       '📢 패치나 공지가 생기면 처음 들어왔을 때 한 번 팝업으로 알려 줘요',
@@ -6957,7 +7336,9 @@
     scrap:       { n:'고철', ic:'⚙️', cat:'tool', wt:1, desc:'쉘터 건설 재료' },
     fuel:        { n:'휘발유 통', ic:'⛽', cat:'tool', wt:1, desc:'탈것 연료 +5 · 보트·발전기에도 쓴다' },
     pack:        { n:'등산 배낭', ic:'🎒', cat:'tool', wt:1, desc:'들고 있으면 가방 +10kg' },
-    vitamins:    { n:'비타민', ic:'💛', cat:'med', wt:0.05, hp:3, fat:-3, desc:'체력 +3' }
+    vitamins:    { n:'비타민', ic:'💛', cat:'med', wt:0.05, hp:3, fat:-3, desc:'체력 +3' },
+    coin:        { n:'은화', ic:'🪙', cat:'tool', wt:0, desc:'떠돌이 상인에게 물건을 팔고 받는 돈 · 상인에게서 반지를 살 수 있다' },
+    ring:        { n:'반지', ic:'💍', cat:'tool', wt:.01, desc:'떠돌이 상인에게 산 반지 · 배우자 신청에 쓴다' }
   };
   const CAT_NAME = { food:'음식', drink:'음료', med:'의료품', tool:'도구·재료' };
   const TOOL_LOOT = {
@@ -7183,6 +7564,7 @@
     const cw = carryWeight(), cm = carryMax();
     $('bagWeight').innerHTML = `<span>무게 ${cw} / ${cm} kg${inv('pack') > 0 ? ' · 🎒 등산 배낭' : ''}</span><div class="bar-bg"><div class="bar-fill${cw / cm > 0.9 ? ' low' : cw / cm > 0.7 ? ' mid' : ''}" style="width:${Math.min(100, cw / cm * 100)}%"></div></div>`;
     renderRepair();
+    renderScrap();
     $('craftList').innerHTML = RECIPES.map(r => {
       const need = Object.keys(r.need).map(k => `${ITEMS[k].n} ${inv(k)}/${r.need[k]}`).concat(r.fire ? [hasFire() ? '불 있음' : '라이터나 성냥 필요'] : []).join(' · ');
       return `<div class="bag-row"><span class="bic">${r.ic}</span><div class="bnm">${r.n} → ${Object.keys(r.out).map(k => ITEMS[k].n + ' ' + r.out[k]).join(', ')}<small>${need}</small></div><button class="secondary" type="button" data-craft="${r.id}"${dead || busy || !canCraft(r) ? ' disabled' : ''}>만들기 · ${r.min}분</button></div>`;
@@ -7309,6 +7691,7 @@
     if (memoUnsub) { try { memoUnsub(); } catch(e){} memoUnsub = null; }
     if (graveUnsub) { try { graveUnsub(); } catch(e){} graveUnsub = null; }
     if (noticeUnsub) { try { noticeUnsub(); } catch(e){} noticeUnsub = null; }
+    friendStop();
     if (regUnsub) { try { regUnsub(); } catch(e){} regUnsub = null; }
     if (regEvUnsub) { try { regEvUnsub(); } catch(e){} regEvUnsub = null; }
     notices = [];

@@ -99,6 +99,17 @@ await ok('npc claim', setDoc(doc(A, 'npcClaims/c1'), { by: 'uid-alice', name: '�
 await no('npc claim taken', setDoc(doc(B, 'npcClaims/c1'), { by: 'uid-bob', name: '사라 킴', kind: 'journalist', ts: 2 }));
 await no('npc claim delete other', deleteDoc(doc(B, 'npcClaims/c1')));
 await ok('npc claim delete own', deleteDoc(doc(A, 'npcClaims/c1')));
+const F = 'friends/f_uid-alice_uid-bob', fr = { m: ['uid-alice', 'uid-bob'], st: 'wait', from: 'uid-alice', rel: 'friend', req: null, ts: 1 };
+await ok('friend request', setDoc(doc(A, F), fr));
+await no('friend fake from', setDoc(doc(B, 'friends/f_uid-alice_uid-bob2'), { m: ['uid-alice', 'uid-bob2'], st: 'wait', from: 'uid-alice', rel: 'friend', req: null, ts: 1 }));
+await no('friend wrong id', setDoc(doc(A, 'friends/xx'), fr));
+await no('friend create ok', setDoc(doc(A, 'friends/f_uid-alice_uid-zed'), { m: ['uid-alice', 'uid-zed'], st: 'ok', from: 'uid-alice', rel: 'spouse', req: null, ts: 1 }));
+await no('friend self-accept', setDoc(doc(A, F), Object.assign({}, fr, { st: 'ok' })));
+await ok('friend accept', setDoc(doc(B, F), Object.assign({}, fr, { st: 'ok' })));
+await ok('friend rel req', setDoc(doc(A, F), Object.assign({}, fr, { st: 'ok', req: { type: 'spouse', from: 'uid-alice', ring: 2, ts: 3 } })));
+await ok('friend rel accept', setDoc(doc(B, F), Object.assign({}, fr, { st: 'ok', rel: 'spouse', req: null })));
+await no('friend bad rel', setDoc(doc(B, F), Object.assign({}, fr, { st: 'ok', rel: 'boss' })));
+await ok('friend delete', deleteDoc(doc(B, F)));
 await ok('report create', setDoc(doc(A, 'reports/r1'), { cat: 'bug', text: '버그', author: '앨리스', authorKey: 'uid-alice', ts: 1, status: 'open' }));
 await no('report fake author', setDoc(doc(B, 'reports/r2'), { cat: 'bug', text: 'x', author: '앨리스', authorKey: 'uid-alice', ts: 1, status: 'open' }));
 await no('report self-answer', setDoc(doc(A, 'reports/r1'), { cat: 'bug', text: '버그', author: '앨리스', authorKey: 'uid-alice', ts: 1, status: 'done', reply: '해결' }));

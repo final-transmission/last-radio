@@ -140,6 +140,21 @@ service cloud.firestore {
       allow delete: if signedIn() && (resource.data.by == myKey() || isAdmin());
     }
 
+    // ---------- 친구 · 관계: 두 사람 문서 하나 (f_작은키_큰키). 신청은 내가, 수락은 상대가, 지우기는 둘 중 누구나 ----------
+    match /friends/{id} {
+      allow read: if signedIn();
+      allow create: if signedIn() && d().m is list && d().m.size() == 2 && d().m[0] < d().m[1]
+        && id == 'f_' + d().m[0] + '_' + d().m[1] && myKey() in d().m && d().from == myKey()
+        && d().st == 'wait' && d().rel == 'friend' && d().keys().hasOnly(['m', 'st', 'from', 'rel', 'req', 'ts']);
+      allow update: if signedIn() && myKey() in resource.data.m
+        && d().m == resource.data.m && d().from == resource.data.from
+        && d().keys().hasOnly(['m', 'st', 'from', 'rel', 'req', 'ts'])
+        && d().rel in ['friend', 'family', 'lover', 'spouse', 'enemy']
+        && (d().st == resource.data.st || (resource.data.st == 'wait' && d().st == 'ok' && resource.data.from != myKey()))
+        && (d().st == 'ok' || (d().rel == 'friend' && d().req == null));
+      allow delete: if signedIn() && (myKey() in resource.data.m || isAdmin());
+    }
+
     // ---------- 문의·버그 제보: 글쓴이는 나, 답변·상태는 관리자만, 지우기는 글쓴이·관리자 ----------
     match /reports/{id} {
       allow read: if signedIn();
