@@ -45,24 +45,26 @@ UPDATE_NOTICE = """<div id="updateBar" hidden style="position:fixed;left:50%;bot
   function check(){
     fetch('version.txt?t=' + Date.now(), { cache: 'no-store' }).then(function(r){ return r.ok ? r.text() : ''; }).then(function(v){
       v = (v || '').trim();
-      if (v && v !== BUILD_ID) document.getElementById('updateBar').hidden = false;
+      // 버전 뒤에 '!'가 붙어 있으면 안내 없이 바로 새로고침 (꼭 바꿔야 하는 수정)
+      if (v && v.replace('!', '') !== BUILD_ID) { if (v.slice(-1) === '!') location.reload(); else document.getElementById('updateBar').hidden = false; }
     }).catch(function(){});
   }
   document.getElementById('updateReload').addEventListener('click', function(){ location.reload(); });
-  setInterval(check, 180000);
+  setInterval(check, 60000);
   // 다른 탭·앱에 갔다가 돌아왔을 때 새 버전이 있으면 바로 새로고침한다 (옛 화면이 새 기록을 덮어쓰지 않도록)
   document.addEventListener('visibilitychange', function(){
     if (document.hidden) return;
     fetch('version.txt?t=' + Date.now(), { cache: 'no-store' }).then(function(r){ return r.ok ? r.text() : ''; }).then(function(v){
       v = (v || '').trim();
-      if (v && v !== BUILD_ID) location.reload();
+      if (v && v.replace('!', '') !== BUILD_ID) location.reload();
     }).catch(function(){});
   });
 })();
 </script>
 """.replace("__BUILD_ID__", BUILD_ID)
 s = s.rstrip() + '\n' + UPDATE_NOTICE + '</body>\n</html>\n'
-open(os.path.join(os.path.dirname(os.path.abspath(out)), 'version.txt'), 'w').write(BUILD_ID + '\n')
+# LR_FORCE=1로 빌드하면 열려 있는 모든 화면이 바로 새로고침된다
+open(os.path.join(os.path.dirname(os.path.abspath(out)), 'version.txt'), 'w').write(BUILD_ID + ('!' if os.environ.get('LR_FORCE') == '1' else '') + '\n')
 
 # 2) 저장소: claude 공유 DB → Firestore
 R("    try { db = await claude.use('db'); } catch(e) { db = null; }", """    try {

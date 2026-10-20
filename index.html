@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://apis.google.com 'sha256-NzWzSr/JJIt0kS48PXCsqUjn9/ALxUaH31f7sTmbH+s=' 'sha256-XBhYyYOXmyHU+rUeBJm1vZW172xgTyzDLX1SllyaCU8=' 'sha256-Yj+yxDallF/kxYOHhegSjeBITCoqLi4RP0OoUr61Mr0=' 'sha256-casIuoLMWtUrAF0aNeJGEj7ZEQXE9fLTb/SSIkE/A9Y='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://www.google.com; connect-src 'self' https://*.googleapis.com https://*.firebaseapp.com https://*.firebaseio.com wss://*.firebaseio.com; frame-src https://*.firebaseapp.com; object-src 'none'; base-uri 'self'; form-action 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://apis.google.com 'sha256-NzWzSr/JJIt0kS48PXCsqUjn9/ALxUaH31f7sTmbH+s=' 'sha256-XBhYyYOXmyHU+rUeBJm1vZW172xgTyzDLX1SllyaCU8=' 'sha256-Yj+yxDallF/kxYOHhegSjeBITCoqLi4RP0OoUr61Mr0=' 'sha256-3HSVC3KK66h45zPh3J4ydcSO+/9eLC3DF4AMfb0n8uk='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://www.google.com; connect-src 'self' https://*.googleapis.com https://*.firebaseapp.com https://*.firebaseio.com wss://*.firebaseio.com; frame-src https://*.firebaseapp.com; object-src 'none'; base-uri 'self'; form-action 'self'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <style id="antiClickjack">html{display:none !important}</style>
 <script>if (window.self === window.top) { var ack = document.getElementById('antiClickjack'); ack.parentNode.removeChild(ack); } else { try { window.top.location = window.self.location.href; } catch (e) {} }</script>
@@ -7416,21 +7416,22 @@ const FIREBASE_CONFIG = {
 </div>
 <script>
 (function(){
-  var BUILD_ID = '20261019170655';
+  var BUILD_ID = '20261020011551';
   function check(){
     fetch('version.txt?t=' + Date.now(), { cache: 'no-store' }).then(function(r){ return r.ok ? r.text() : ''; }).then(function(v){
       v = (v || '').trim();
-      if (v && v !== BUILD_ID) document.getElementById('updateBar').hidden = false;
+      // 버전 뒤에 '!'가 붙어 있으면 안내 없이 바로 새로고침 (꼭 바꿔야 하는 수정)
+      if (v && v.replace('!', '') !== BUILD_ID) { if (v.slice(-1) === '!') location.reload(); else document.getElementById('updateBar').hidden = false; }
     }).catch(function(){});
   }
   document.getElementById('updateReload').addEventListener('click', function(){ location.reload(); });
-  setInterval(check, 180000);
+  setInterval(check, 60000);
   // 다른 탭·앱에 갔다가 돌아왔을 때 새 버전이 있으면 바로 새로고침한다 (옛 화면이 새 기록을 덮어쓰지 않도록)
   document.addEventListener('visibilitychange', function(){
     if (document.hidden) return;
     fetch('version.txt?t=' + Date.now(), { cache: 'no-store' }).then(function(r){ return r.ok ? r.text() : ''; }).then(function(v){
       v = (v || '').trim();
-      if (v && v !== BUILD_ID) location.reload();
+      if (v && v.replace('!', '') !== BUILD_ID) location.reload();
     }).catch(function(){});
   });
 })();
