@@ -162,7 +162,7 @@ service cloud.firestore {
     match /aids/{id} {
       allow read: if signedIn() && (resource.data.to == myKey() || resource.data.from == myKey() || isAdmin());
       allow create: if signedIn() && d().from == myKey() && d().to is string && d().to != myKey()
-        && d().kind in ['heal', 'party', 'partyOk', 'flower'] && str(d().fromName, 24) && d().ts is number
+        && d().kind in ['heal', 'party', 'partyOk', 'flower', 'rest'] && str(d().fromName, 24) && d().ts is number
         && d().keys().hasOnly(['kind', 'from', 'fromName', 'to', 'item', 'loc', 'ts'])
         && (!('item' in d()) || str(d().item, 20)) && (!('loc' in d()) || str(d().loc, 30));
       allow update: if false;
