@@ -176,8 +176,8 @@ try {
   ok('무기 분해', !sA2.weapons.includes('야구방망이') && (+sA2.inv.scrap || 0) === scrap0 + 1, JSON.stringify([sA2.weapons, sA2.inv.scrap]));
   await closePops();
   // 생존자끼리: 구조 요청 → 응급치료(보상) · 동행 · 묘비 꽃
-  await edit(ub.key, d => { d.hp = 30; d.loc = 'dtla'; d.busy = null; d.event = null; });
-  await edit(ua.key, d => { d.inv = Object.assign({}, d.inv, { bandage: 3, green_herb: 2 }); d.loc = 'dtla'; d.busy = null; d.event = null; });
+  await edit(ub.key, d => { d.hp = 30; d.loc = 'dtla'; d.spot = null; d.busy = null; d.event = null; });
+  await edit(ua.key, d => { d.inv = Object.assign({}, d.inv, { bandage: 3, green_herb: 2 }); d.loc = 'dtla'; d.spot = null; d.busy = null; d.event = null; });
   await A.p.reload(); await B.p.reload(); await A.p.waitForTimeout(2500); await B.p.waitForTimeout(500);
   await A.p.click('#tabBtnPlay').catch(() => {}); await B.p.click('#tabBtnPlay').catch(() => {});
   await B.p.click('#nearBox button[data-nsos="on"]'); await B.p.waitForTimeout(3000);
