@@ -506,6 +506,13 @@
   .pt button { width: auto; padding: 7px 10px; font-size: 12px; white-space: nowrap; }
   .spots-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; margin-top: 14px; font-size: 12px; color: var(--text-dim); }
   .spots-head b { color: var(--text); font-weight: 700; }
+  .goal-line { margin-top: 6px; font-size: 12px; color: var(--text-dim); }
+  .goal-line button { width: auto; padding: 3px 9px; font-size: 11px; margin-left: 4px; }
+  .nr-row.sel { background: var(--accent-wash, rgba(0,0,0,.04)); }
+  .nr-act { margin-top: 6px; padding: 8px; border: 1px dashed var(--accent); border-radius: 8px; }
+  .nr-at { font-weight: 700; margin-bottom: 4px; }
+  .nr-a { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; padding: 3px 0; }
+  .nr-a input, .nr-line input { width: 56px; padding: 3px; font-size: 12px; }
   .near-box { margin: 8px 0; padding: 8px 10px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg-elevated); font-size: 13px; }
   .near-box button { width: auto; padding: 5px 9px; font-size: 12px; margin-left: 4px; }
   .near-box select { width: auto; max-width: 150px; padding: 3px; font-size: 12px; }
@@ -726,6 +733,7 @@
       <h2>📻 오늘의 무전 <span class="rec">● 수신 중</span><span class="wx" id="wxBadge"></span></h2>
       <div class="radio-text" id="radioText">수신 중...</div>
       <div class="gev-line" id="gevLine" hidden></div>
+      <div class="goal-line" id="goalLine" hidden></div>
       <div class="gev-line" id="frontierLine" hidden></div>
     </div>
 
@@ -1026,7 +1034,7 @@
           <details><summary>💤 자리를 비우면</summary><p>현실 1시간 반 넘게 접속하지 않으면 잠든 것으로 쳐요. 소모는 1/4로 줄고 피로는 회복돼요. 감염도 1/4 속도로 진행되다가 95%(말기)에서 멈추니, 돌아오면 서둘러 치료하세요.</p></details>
           <details><summary>🛡️ 신참 보호</summary><p>캐릭터를 만든 뒤 현실 14일 동안은 체력이 0이 돼도 죽지 않고 체력 1로 버텨요. 감염도 말기(95%)에서 멈춰 좀비로 변하지 않아요. 남은 기간은 맨 위 상단바에 보여요.</p></details>
           <details><summary>🪦 죽음과 다시 시작</summary><p>죽으면 묘비명을 새기고, 죽은 자리에 묘비를 남긴 채 같은 이름으로 다시 시작할 수 있어요. 이름·사진·설정·쉘터·일지·지도·친구는 그대로, 몸과 배낭은 처음부터예요. 다시 눈을 뜨는 곳은 죽은 지방 안의 아무 곳이에요. 묘비는 그 지역 메모 칸과 생존자 탭에 남아요. 행동 카드 맨 아래 「스스로 생을 마감하기」로 바로 죽을 수도 있어요(한 번 더 물어봐요).</p></details>
-          <details><summary>🩹 생존자끼리 돕기</summary><p>같은 지역에 다른 생존자가 있으면 「조사할 구역 고르기」 아래에 이름과 있는 곳(거리·건물)이 떠요. 같은 곳(같은 건물 안, 또는 둘 다 거리)에 있을 때 내 의약품을 골라 「치료해주기」를 누르면 상대 몸에 바로 적용되고(접속하지 않았으면 다음 접속 때), 나는 의술 경험을 얻어요.</p><p>「동행 신청」을 보내 상대가 10분 안에 수락하면 30분 동안 함께 움직여요. 같은 지역에 있는 동안 조사 위험 ×0.8, 조사 음식 +1, 사냥 성공률 +8%예요.</p><p>체력이 50 아래거나 감염 50% 이상, 열상·물림이 있으면 「🆘 구조 요청」을 보낼 수 있어요. 친구와 쉘터 동료에게 알림이 가고, 와서 치료해 준 사람은 은화 3닢을 받아요. 요청은 1시간 뒤나 몸이 나으면 내려가요.</p><p>감염으로 죽은 생존자의 묘비가 있는 지역을 조사하면 가끔 그 사람 얼굴을 한 워커를 마주쳐요. 잠재워 주면 그 사람이 마지막에 들고 있던 유품을 얻고, 그 사람 일지에 기록돼요(묘비마다 한 번).</p><p>묘비에는 「💐 꽃 놓기」를 할 수 있어요(묘비마다 한 번, 피로 -5). 묘비 주인의 일지에 기록돼요.</p></details>
+          <details><summary>🩹 생존자끼리 함께 하기</summary><p>같은 지역에 다른 생존자가 있으면 「조사할 구역 고르기」 아래에 이름과 있는 곳(거리·건물)이 떠요. 「고르기」로 한 사람을 고르면, 같은 곳(같은 건물 안, 또는 둘 다 거리)에 있을 때 이런 걸 함께 할 수 있어요. 상대가 접속해 있지 않으면 다음 접속 때 적용돼요.</p><p>🩹 응급치료(내 의약품, 의술 경험) · 🎁 건네주기(물건·무기를 바로) · 🔫 엄호(상대의 다음 두 번 싸움 피해 절반, 10분 · 총은 탄 2발, 그 밖의 무기는 닳아요) · 🏃 업고 가기(체력 20 이하인 사람을 옆 지역으로, 이동 시간 두 배) · 🚗 태우고 가기(내 탈것이 있을 때, 상대가 「타기」를 누르면 함께 도착) · 📷 같이 사진 찍기(일회용 카메라) · 🎲 결투 내기(은화를 걸고 무기·전투 기술로 겨뤄요, 다치지 않아요. 10분 안에 상대가 안 받으면 돌려받아요)</p><p>🤝 함께 수색: 같은 건물에 다른 생존자가 있을 때 지점을 뒤지면 시간이 절반이고, 조금 더 안전하며, 숨겨진 방을 찾기도 해요. 가끔 혼자 은닉처를 발견하면 반씩 나눌지 몰래 챙길지 골라요. 몰래 챙기다 들키면 친구 사이는 웬수가 돼요.</p><p>🎸 기타·🎵 하모니카(주택가·모텔·스튜디오·학교에서 찾아요)로 하루 한 번 연주하면 나와 같은 곳 사람들의 피로가 줄어요. 소리가 좀비를 부를 수 있어요.</p><p>🆘 체력이 50 아래거나 감염 50% 이상, 열상·물림이 있으면 구조 요청을 보낼 수 있어요. 친구와 쉘터 동료에게 알림이 가고, 와서 치료해 준 사람은 은화 3닢을 받아요.</p><p>🔦 이틀 넘게 소식이 없는 생존자가 마지막으로 있던 지역에 가면 「흔적 찾기」로 남은 짐을 찾고, 그 사람 일지에 기록이 남아요.</p><p>📡 지방마다 무전탑이 하나 있어요(LA는 그리피스 파크, 다른 지방은 들어서자마자 닿는 첫 지역). 모두 함께 고철 20·못 30·나무판자 15·휘발유 통 5를 모으면 복구되고, 그 지방엔 떠돌이 상인이 더 자주 와요.</p><p>🎯 공동 목표: 모든 생존자가 함께 좀비를 처치해 목표(100마리부터, 단계마다 100씩)를 채우면 누구나 보상을 받아요. 무전 아래에 진행 상황이 보여요.</p><p>감염으로 죽은 생존자의 묘비가 있는 지역을 조사하면 가끔 그 사람 얼굴을 한 워커를 마주쳐요. 잠재워 주면 유품을 얻고, 그 사람 일지에 기록돼요. 묘비에는 「💐 꽃 놓기」를 할 수 있어요(묘비마다 한 번, 피로 -5).</p></details>
           <details><summary>👥 친구와 관계</summary><p>캐릭터 탭의 「친구」 창에서 생존자를 찾아 친구 신청을 보내고, 받은 신청은 「요청」에서 수락해요. 친구는 50명까지, 접속 중인지·어디 있는지·체력이 보여요.</p><p>친구의 「관리」에서 관계를 가족·친구·연인·배우자·웬수로 바꿀 수 있어요. 웬수는 바로 바뀌고, 나머지는 상대가 수락해야 해요. 배우자는 한 사람만, 떠돌이 상인에게 산 💍 반지 2개가 필요해요(신청하는 사람이 2개, 또는 두 사람이 1개씩). 신청할 때 반지를 맡기고, 거절·취소되면 돌려받아요.</p><p>가족·연인·배우자가 같은 지역에 있으면 피로가 30% 덜 쌓여요. 웬수가 같은 지역에 오면 알려 줘요.</p></details>
         </div>
       </div>
@@ -1516,6 +1524,7 @@
     renderComp();
     renderFriends();
     renderNear();
+    renderGoal();
     renderSkills();
     renderMerchant();
     renderFrontier();
@@ -1722,6 +1731,7 @@
     if (!db) { permNotice.style.display = 'block'; return; }
     if (adopting) return;
     myDoc.updatedAt = Date.now();
+    goalTrack();
     myDoc.rev = (+myDoc.rev || 0) + 1; myDoc.sess = mySession;
     const out = pubOut(myDoc);
     try {
@@ -1850,7 +1860,7 @@
   function merchantOf(day, rg) {
     rg = rg || 'la';
     const pre = rg === 'la' ? '' : rg + '-';
-    if (mixHash('merchant-' + pre + day) % 100 >= 40) return null;
+    if (mixHash('merchant-' + pre + day) % 100 >= (towerDone(rg) ? 60 : 40)) return null;
     const keys = regionKeys(rg);
     let i = mixHash('merchant-at-' + pre + day) % keys.length;
     if (keys[i] === hordeOf(day, rg)) i = (i + 1) % keys.length;
@@ -2100,6 +2110,7 @@
     }
     if (myDoc.busy && Date.now() >= myDoc.busy.until) await completeAction();
     shelterAutoEat();
+    goalFlush();
     renderBusy();
     updateClock();
   }, 1000);
@@ -4802,6 +4813,7 @@
     let dmg = Math.round(rint(base[0], base[1]) * Z.dmg * compFx('dmg') * (1 - 0.08 * tier));
     let note = '';
     if (comps().some(canTank) && ch(.2)) { const cd = Math.min(dmg, rint(8, 16)); dmg -= Math.round(cd / 2); note += hurtComp(cd); }
+    if (coverOn()) { dmg = Math.round(dmg / 2); myDoc.cover.n -= 1; note += ' (' + myDoc.cover.name + '님의 엄호로 피해 절반)'; }
     myDoc.hp = clamp(myDoc.hp - dmg);
     const zt = Array.isArray(Z.t) ? pick(Z.t) : Z.t;
     // 좋은 무기일수록 상처 없이 넘길 확률이 높다 (맨손 20% ~ 총 68%)
@@ -5508,6 +5520,31 @@
       return n + '였던 것을 잠재워 줬다. ' + fight + ' 쥐고 있던 손을 펴 보니 유품이 남아 있었다. (' + (lootText(got) || '가방이 꽉 차 챙기지 못했다') + w + ') 이름표는 떼어 주머니에 넣었다.';
     } });
 
+  // ---------- 함께 수색 중 혼자 찾은 은닉처: 나눌까, 몰래 챙길까 ----------
+  EVENTS.push({ id:'co_stash', w:0, hidden:true,
+    get title() { return '📦 둘만 아는 은닉처'; },
+    get text() { const z = myDoc && myDoc.zco; return z ? '선반 뒤에 ' + lootText(z.stash).replace(/\+/g, '') + '이(가) 숨겨져 있다. ' + z.name + '님은 아직 모른다.' : '숨겨진 물자를 찾았다.'; },
+    opts:[['share','반씩 나눈다'],['take','몰래 혼자 챙긴다']],
+    resolve: k => {
+      const z = myDoc.zco; myDoc.zco = null;
+      if (!z) return '은닉처는 텅 비어 있었다.';
+      const mine = {}, theirs = {};
+      Object.keys(z.stash).forEach(x => { const n = z.stash[x]; mine[x] = k === 'share' ? Math.ceil(n / 2) : n; theirs[x] = n - mine[x]; });
+      const got = {}; Object.keys(mine).forEach(x => { const g = gainItem(x, mine[x]); if (g) got[x] = g; });
+      if (k === 'share') {
+        Object.keys(theirs).forEach(x => { if (theirs[x] > 0) aidSend(z.key, 'give', { item: x, n: theirs[x], loc: myDoc.loc }); });
+        const f = friendDocs[pairId(myKey, z.key)];
+        return z.name + '님을 불러 반씩 나눴다. 고맙다는 말이 돌아왔다. (' + lootText(got) + ')';
+      }
+      if (ch(0.35)) {
+        aidSend(z.key, 'betray', { loc: myDoc.loc });
+        const f = friendDocs[pairId(myKey, z.key)];
+        if (f && f.st === 'ok' && f.rel !== 'enemy') frTx(f.id, cur => cur && cur.st === 'ok' ? Object.assign(cur, { rel: 'enemy', req: null, ts: Date.now() }) : false);
+        return '가방에 쑤셔 넣는 순간 ' + z.name + '님과 눈이 마주쳤다. 아무 말도 하지 않았지만, 무언가 깨졌다.' + (f && f.st === 'ok' ? ' (관계: ⚔️ 웬수)' : '') + ' (' + lootText(got) + ')';
+      }
+      return '아무도 모르게 가방에 챙겼다. 마음 한구석이 무겁다. (' + lootText(got) + ')';
+    } });
+
   // ---------- 동물 동료 영입 이벤트 ----------
   EVENTS.push(
     { id:'stray_cat', w:2.5, where:['house','motel','bedroom','basement','storeroom'], title:'🐈 상자 속 고양이', text:'젖은 종이 상자 안에서 마른 고양이가 이쪽을 노려본다. 도망가지 않고 꼬리만 천천히 흔든다.', opts:[['feed','참치를 나눠 준다'],['pet','손을 내밀어 본다'],['leave','그냥 둔다']],
@@ -6073,7 +6110,7 @@
     if (!P) return;
     const T = SPOT_TYPES[S[0]], key = pointKey(loc, i, j), depleted = !!pointState(loc, i, j).depleted;
     const bonus = partyBonusActive();
-    const danger = Math.min(0.85, pointDanger(loc, i, j) * (bonus ? 0.75 : 1) * (buddyActive() ? 0.8 : 1) * compFx('danger') * (isNight() ? compFx('nightDanger') : 1) * (1 - 0.015 * skillLv('scav')) * dangerMult(loc, 'explore'));
+    const danger = Math.min(0.85, pointDanger(loc, i, j) * (bonus ? 0.75 : 1) * (myDoc.coKey ? 0.85 : 1) * compFx('danger') * (isNight() ? compFx('nightDanger') : 1) * (1 - 0.015 * skillLv('scav')) * dangerMult(loc, 'explore'));
     let head = S[1] + ' ' + P.n + ' 뒤지기. ';
     myDoc.searched[key] = myDoc.day;
     gainSkill('scav', 1);
@@ -6117,8 +6154,7 @@
       return;
     }
     const fr = P.food || [0, 0], dr = P.drink || [0, 0];
-    const bud = buddyActive();
-    let f = rint(fr[0], fr[1]) + (bonus && fr[1] ? 1 : 0) + (bud && fr[1] ? 1 : 0), wa = rint(dr[0], dr[1]);
+    let f = rint(fr[0], fr[1]) + (bonus && fr[1] ? 1 : 0), wa = rint(dr[0], dr[1]);
     let m = Math.random() < ((P.med || 0) + (P.med ? compFx('med') : 0)) * (depleted ? 0.3 : 1) ? (Math.random() < (P.med || 0) / 2 ? 2 : 1) : 0;
     if (depleted) { f = Math.floor(f / 2); wa = Math.floor(wa / 2); }
     else {
@@ -6150,6 +6186,17 @@
     addLog(head + (lt ? '쓸 만한 물자를 챙겼다. (' + lt + ')' : depleted ? '며칠 전에 뒤진 곳이라 남은 게 없다.' : '아무것도 찾지 못했다.'));
     if (!depleted && ['ward','medshelf','armory'].includes(P.id) && ch(0.04)) { const g = gainItem('vaccine', 1); if (g) addLog('🧪 잠긴 냉장 보관함 안에서 「실험용 백신」 앰플을 찾았다! 라벨에는 손글씨로 "효과 미확인"이라고 적혀 있다. (실험용 백신 +1)'); }
     if (!depleted) findStationery(P.st || 0);
+    // 함께 수색: 둘이 같은 건물을 뒤지면 숨겨진 방을 찾을 수 있고, 가끔 둘이 함께 은닉처를 발견한다
+    const co = myDoc.coKey && latestDocs.find(d => keyOf(d) === myDoc.coKey);
+    if (co && !depleted) {
+      if (ch(0.2)) addLog('🤝 ' + co.name + '님과 함께 뒤지다 벽장 뒤 숨겨진 방을 찾았다.' + evLoot(foodPool.concat(lootPool(S[0], 'med'), ['ammo', 'cloth', 'nails']), 2));
+      else if (ch(0.12)) {
+        const stash = {}; ['mre', 'first_aid', 'ammo', 'water', 'antibiotics'].sort(() => Math.random() - .5).slice(0, 2).forEach(k => { stash[k] = k === 'ammo' ? 6 : 2; });
+        myDoc.zco = { key: keyOf(co), name: String(co.name).slice(0, 16), stash };
+        myDoc.event = { id: 'co_stash', loc, i, j, head: '' };
+        addLog('🤝 ' + co.name + '님이 다른 방을 뒤지는 사이, 혼자 숨겨진 은닉처를 발견했다.');
+      }
+    }
   }
 
   // 무기 수리: 재료를 써서 최대 내구도의 40%(+정비 레벨마다 4%)를 되살린다
@@ -6234,7 +6281,7 @@
     if (weapon !== '맨손') wearWeapon(weapon);
     const sk = isShooter(weapon) && !(GUN_AMMO[weapon] && t === 1) ? 'shoot' : 'melee';
     gainSkill(sk, 2);
-    const pSucc = 0.25 + 0.05 * t + (sk === 'shoot' ? 0.03 : 0.02) * skillLv(sk) + compFx('hunt') + (buddyActive() ? 0.08 : 0), pKill = pSucc + 0.25 + 0.03 * t, pHurt = pKill + 0.25 - 0.04 * t;
+    const pSucc = 0.25 + 0.05 * t + (sk === 'shoot' ? 0.03 : 0.02) * skillLv(sk) + compFx('hunt'), pKill = pSucc + 0.25 + 0.03 * t, pHurt = pKill + 0.25 - 0.04 * t;
     let r = Math.random();
     if (Math.random() < 0.15 * (dangerMult(myDoc.loc, 'hunt') - 1)) r = pKill + 0.001;
     if (r < pSucc) {
@@ -6375,8 +6422,12 @@
     if (type === 'med' && !canUseMed(arg)) return;
     const plan = actionPlan(type, arg);
     if (!plan) return;
+    // 같은 건물에 다른 생존자가 있으면 함께 수색: 시간 절반
+    let co = null;
+    if (type === 'explore') { const c = coSearcher(Number(String(arg).split(':')[0])); if (c) { co = keyOf(c); plan.min = Math.max(1, Math.ceil(plan.min / 2)); plan.label += ' (' + c.name + '님과 함께)'; } }
     const now = Date.now();
     myDoc.busy = { type, arg, label: plan.label, min: plan.min, start: now, until: now + plan.min * 60000, veh: plan.veh || null };
+    if (co) myDoc.busy.co = co;
     const paid = payMaterials(type, arg);
     if (paid) myDoc.busy.paid = paid;
     if (type === 'explore') myDoc.spot = Number(String(arg).split(':')[0]);
@@ -6410,8 +6461,8 @@
         else if (t === 'hunt') resolveHunt(b.arg);
         else if (t === 'rest') doRest();
         else if (t === 'sleep') doSleep();
-        else if (t === 'explore') { if (myDoc.loc && SPOTS[myDoc.loc] && String(b.arg).includes(':')) doExplore(b.arg); else addLog('어디를 뒤질지 몰라 그냥 돌아 나왔다.'); }
-        else if (t === 'move') doMove(b.arg, b.veh);
+        else if (t === 'explore') { myDoc.coKey = b.co || null; if (myDoc.loc && SPOTS[myDoc.loc] && String(b.arg).includes(':')) doExplore(b.arg); else addLog('어디를 뒤질지 몰라 그냥 돌아 나왔다.'); myDoc.coKey = null; }
+        else if (t === 'move') { doMove(b.arg, b.veh); if (b.carry && myDoc.loc === b.arg) aidSend(b.carry.key, 'carry', { loc: b.arg, src: b.carry.src }); }
         else if (t === 'raid') { if (RAID_ENABLED) await doRaid(b.arg); else addLog('누군가를 덮치려다 마음을 접었다.'); }
         else if (t === 'med') { if (canUseMed(b.arg)) useMed(b.arg); }
         else if (t === 'craft') doCraft(b.arg, b.paid);
@@ -6824,11 +6875,12 @@
     }
   });
 
-  // ---------- 생존자끼리: 응급치료 · 동행 · 구조 요청(SOS) · 묘비 꽃 ----------
+  // ---------- 생존자끼리: 같은 곳에서 함께 하는 행동 · 구조 요청(SOS) · 실종자 수색 · 묘비 꽃 ----------
   // 남의 캐릭터는 고칠 수 없으니 aids 컬렉션에 {kind, from, to, ...}를 남기고, 받는 사람 화면이 보고 적용한 뒤 지운다
   const AID_MEDS = ['first_aid','mixed_herb','suture','disinfectant','bandage','green_herb','antibiotics','painkillers','vitamins'];
-  const BUDDY_MS = 30 * 60 * 1000, INVITE_MS = 10 * 60 * 1000, SOS_MS = 60 * 60 * 1000, AID_DAY_MAX = 10;
-  let aids = [], aidUnsub = null, aidDone = new Set(), nearMed = '', nearMsgT = '';
+  const OFFER_MS = 10 * 60 * 1000, SOS_MS = 60 * 60 * 1000, AID_DAY_MAX = 10, COVER_MS = 10 * 60 * 1000, MISSING_MS = 2 * 24 * 3600e3;
+  let aids = [], aidUnsub = null, aidDone = new Set(), nearMsgT = '', nearSel = '';
+  const nearIn = { med: '', give: '', dest: '', stake: '5' };
   const sosSeen = new Set(), enemySeen = new Set();
   function aidSubscribe() {
     if (aidUnsub) { try { aidUnsub(); } catch (e) {} aidUnsub = null; }
@@ -6848,14 +6900,16 @@
     try { await db.collection('aids').add(Object.assign({ kind, from: myKey, fromName: String(myName).slice(0, 24), to, ts: Date.now() }, extra || {})); return true; } catch (e) { return false; }
   }
   function aidDel(a) { aidDone.add(a.id); try { db.collection('aids').doc(a.id).delete().catch(() => {}); } catch (e) {} }
-  // 받은 것 적용: 치료는 바로 몸에, 동행 수락은 동행 시작, 꽃은 일지에 (동행 신청은 내가 답할 때까지 남겨 둔다)
+  const OFFER_KINDS = ['ride', 'duel'];
+  // 받은 것 적용. 태워 주기·결투 신청은 내가 답할 때까지 남겨 둔다
   function aidApply() {
     if (!myDoc || !docReady || adopting) return;
     let dirty = false;
     aids.filter(a => !aidDone.has(a.id)).forEach(a => {
-      const nm = String(a.fromName || '누군가').slice(0, 24);
-      if (a.kind === 'party') { if (Date.now() - (+a.ts || 0) > INVITE_MS) aidDel(a); return; }
+      const nm = String(a.fromName || '누군가').slice(0, 24), dn = DISTRICTS[a.loc] ? DISTRICTS[a.loc].n : '';
+      if (OFFER_KINDS.includes(a.kind)) { if (Date.now() > offerEnd(a)) aidDel(a); return; }
       aidDel(a);
+      dirty = true;
       if (a.kind === 'heal') {
         if (myDoc.status === 'dead' || !AID_MEDS.includes(a.item)) return;
         if (!myDoc.aidDay || myDoc.aidDay.d !== myDoc.day) myDoc.aidDay = { d: myDoc.day, n: 0 };
@@ -6864,115 +6918,365 @@
         addLog('🩹 ' + nm + '님이 ' + josa(ITEMS[a.item].n, '으로', '로') + ' 응급치료를 해 줬다.');
         addItem(a.item, 1);
         if (canUseMed(a.item)) useMed(a.item); else addLog('치료할 곳이 없어 ' + josa(ITEMS[a.item].n, '은', '는') + ' 배낭에 챙겨 두었다.');
-        dirty = true;
-      } else if (a.kind === 'partyOk') {
-        myDoc.buddy = { key: a.from, until: Date.now() + BUDDY_MS };
-        addLog('🤝 ' + nm + '님이 동행을 받아들였다. 함께 움직이면 조사·사냥이 더 안전해진다. (30분)');
-        dirty = true;
+      } else if (a.kind === 'give') {
+        const n = Math.max(1, Math.min(99, +a.n || 1));
+        if (String(a.item).startsWith('w:')) {
+          const w = String(a.item).slice(2);
+          if (!WEAPON_TIER[w]) return;
+          if (myDoc.weapons.includes(w)) { addLog('🎁 ' + nm + '님이 ' + josa(w, '을', '를') + ' 건넸지만 이미 가지고 있어 돌려보냈다.'); aidSend(a.from, 'give', { item: a.item, n: 1, loc: myDoc.loc }); return; }
+          myDoc.weapons.push(w); myDoc.wdur = myDoc.wdur || {}; myDoc.wdur[w] = Math.max(1, Math.min(WEAPON_DUR[w] || 20, +a.p || WEAPON_DUR[w] || 20));
+          addLog('🎁 ' + nm + '님이 ' + josa(w, '을', '를') + ' 건네줬다.');
+        } else if (ITEMS[a.item]) { addItem(a.item, n); addLog('🎁 ' + nm + '님이 ' + ITEMS[a.item].n + ' ' + n + '개를 건네줬다.'); }
+      } else if (a.kind === 'cover') {
+        if (myDoc.status === 'dead') return;
+        myDoc.cover = { name: nm, until: Date.now() + COVER_MS, n: 2 };
+        addLog('🔫 ' + nm + '님이 엄호해 주기로 했다. 다음 두 번의 싸움에서 받는 피해가 절반이 된다. (10분)');
+      } else if (a.kind === 'carry') {
+        if (myDoc.status === 'dead' || myDoc.loc !== a.src || !DISTRICTS[a.loc]) return;
+        if (myDoc.busy) { refundMaterials(myDoc.busy.paid); myDoc.busy = null; }
+        myDoc.loc = a.loc; myDoc.spot = null;
+        if (!myDoc.visited.includes(a.loc)) myDoc.visited.push(a.loc);
+        addLog('🏃 정신이 흐릿한 사이 ' + nm + '님이 나를 업고 ' + dn + '까지 옮겨 줬다.');
+      } else if (a.kind === 'song') {
+        if (myDoc.status === 'dead') return;
+        myDoc.fat = clamp(myDoc.fat - 10);
+        addLog('🎵 ' + nm + '님의 ' + (a.item === 'guitar' ? '기타' : '하모니카') + ' 소리를 들었다. 잠시 모든 걸 잊었다. (피로 -10)');
+      } else if (a.kind === 'photo') {
+        myDoc.album = (Array.isArray(myDoc.album) ? myDoc.album : []).concat({ w: nm, loc: a.loc, day: myDoc.day }).slice(-20);
+        addLog('📷 ' + nm + '님과 ' + (dn ? dn + '에서 ' : '') + '사진을 찍었다. 빛바랜 폴라로이드를 한 장 받았다.');
+      } else if (a.kind === 'duelNo') {
+        duelRefund(a.ref, nm + '님이 결투를 거절했다.');
+      } else if (a.kind === 'duelRes') {
+        const esc = myDoc.duelEsc || {}, n = +esc[a.ref] || 0, stake = Math.max(1, +a.n || 1);
+        delete esc[a.ref]; myDoc.duelEsc = esc;
+        if (a.win) { addItem('coin', (n || 0) + stake); addLog('🎲 ' + nm + '님과의 결투에서 이겼다! (은화 +' + stake + ')'); }
+        else { if (!n) addItem('coin', -Math.min(inv('coin'), stake)); addLog('🎲 ' + nm + '님과의 결투에서 졌다. (은화 -' + stake + ')'); }
+      } else if (a.kind === 'betray') {
+        addLog('😠 ' + nm + '님이 함께 찾은 물자를 몰래 혼자 챙기는 걸 봤다.');
+        notify('😠 배신', nm + '님이 물자를 몰래 챙겼어요.');
+      } else if (a.kind === 'search') {
+        addLog('🔦 자리를 비운 사이 ' + nm + '님이 ' + (dn ? dn + '까지 ' : '') + '나를 찾으러 왔었다.');
       } else if (a.kind === 'rest') {
-        addLog('🕯️ ' + nm + '님이 ' + (DISTRICTS[a.loc] ? DISTRICTS[a.loc].n + '에서 ' : '') + '워커가 되어 떠돌던 나를 잠재워 줬다. 이제야 편히 쉴 수 있다.');
-        dirty = true;
+        addLog('🕯️ ' + nm + '님이 ' + (dn ? dn + '에서 ' : '') + '워커가 되어 떠돌던 나를 잠재워 줬다. 이제야 편히 쉴 수 있다.');
       } else if (a.kind === 'flower') {
-        addLog('💐 ' + nm + '님이 ' + (DISTRICTS[a.loc] ? DISTRICTS[a.loc].n + '의 ' : '') + '내 묘비에 꽃을 놓고 갔다.');
-        dirty = true;
-      }
+        addLog('💐 ' + nm + '님이 ' + (dn ? dn + '의 ' : '') + '내 묘비에 꽃을 놓고 갔다.');
+      } else dirty = false;
     });
+    // 답이 없는 결투 신청은 15분 뒤 건 은화를 돌려받는다
+    const esc = myDoc.duelEsc || {};
+    Object.keys(esc).forEach(ts => { if (Date.now() - +ts > OFFER_MS + 5 * 60 * 1000) { duelRefund(ts, '결투 신청에 아무도 답하지 않았다.'); dirty = true; } });
     if (dirty) { renderStatus(); saveDoc(); }
   }
+  function offerEnd(a) { return a.kind === 'ride' ? Math.max(+a.until || 0, +a.ts + 60000) : +a.ts + OFFER_MS; }
+  function duelRefund(ref, why) { const esc = myDoc.duelEsc || {}, n = +esc[ref] || 0; if (!n) return; delete esc[ref]; myDoc.duelEsc = esc; addItem('coin', n); addLog('🎲 ' + why + ' 걸어 둔 은화 ' + n + '닢을 돌려받았다.'); }
   // 같은 지역의 살아 있는 다른 생존자 (최근 하루 안에 움직인 사람)
-  function nearPeople() { return latestDocs.filter(d => !isMe(d) && d.status !== 'dead' && d.loc === myDoc.loc && Date.now() - (+d.updatedAt || 0) < 24 * 3600e3).sort((a, b) => (+b.updatedAt || 0) - (+a.updatedAt || 0)); }
+  function nearPeople() { return latestDocs.filter(d => !isMe(d) && d.status !== 'dead' && d.loc === myDoc.loc && Date.now() - (+d.updatedAt || 0) < 24 * 3600e3).sort((a, b) => (spotOf(b) === mySpot() ? 1 : 0) - (spotOf(a) === mySpot() ? 1 : 0) || (+b.updatedAt || 0) - (+a.updatedAt || 0)); }
+  // 오래 소식이 없는 생존자: 마지막으로 있던 곳에서 흔적을 찾을 수 있다
+  function missingHere() { return latestDocs.filter(d => !isMe(d) && d.status !== 'dead' && d.loc === myDoc.loc && Date.now() - (+d.updatedAt || 0) >= MISSING_MS); }
+  function samePlace(d) { return !!d && d.loc === myDoc.loc && spotOf(d) === mySpot(); }
+  // 같은 건물을 함께 뒤지는 사람 (조사 시간 절반, 숨겨진 방)
+  function coSearcher(i) { return latestDocs.find(d => !isMe(d) && d.status !== 'dead' && d.loc === myDoc.loc && spotOf(d) === i && Date.now() - (+d.updatedAt || 0) < 30 * 60 * 1000) || null; }
   function sosOn(d) { return !!(d && d.sos && Date.now() - (+d.sos.ts || 0) < SOS_MS && d.status !== 'dead'); }
-  function buddyKey() { const b = myDoc && myDoc.buddy; return b && b.until > Date.now() ? b.key : ''; }
-  function buddyActive() { const k = buddyKey(), d = k && latestDocs.find(x => keyOf(x) === k); return !!(d && d.status !== 'dead' && d.loc === myDoc.loc); }
   function relOf(k) { const f = friendDocs[pairId(myKey, k)]; return f && f.st === 'ok' ? f.rel : ''; }
   // 가족·연인·배우자가 같은 지역에 있으면 피로가 덜 쌓인다
   function closeNear() { return latestDocs.some(d => !isMe(d) && d.status !== 'dead' && d.loc === myDoc.loc && ['family', 'lover', 'spouse'].includes(relOf(keyOf(d)))); }
   function needSos() { return myDoc.hp < 50 || myDoc.infection >= 50 || (myDoc.injuries || []).some(i => i.type === 'wound' || i.type === 'bite'); }
+  function coverOn() { return !!(myDoc.cover && myDoc.cover.until > Date.now() && myDoc.cover.n > 0); }
+  function myPower() { const w = equipped(); return (WEAPON_TIER[w] || 0) * 2 + Math.max(skillLv('melee'), skillLv('shoot')); }
   function nearMsg(t) { nearMsgT = t; const m = $('nearMsg'); if (m) m.textContent = t; }
+  function destOpts() { return (ADJ[myDoc.loc] || []).filter(id => actionPlan('move', id)).map(id => `<option value="${id}"${id === nearIn.dest ? ' selected' : ''}>${escapeHtml(knownName(id) || '미지의 지역')}</option>`).join(''); }
   function renderNear() {
     const box = $('nearBox');
     if (!box || !myDoc) return;
     aidApply();
     if (myDoc.status === 'dead') { box.hidden = true; return; }
+    if (box.contains(document.activeElement) && ['SELECT', 'INPUT'].includes(document.activeElement.tagName)) return;
     // 구조 요청이 끝났으면(나았거나 1시간 지남) 내린다
     if (myDoc.sos && (!sosOn(myDoc) || (myDoc.hp >= 70 && myDoc.infection < 50))) { myDoc.sos = null; saveDoc(); }
-    const near = nearPeople(), busy = !!myDoc.busy, bk = buddyKey();
-    // 친구·쉘터 동료의 구조 요청, 같은 지역 웬수 알림
+    const near = nearPeople(), busy = !!myDoc.busy;
     const mates = latestDocs.filter(d => !isMe(d) && sosOn(d) && (relOf(keyOf(d)) && relOf(keyOf(d)) !== 'enemy' || (myDoc.party && d.party === myDoc.party)));
     mates.forEach(d => { const id = keyOf(d) + ':' + d.sos.ts; if (!sosSeen.has(id)) { sosSeen.add(id); if (docReady) notify('🆘 구조 요청', d.name + '님이 ' + (knownName(d.loc) || '어딘가') + '에서 구조를 요청했어요.'); } });
     near.filter(d => relOf(keyOf(d)) === 'enemy').forEach(d => { const id = keyOf(d) + ':' + myDoc.loc; if (!enemySeen.has(id)) { enemySeen.add(id); addLog('⚔️ 웬수 ' + d.name + '님이 ' + DISTRICTS[myDoc.loc].n + '에 있다. 등 뒤를 조심하자.'); notify('⚔️ 웬수 발견', d.name + '님이 같은 지역에 있어요.'); } });
-    const invites = aids.filter(a => a.kind === 'party' && Date.now() - (+a.ts || 0) <= INVITE_MS && !aidDone.has(a.id));
-    const meds = AID_MEDS.filter(k => inv(k) > 0);
-    if (!meds.includes(nearMed)) nearMed = meds[0] || '';
     let h = '';
     if (myDoc.sos && sosOn(myDoc)) h += `<div class="nr-line sos">🆘 구조 요청 중 · 친구와 쉘터 동료에게 알렸어요 <button class="secondary" type="button" data-nsos="off">취소</button></div>`;
     else if (needSos()) h += `<div class="nr-line">몸 상태가 좋지 않아요. <button class="secondary" type="button" data-nsos="on">🆘 구조 요청 보내기</button></div>`;
     mates.filter(d => d.loc !== myDoc.loc).forEach(d => { h += `<div class="nr-line sos">🆘 ${escapeHtml(d.name)}님이 ${escapeHtml(knownName(d.loc) || '어딘가')}에서 구조를 기다려요 · ♥${Math.max(0, +d.hp || 0)}</div>`; });
-    if (bk) { const bd = latestDocs.find(x => keyOf(x) === bk); h += `<div class="nr-line">🤝 ${escapeHtml(bd ? bd.name : '동행')}님과 동행 중 · ${mmss(myDoc.buddy.until - Date.now())} 남음${buddyActive() ? ' · 조사·사냥 위험 ↓ 물자 ↑' : ' · 같은 지역에 있어야 효과가 있어요'} <button class="secondary" type="button" data-nbuddy="off">그만두기</button></div>`; }
-    invites.forEach(a => { h += `<div class="nr-line">📨 ${escapeHtml(String(a.fromName || '누군가'))}님이 동행을 신청했어요 <button class="primary" type="button" data-ninv="${a.id}" data-ok="1"${busy ? '' : ''}>수락</button><button class="secondary" type="button" data-ninv="${a.id}">거절</button></div>`; });
+    if (coverOn()) h += `<div class="nr-line">🔫 ${escapeHtml(myDoc.cover.name)}님이 엄호 중 · 남은 ${myDoc.cover.n}번 · ${mmss(myDoc.cover.until - Date.now())}</div>`;
+    aids.filter(a => OFFER_KINDS.includes(a.kind) && !aidDone.has(a.id) && Date.now() <= offerEnd(a)).forEach(a => {
+      const nm = escapeHtml(String(a.fromName || '누군가'));
+      if (a.kind === 'ride') h += `<div class="nr-line">🚗 ${nm}님이 ${escapeHtml(knownName(a.loc) || '미지의 지역')}까지 태워 준대요 · ${mmss(offerEnd(a) - Date.now())} 뒤 도착 <button class="primary" type="button" data-noffer="${a.id}" data-ok="1"${busy || myDoc.loc !== a.src ? ' disabled' : ''}>타기</button><button class="secondary" type="button" data-noffer="${a.id}">거절</button></div>`;
+      else h += `<div class="nr-line">🎲 ${nm}님이 은화 ${+a.n || 1}닢을 걸고 결투를 신청했어요 (가진 은화 ${inv('coin')}) <button class="primary" type="button" data-noffer="${a.id}" data-ok="1"${inv('coin') < (+a.n || 1) ? ' disabled' : ''}>받기</button><button class="secondary" type="button" data-noffer="${a.id}">거절</button></div>`;
+    });
+    // 무전탑
+    const tw = towerHere();
+    if (tw) h += towerHtml(tw);
+    // 실종자
+    missingHere().slice(0, 3).forEach(d => { const done = (myDoc.searchedP || {})[keyOf(d)] === myDoc.day; h += `<div class="nr-line">🔦 ${escapeHtml(d.name)}님이 ${agoText(d.updatedAt)} 이곳에서 소식이 끊겼어요 <button class="secondary" type="button" data-nsearch="${escapeHtml(keyOf(d))}"${busy || done ? ' disabled' : ''}>${done ? '오늘 찾아봄' : '흔적 찾기'}</button></div>`; });
+    // 연주
+    const ins = ['guitar', 'harmonica'].find(k => inv(k) > 0);
+    if (ins) h += `<div class="nr-line">${ITEMS[ins].ic} ${ITEMS[ins].n}가 있어요 <button class="secondary" type="button" data-nsong="${ins}"${myDoc.songDay === myDoc.day ? ' disabled' : ''}>${myDoc.songDay === myDoc.day ? '오늘 연주함' : '연주하기'}</button><small class="muted" style="margin:0">같은 곳 사람들 피로 ↓ · 소리가 좀비를 부를 수 있어요</small></div>`;
     if (near.length) {
-      h += `<div class="nr-head">👥 이 지역 생존자 ${near.length}명${meds.length ? ` · 쓸 의약품 <select id="nearMed" aria-label="치료에 쓸 의약품">${meds.map(k => `<option value="${k}"${k === nearMed ? ' selected' : ''}>${ITEMS[k].ic} ${ITEMS[k].n} ${inv(k)}</option>`).join('')}</select>` : ' · 치료하려면 의약품이 필요해요'}</div>`;
+      if (!near.some(d => keyOf(d) === nearSel)) nearSel = keyOf(near.find(samePlace) || near[0]);
+      h += `<div class="nr-head">👥 이 지역 생존자 ${near.length}명 · 함께 할 사람을 고르세요</div>`;
       h += near.slice(0, 6).map(d => {
-        const k = keyOf(d), R = RELS[relOf(k)], same = spotOf(d) === mySpot(), hurt = (+d.hp || 0) < 100 || (Array.isArray(d.injuries) && d.injuries.length) || (+d.infection || 0) > 0;
-        return `<div class="nr-row${sosOn(d) ? ' sos' : ''}">${avatarHtml(d)}<div class="info"><b>${escapeHtml(d.name)}</b>${R ? ' <span class="fr-rel r-' + relOf(k) + '">' + R.ic + ' ' + R.n + '</span>' : ''}${sosOn(d) ? ' <b class="sos-tag">🆘 구조 요청</b>' : ''}<small>${frStatus(d)} · ♥${Math.max(0, +d.hp || 0)}${(+d.infection || 0) > 0 ? ' · 감염 ' + d.infection + '%' : ''} · 📍 ${escapeHtml(placeName(d.loc, spotOf(d)))}${same ? ' (같은 곳)' : ''}</small></div>
-          <button class="secondary" type="button" data-nheal="${escapeHtml(k)}"${busy || !meds.length || !hurt || !same ? ' disabled' : ''} title="${same ? '' : '같은 곳에 있어야 치료할 수 있어요'}">🩹 ${escapeHtml(d.name.slice(0, 8))} 치료해주기${same ? '' : ' (같은 곳에서)'}</button>${bk === k ? '' : `<button class="secondary" type="button" data-nparty="${escapeHtml(k)}"${relOf(k) === 'enemy' ? ' disabled' : ''}>🤝 동행 신청</button>`}</div>`;
+        const k = keyOf(d), R = RELS[relOf(k)], same = samePlace(d);
+        return `<div class="nr-row${sosOn(d) ? ' sos' : ''}${k === nearSel ? ' sel' : ''}">${avatarHtml(d)}<div class="info"><b>${escapeHtml(d.name)}</b>${R ? ' <span class="fr-rel r-' + relOf(k) + '">' + R.ic + ' ' + R.n + '</span>' : ''}${sosOn(d) ? ' <b class="sos-tag">🆘 구조 요청</b>' : ''}<small>${frStatus(d)} · ♥${Math.max(0, +d.hp || 0)}${(+d.infection || 0) > 0 ? ' · 감염 ' + d.infection + '%' : ''} · 📍 ${escapeHtml(placeName(d.loc, spotOf(d)))}${same ? ' (같은 곳)' : ''}</small></div><button class="secondary" type="button" data-nsel="${escapeHtml(k)}"${k === nearSel ? ' disabled' : ''}>${k === nearSel ? '선택됨' : '고르기'}</button></div>`;
       }).join('');
+      const t = near.find(d => keyOf(d) === nearSel);
+      if (t) h += actPanel(t, busy);
     }
     box.hidden = !h;
-    if (box.contains(document.activeElement) && document.activeElement.id === 'nearMed') return;
     box.innerHTML = h + `<div class="char-msg" id="nearMsg" role="status">${escapeHtml(nearMsgT)}</div>`;
   }
-  $('nearBox').addEventListener('change', (e) => { if (e.target.id === 'nearMed') nearMed = e.target.value; });
+  // 고른 사람과 함께 할 수 있는 행동들 (모두 같은 곳에 있어야 한다)
+  function actPanel(t, busy) {
+    const nm = escapeHtml(t.name.slice(0, 10)), same = samePlace(t), off = busy ? ' disabled' : '';
+    if (!same) return `<div class="nr-act"><div class="muted" style="margin:0">${nm}님과 같은 곳(📍 ${escapeHtml(placeName(t.loc, spotOf(t)))})에 있어야 함께 할 수 있어요.</div></div>`;
+    const meds = AID_MEDS.filter(k => inv(k) > 0), gives = Object.keys(invOf(myDoc)).filter(k => ITEMS[k] && inv(k) > 0).map(k => 'i:' + k).concat((myDoc.weapons || []).filter(w => WEAPON_TIER[w] && !(t.weapons || []).includes(w)).map(w => 'w:' + w));
+    if (!meds.includes(nearIn.med)) nearIn.med = meds[0] || '';
+    if (!gives.includes(nearIn.give)) nearIn.give = gives[0] || '';
+    const hurt = (+t.hp || 0) < 100 || (Array.isArray(t.injuries) && t.injuries.length) || (+t.infection || 0) > 0;
+    const w = equipped(), am = GUN_AMMO[w], canCover = w !== '맨손' && (!am || inv(am) >= 2);
+    const v = vehHere(), dests = destOpts();
+    let h = `<div class="nr-act"><div class="nr-at">🤝 ${nm}님과 함께</div>`;
+    h += `<div class="nr-a">🩹 ${meds.length ? `<select data-nin="med">${meds.map(k => `<option value="${k}"${k === nearIn.med ? ' selected' : ''}>${ITEMS[k].ic} ${ITEMS[k].n} ${inv(k)}</option>`).join('')}</select><button class="secondary" type="button" data-na="heal"${off}${hurt ? '' : ' disabled'}>치료해주기</button>` : '<span class="muted" style="margin:0">치료하려면 의약품이 필요해요</span>'}</div>`;
+    h += `<div class="nr-a">🎁 ${gives.length ? `<select data-nin="give">${gives.map(g => `<option value="${escapeHtml(g)}"${g === nearIn.give ? ' selected' : ''}>${g.startsWith('w:') ? '🗡️ ' + escapeHtml(g.slice(2)) : ITEMS[g.slice(2)].ic + ' ' + ITEMS[g.slice(2)].n + ' ' + inv(g.slice(2))}</option>`).join('')}</select><input type="number" data-nin="qty" min="1" max="99" value="1" aria-label="건넬 수량"><button class="secondary" type="button" data-na="give">건네주기</button>` : '<span class="muted" style="margin:0">건넬 물건이 없어요</span>'}</div>`;
+    h += `<div class="nr-a">🔫 <button class="secondary" type="button" data-na="cover"${off}${canCover ? '' : ' disabled'}>엄호하기</button><small class="muted" style="margin:0">${canCover ? '상대의 다음 두 번 싸움 피해 절반 (10분)' + (am ? ' · ' + ITEMS[am].n + ' 2발' : ' · 무기가 닳아요') : '무기가 필요해요' + (am ? ' (' + ITEMS[am].n + ' 2발)' : '')}</small></div>`;
+    if ((+t.hp || 0) <= 20 && dests) h += `<div class="nr-a">🏃 <select data-nin="dest">${dests}</select><button class="secondary" type="button" data-na="carry"${off}>업고 가기</button><small class="muted" style="margin:0">이동 시간 두 배</small></div>`;
+    if (v && canDrive() && dests) h += `<div class="nr-a">${VEHICLES[v.id].ic} <select data-nin="dest">${dests}</select><button class="secondary" type="button" data-na="ride"${off}>태우고 가기</button><small class="muted" style="margin:0">상대가 타면 함께 도착 · 연료 한 번</small></div>`;
+    if (inv('camera') > 0) h += `<div class="nr-a">📷 <button class="secondary" type="button" data-na="photo">같이 사진 찍기</button><small class="muted" style="margin:0">일회용 카메라 ${inv('camera')}</small></div>`;
+    h += `<div class="nr-a">🎲 은화 <input type="number" data-nin="stake" min="1" max="50" value="${escapeHtml(nearIn.stake)}" aria-label="걸 은화"><button class="secondary" type="button" data-na="duel"${relOf(keyOf(t)) === 'enemy' ? '' : ''}${inv('coin') < 1 ? ' disabled' : ''}>결투 내기 신청</button><small class="muted" style="margin:0">가진 은화 ${inv('coin')} · 다치지 않아요</small></div>`;
+    return h + '</div>';
+  }
+  $('nearBox').addEventListener('change', (e) => { const k = e.target.dataset && e.target.dataset.nin; if (k && k !== 'qty') nearIn[k] = e.target.value; });
   $('nearBox').addEventListener('click', async (e) => {
     const b = e.target.closest('button');
     if (!b || b.disabled || !myDoc || myDoc.status === 'dead') return;
+    const val = k => { const el = $('nearBox').querySelector('[data-nin="' + k + '"]'); return el ? el.value : ''; };
+    if (b.dataset.nsel) { nearSel = b.dataset.nsel; nearMsg(''); renderNear(); return; }
     if (b.dataset.nsos) {
       myDoc.sos = b.dataset.nsos === 'on' ? { ts: Date.now(), loc: myDoc.loc } : null;
       if (myDoc.sos) addLog('🆘 무전기로 구조 요청을 보냈다. 친구와 쉘터 동료가 들었을 것이다.');
       nearMsg(myDoc.sos ? '구조 요청을 보냈어요. 친구와 쉘터 동료 화면에 떠요.' : '구조 요청을 내렸어요.');
       renderStatus(); await saveDoc(); return;
     }
-    if (b.dataset.nbuddy) { myDoc.buddy = null; nearMsg('동행을 그만뒀어요.'); renderStatus(); await saveDoc(); return; }
-    if (b.dataset.ninv) {
-      const a = aids.find(x => x.id === b.dataset.ninv);
+    if (b.dataset.noffer) {
+      const a = aids.find(x => x.id === b.dataset.noffer);
       if (!a) return;
       aidDel(a);
-      if (b.dataset.ok) {
-        myDoc.buddy = { key: a.from, until: Date.now() + BUDDY_MS };
-        await aidSend(a.from, 'partyOk', { loc: myDoc.loc });
-        addLog('🤝 ' + String(a.fromName || '누군가') + '님과 동행하기로 했다. (30분)');
-        nearMsg('동행을 시작했어요.');
-        renderStatus(); await saveDoc();
-      } else { nearMsg('동행 신청을 거절했어요.'); renderNear(); }
-      return;
+      const nm = String(a.fromName || '누군가');
+      if (!b.dataset.ok) { if (a.kind === 'duel') aidSend(a.from, 'duelNo', { ref: String(a.ref) }); nearMsg('거절했어요.'); renderNear(); return; }
+      if (a.kind === 'ride') {
+        if (myDoc.busy || myDoc.loc !== a.src || !DISTRICTS[a.loc]) return;
+        const until = Math.max(Date.now() + 30000, +a.until || 0), min = Math.max(1, Math.round((until - Date.now()) / 60000));
+        myDoc.busy = { type: 'move', arg: a.loc, label: '🚗 ' + nm + '님 차로 ' + (knownName(a.loc) || '미지의 지역') + '(으)로 이동', min, start: Date.now(), until, veh: null, ride: 1 };
+        addLog('🚗 ' + nm + '님의 차에 올라탔다.');
+        nearMsg('출발했어요.');
+      } else {
+        const n = Math.max(1, +a.n || 1);
+        if (inv('coin') < n) return;
+        const myP = myPower(), win = ch(Math.max(0.2, Math.min(0.8, 0.5 + (myP - (+a.p || 0)) * 0.04)));
+        addItem('coin', win ? n : -n);
+        aidSend(a.from, 'duelRes', { ref: String(a.ref), n, win: !win, loc: myDoc.loc });
+        gainSkill('melee', 1);
+        addLog('🎲 ' + nm + '님과 은화 ' + n + '닢을 걸고 겨뤘다. ' + (win ? '이겼다! (은화 +' + n + ')' : '졌다. (은화 -' + n + ')'));
+        nearMsg(win ? '이겼어요!' : '졌어요.');
+      }
+      renderStatus(); await saveDoc(); return;
     }
-    if (b.dataset.nparty) {
-      const k = b.dataset.nparty, d = latestDocs.find(x => keyOf(x) === k);
-      if (!d) return;
-      b.disabled = true;
-      const ok = await aidSend(k, 'party', { loc: myDoc.loc });
-      nearMsg(ok ? d.name + '님에게 동행을 신청했어요. 10분 안에 수락하면 함께 움직여요.' : '신청하지 못했어요.');
-      return;
+    if (b.dataset.nsong) {
+      const k = b.dataset.nsong;
+      if (inv(k) <= 0 || myDoc.songDay === myDoc.day) return;
+      myDoc.songDay = myDoc.day;
+      myDoc.fat = clamp(myDoc.fat - 8);
+      const ppl = latestDocs.filter(d => samePlace(d) && !isMe(d) && d.status !== 'dead' && Date.now() - (+d.updatedAt || 0) < 30 * 60 * 1000);
+      ppl.forEach(d => aidSend(keyOf(d), 'song', { item: k, loc: myDoc.loc }));
+      regEvent('noise', myDoc.loc, 4);
+      addLog('🎵 ' + josa(ITEMS[k].n, '을', '를') + ' 꺼내 한 곡 연주했다.' + (ppl.length ? ' ' + ppl.map(d => d.name).join(', ') + '님이 조용히 들었다.' : ' 듣는 사람은 없었지만 마음이 조금 가벼워졌다.') + ' (피로 -8)');
+      nearMsg('연주했어요.'); renderStatus(); await saveDoc(); return;
     }
-    if (b.dataset.nheal) {
-      const k = b.dataset.nheal, d = latestDocs.find(x => keyOf(x) === k), id = $('nearMed') ? $('nearMed').value : nearMed;
-      if (d && spotOf(d) !== mySpot()) { nearMsg(d.name + '님과 같은 곳(' + placeName(d.loc, spotOf(d)) + ')에 있어야 치료할 수 있어요.'); return; }
-      if (!d || d.loc !== myDoc.loc || !AID_MEDS.includes(id) || inv(id) <= 0 || myDoc.busy) return;
-      b.disabled = true;
+    if (b.dataset.nsearch) {
+      const k = b.dataset.nsearch, d = latestDocs.find(x => keyOf(x) === k);
+      if (!d || myDoc.busy) return;
+      myDoc.searchedP = Object.assign({}, myDoc.searchedP || {}, { [k]: myDoc.day });
+      const got = rollLoot(['bandage', 'water', 'beans', 'cloth', 'matches', 'crackers', 'ammo'], rint(1, 2));
+      aidSend(k, 'search', { loc: myDoc.loc });
+      addLog('🔦 ' + d.name + '님의 흔적을 따라 ' + DISTRICTS[myDoc.loc].n + '을 뒤졌다. 벽에 남은 표식과 버려진 짐을 찾았다.' + (lootText(got) ? ' (' + lootText(got) + ')' : ''));
+      gainSkill('scav', 1);
+      nearMsg('흔적을 찾았어요.'); renderStatus(); await saveDoc(); return;
+    }
+    if (b.dataset.tw) { await towerGive(b.dataset.tw, val('twqty')); return; }
+    const act = b.dataset.na, t = latestDocs.find(x => keyOf(x) === nearSel);
+    if (!act || !t) return;
+    const k = keyOf(t);
+    if (!samePlace(t)) { nearMsg(t.name + '님과 같은 곳(' + placeName(t.loc, spotOf(t)) + ')에 있어야 해요.'); return; }
+    b.disabled = true;
+    if (act === 'heal') {
+      const id = val('med');
+      if (!AID_MEDS.includes(id) || inv(id) <= 0 || myDoc.busy) return;
       if (!(await aidSend(k, 'heal', { item: id, loc: myDoc.loc }))) { nearMsg('치료하지 못했어요. 잠시 후 다시 해보세요.'); b.disabled = false; return; }
       addItem(id, -1);
       gainSkill('medic', 2);
-      let txt = '🩹 ' + d.name + '님에게 ' + josa(ITEMS[id].n, '으로', '로') + ' 응급치료를 해 줬다.';
+      let txt = '🩹 ' + t.name + '님에게 ' + josa(ITEMS[id].n, '으로', '로') + ' 응급치료를 해 줬다.';
       // 구조 요청에 응답해 치료하면 보상 (요청 하나에 한 번)
-      if (sosOn(d)) {
-        const sid = k + ':' + d.sos.ts;
+      if (sosOn(t)) {
+        const sid = k + ':' + t.sos.ts;
         myDoc.sosHelped = Array.isArray(myDoc.sosHelped) ? myDoc.sosHelped : [];
         if (!myDoc.sosHelped.includes(sid)) { myDoc.sosHelped = myDoc.sosHelped.concat(sid).slice(-30); addItem('coin', 3); txt += ' 구조 요청에 응답했다. (은화 +3, 의술 경험)'; gainSkill('medic', 2); }
       }
-      addLog(txt);
-      nearMsg(d.name + '님을 치료했어요. 상대 화면에 바로 적용돼요.');
-      sfx('heal'); renderStatus(); await saveDoc();
+      addLog(txt); nearMsg(t.name + '님을 치료했어요.'); sfx('heal');
+    } else if (act === 'give') {
+      const g = val('give'), q = Math.max(1, Math.min(99, parseInt(val('qty'), 10) || 1));
+      if (g.startsWith('w:')) {
+        const w = g.slice(2);
+        if (!myDoc.weapons.includes(w)) return;
+        const dur = (myDoc.wdur || {})[w];
+        if (!(await aidSend(k, 'give', { item: g, n: 1, p: dur == null ? WEAPON_DUR[w] : dur, loc: myDoc.loc }))) { nearMsg('건네지 못했어요.'); return; }
+        myDoc.weapons = myDoc.weapons.filter(x => x !== w); if (myDoc.wdur) delete myDoc.wdur[w];
+        addLog('🎁 ' + t.name + '님에게 ' + josa(w, '을', '를') + ' 건넸다.');
+      } else {
+        const id = g.slice(2), n = Math.min(q, inv(id));
+        if (!ITEMS[id] || n <= 0) return;
+        if (!(await aidSend(k, 'give', { item: id, n, loc: myDoc.loc }))) { nearMsg('건네지 못했어요.'); return; }
+        addItem(id, -n);
+        addLog('🎁 ' + t.name + '님에게 ' + ITEMS[id].n + ' ' + n + '개를 건넸다.');
+      }
+      nearMsg('건넸어요.');
+    } else if (act === 'cover') {
+      const w = equipped(), am = GUN_AMMO[w];
+      if (w === '맨손' || (am && inv(am) < 2) || myDoc.busy) return;
+      if (!(await aidSend(k, 'cover', { loc: myDoc.loc }))) { nearMsg('엄호하지 못했어요.'); return; }
+      if (am) addItem(am, -2); else wearWeapon(w);
+      gainSkill(isShooter(w) ? 'shoot' : 'melee', 1);
+      addLog('🔫 ' + josa(w, '을', '를') + ' 들고 ' + t.name + '님을 엄호하기로 했다.' + (am ? ' (' + ITEMS[am].n + ' -2)' : ''));
+      nearMsg('엄호를 시작했어요.');
+    } else if (act === 'carry' || act === 'ride') {
+      const dest = val('dest'), src = myDoc.loc;
+      if (!DISTRICTS[dest] || myDoc.busy) return;
+      if (act === 'carry' && (+t.hp || 0) > 20) return;
+      await startAction('move', dest);
+      if (!myDoc.busy || myDoc.busy.type !== 'move') { nearMsg('그쪽으로는 갈 수 없어요.'); return; }
+      if (act === 'carry') {
+        const B = myDoc.busy, add = B.until - B.start;
+        B.until += add; B.min *= 2; B.label += ' (' + t.name + '님을 업고)'; B.carry = { key: k, src };
+        addLog('🏃 쓰러진 ' + t.name + '님을 업고 ' + (knownName(dest) || '미지의 지역') + '(으)로 향했다.');
+      } else {
+        await aidSend(k, 'ride', { loc: dest, src, until: myDoc.busy.until });
+        addLog('🚗 ' + t.name + '님에게 ' + (knownName(dest) || '미지의 지역') + '까지 태워 주겠다고 했다.');
+      }
+      nearMsg(act === 'carry' ? '업고 출발했어요.' : '자리를 내줬어요. 상대가 타면 함께 도착해요.');
+    } else if (act === 'photo') {
+      if (inv('camera') <= 0) return;
+      addItem('camera', -1);
+      aidSend(k, 'photo', { loc: myDoc.loc });
+      myDoc.album = (Array.isArray(myDoc.album) ? myDoc.album : []).concat({ w: t.name, loc: myDoc.loc, day: myDoc.day }).slice(-20);
+      myDoc.fat = clamp(myDoc.fat - 3);
+      addLog('📷 ' + t.name + '님과 ' + DISTRICTS[myDoc.loc].n + '에서 기념사진을 찍었다. 이 순간만큼은 웃고 있었다. (피로 -3)');
+      nearMsg('사진을 찍었어요.');
+    } else if (act === 'duel') {
+      const n = Math.max(1, Math.min(50, parseInt(val('stake'), 10) || 1));
+      nearIn.stake = String(n);
+      if (inv('coin') < n) { nearMsg('은화가 모자라요.'); return; }
+      const ref = String(Date.now());
+      if (!(await aidSend(k, 'duel', { n, p: myPower(), ref, loc: myDoc.loc }))) { nearMsg('신청하지 못했어요.'); return; }
+      addItem('coin', -n);
+      myDoc.duelEsc = Object.assign({}, myDoc.duelEsc || {}, { [ref]: n });
+      addLog('🎲 ' + t.name + '님에게 은화 ' + n + '닢을 걸고 결투를 신청했다.');
+      nearMsg('결투를 신청했어요. 10분 안에 상대가 받지 않으면 은화를 돌려받아요.');
     }
+    renderStatus(); await saveDoc();
+  });
+  // ---------- 무전탑: 지방마다 하나, 다 함께 재료를 모아 고치면 그 지방에 상인이 더 자주 온다 ----------
+  const TOWER_NEED = { scrap: 20, nails: 30, planks: 15, fuel: 5 };
+  let towers = {}, towerUnsub = null;
+  function towerLoc(rg) { const ks = regionKeys(rg).filter(k => DISTRICTS[k] && DISTRICTS[k].la !== 'haven'); return rg === 'la' ? 'griffith' : ks[0]; }
+  function towerDone(rg) { const t = towers[rg]; return !!(t && t.done); }
+  function towerHere() { const rg = rgOf(myDoc.loc); return towerLoc(rg) === myDoc.loc ? rg : null; }
+  function towerSubscribe() {
+    if (towerUnsub) { try { towerUnsub(); } catch (e) {} towerUnsub = null; }
+    if (!db) return;
+    try { towerUnsub = db.collection('towers').onSnapshot(snap => { const n = {}; (snap && snap.docs ? snap.docs : []).forEach(d => { const v = d.data(); if (v) n[d.id] = v; }); towers = n; if (myDoc) renderStatus(); }, () => {}); } catch (e) {}
+  }
+  function towerStop() { if (towerUnsub) { try { towerUnsub(); } catch (e) {} } towerUnsub = null; }
+  function towerHtml(rg) {
+    const t = towers[rg] || {}, m = t.m || {};
+    if (t.done) return `<div class="nr-line">📡 ${escapeHtml(REGIONS[rg].n)} 무전탑이 복구됐어요 · 이 지방엔 떠돌이 상인이 더 자주 와요</div>`;
+    const opts = Object.keys(TOWER_NEED).filter(k => (+m[k] || 0) < TOWER_NEED[k] && inv(k) > 0);
+    return `<div class="nr-line tw">📡 ${escapeHtml(REGIONS[rg].n)} 무전탑 수리 · ${Object.keys(TOWER_NEED).map(k => ITEMS[k].n + ' ' + Math.min(TOWER_NEED[k], +m[k] || 0) + '/' + TOWER_NEED[k]).join(' · ')}</div>` +
+      (opts.length ? `<div class="nr-line">${opts.map(k => `<button class="secondary" type="button" data-tw="${k}">${ITEMS[k].ic} ${ITEMS[k].n} 보태기 (${inv(k)})</button>`).join('')}<input type="number" data-nin="twqty" min="1" max="20" value="1" aria-label="보탤 수량"></div>` : '<div class="muted" style="margin:0 0 6px">모자란 재료(고철·못·나무판자·휘발유 통)를 가져오면 보탤 수 있어요.</div>');
+  }
+  async function towerGive(k, q) {
+    const rg = towerHere();
+    if (!rg || !TOWER_NEED[k] || !db || myDoc.busy) return;
+    let n = Math.max(1, Math.min(20, parseInt(q, 10) || 1, inv(k)));
+    let finished = false, put = 0;
+    try {
+      const ok = await txUpdate('towers/' + rg, cur => {
+        cur = cur || { m: {}, done: false };
+        cur.m = cur.m || {};
+        if (cur.done) return false;
+        put = Math.min(n, TOWER_NEED[k] - (+cur.m[k] || 0));
+        if (put <= 0) return false;
+        cur.m[k] = (+cur.m[k] || 0) + put;
+        cur.done = Object.keys(TOWER_NEED).every(x => (+cur.m[x] || 0) >= TOWER_NEED[x]);
+        finished = cur.done; cur.ts = Date.now();
+        return cur;
+      });
+      if (!ok) { nearMsg('이미 다 모였어요.'); return; }
+    } catch (e) { nearMsg('보태지 못했어요.'); return; }
+    addItem(k, -put);
+    gainSkill('mech', 1);
+    addLog('📡 ' + REGIONS[rg].n + ' 무전탑 수리에 ' + ITEMS[k].n + ' ' + put + '개를 보탰다.' + (finished ? ' 마지막 부품을 끼우자 무전탑에 불이 들어왔다! 잡음이 걷히고 먼 곳의 목소리가 또렷하게 들린다.' : ''));
+    if (finished) addItem('coin', 5);
+    nearMsg(finished ? '무전탑을 복구했어요! (은화 +5)' : '보탰어요.');
+    renderStatus(); await saveDoc();
+  }
+  // ---------- 서버 공동 목표: 모두 합쳐 좀비 처치 (100마리부터, 단계마다 100씩 늘어난다) ----------
+  let goal = null, goalUnsub = null, goalPend = 0, goalAt = 0;
+  function goalSubscribe() {
+    if (goalUnsub) { try { goalUnsub(); } catch (e) {} goalUnsub = null; }
+    if (!db) return;
+    try { goalUnsub = db.doc('goals/main').onSnapshot(s => { goal = s && s.exists ? s.data() : { lv: 1, n: 0 }; renderGoal(); }, () => {}); } catch (e) {}
+  }
+  function goalStop() { if (goalUnsub) { try { goalUnsub(); } catch (e) {} } goalUnsub = null; }
+  function goalTarget(lv) { return 100 * lv; }
+  // 내 처치 수가 늘어난 만큼 모아 두었다가 1분에 한 번 보탠다
+  function goalTrack() {
+    if (!myDoc) return;
+    const k = +myDoc.zombieKills || 0;
+    if (myDoc.goalSeen == null || k < myDoc.goalSeen) myDoc.goalSeen = k;
+    if (k > myDoc.goalSeen) { goalPend += Math.min(20, k - myDoc.goalSeen); myDoc.goalSeen = k; }
+  }
+  async function goalFlush() {
+    if (!db || !goalPend || Date.now() - goalAt < 60000) return;
+    goalAt = Date.now();
+    const add = Math.min(50, goalPend);
+    try {
+      const ok = await txUpdate('goals/main', cur => {
+        cur = cur || { lv: 1, n: 0 };
+        let lv = +cur.lv || 1, n = (+cur.n || 0) + add;
+        if (n >= goalTarget(lv)) { n = Math.min(50, n - goalTarget(lv)); lv += 1; }
+        return { lv, n, ts: Date.now() };
+      });
+      if (ok) goalPend -= add;
+    } catch (e) {}
+  }
+  const GOAL_REWARD = { mre: 1, first_aid: 1, ammo: 5, coin: 10 };
+  function renderGoal() {
+    const el = $('goalLine');
+    if (!el || !myDoc) return;
+    const g = goal || { lv: 1, n: 0 }, lv = +g.lv || 1, can = lv > 1 && (+myDoc.goalClaim || 0) < lv - 1 && myDoc.status !== 'dead';
+    el.hidden = false;
+    el.innerHTML = `🎯 공동 목표 ${lv}단계 · 모두 합쳐 좀비 ${goalTarget(lv)}마리 처치 <b>${Math.min(goalTarget(lv), +g.n || 0)}/${goalTarget(lv)}</b>` + (can ? ` <button class="secondary" type="button" id="goalClaim">🎁 ${lv - 1}단계 달성 보상 받기</button>` : '');
+  }
+  document.addEventListener('click', async (e) => {
+    if (!e.target.closest('#goalClaim') || !myDoc || !goal) return;
+    const lv = (+goal.lv || 1) - 1;
+    if (lv < 1 || (+myDoc.goalClaim || 0) >= lv) return;
+    myDoc.goalClaim = lv;
+    Object.keys(GOAL_REWARD).forEach(k => addItem(k, GOAL_REWARD[k]));
+    addLog('🎯 공동 목표 ' + lv + '단계 달성! 생존자들이 함께 쓰러뜨린 좀비 수만큼 길이 안전해졌다. (' + lootText(GOAL_REWARD) + ')');
+    renderStatus(); await saveDoc();
   });
   // 묘비에 꽃 놓기: 묘비마다 한 번, 놓으면 마음이 조금 가벼워진다 (피로 -5)
   async function placeFlower(gid) {
@@ -6996,6 +7300,8 @@
     npcClaimSubscribe();
     friendSubscribe();
     aidSubscribe();
+    towerSubscribe();
+    goalSubscribe();
     try {
       if (unsub) unsub();
       if (avatarUnsub) avatarUnsub();
@@ -7053,7 +7359,7 @@
   function stopListeners() {
     [unsub, avatarUnsub, chatUnsub, memoUnsub, tradeUnsub, noticeUnsub, graveUnsub, regUnsub, regEvUnsub, talkUnsub, shelterUnsub].forEach(u => { if (u) { try { u(); } catch(e) {} } });
     if (npcClaimUnsub) { try { npcClaimUnsub(); } catch(e) {} npcClaimUnsub = null; }
-    friendStop(); aidStop();
+    friendStop(); aidStop(); towerStop(); goalStop();
     unsub = avatarUnsub = chatUnsub = memoUnsub = tradeUnsub = noticeUnsub = graveUnsub = regUnsub = regEvUnsub = talkUnsub = shelterUnsub = null;
     talkLoc = null; shelterKey = null;
   }
@@ -7332,7 +7638,7 @@
       if (db) await db.collection('graves').add(Object.assign({ loc: myDoc.loc, name: myName, key: myKey, epitaph: myDoc.epitaph || '', turned: !!myDoc.turned, days: survDays(myDoc), kills: myDoc.zombieKills || 0, day: myDoc.day, ts: Date.now() }, myDoc.turned ? { relic, relicW } : {}));
     } catch(e) {}
     comps().forEach(releaseNpc);
-    const keep = { name: myDoc.name, key: myDoc.key, account: myDoc.account, bio: myDoc.bio, party: myDoc.party, bornAt: myDoc.bornAt, log: myDoc.log, lives: (myDoc.lives || 1) + 1, visited: (myDoc.visited || []).slice(), frSeen: myDoc.frSeen, spouse: myDoc.spouse || '', ringEsc: myDoc.ringEsc || {}, stAuto: myDoc.stAuto, flowered: myDoc.flowered || [], rested: myDoc.rested || [] };
+    const keep = { name: myDoc.name, key: myDoc.key, account: myDoc.account, bio: myDoc.bio, party: myDoc.party, bornAt: myDoc.bornAt, log: myDoc.log, lives: (myDoc.lives || 1) + 1, visited: (myDoc.visited || []).slice(), frSeen: myDoc.frSeen, spouse: myDoc.spouse || '', ringEsc: myDoc.ringEsc || {}, stAuto: myDoc.stAuto, flowered: myDoc.flowered || [], rested: myDoc.rested || [], goalClaim: myDoc.goalClaim || 0, album: myDoc.album || [], duelEsc: myDoc.duelEsc || {} };
     const prev = myDoc.loc;
     myDoc = Object.assign(defaultDoc(myName), keep, { day: worldDay(), born: worldDay(), loc: null });
     ensureLocation(DISTRICTS[prev] ? rgOf(prev) : 'la');
@@ -7381,7 +7687,13 @@
   const PATCH_NOTES = [
     { d:'10.22', items:[
       '🩹 같은 곳(같은 건물 또는 거리)에 있는 생존자에게 응급치료를 해 줄 수 있어요 (조사할 구역 고르기 아래)',
-      '🤝 동행: 같은 지역 생존자와 30분 동안 함께 움직이면 조사·사냥이 더 안전하고 물자가 늘어요',
+      '🤝 함께 수색: 같은 건물을 둘이 뒤지면 시간 절반·숨겨진 방 (동행은 없앴어요)',
+      '🎁 건네주기 · 🔫 엄호 · 🏃 업고 가기 · 🚗 태우고 가기 · 📷 사진 · 🎲 결투 내기 (같은 곳에 있는 생존자와)',
+      '🎸 기타·하모니카 연주, 📷 일회용 카메라 아이템',
+      '📦 함께 수색 중 은닉처: 나눌까, 몰래 챙길까',
+      '🎯 서버 공동 목표 (모두 합쳐 좀비 100마리부터)',
+      '📡 지방마다 무전탑: 함께 재료를 모아 복구하면 떠돌이 상인이 더 자주 와요',
+      '🔦 오래 소식 없는 생존자의 흔적 찾기',
       '🆘 구조 요청: 다치면 친구·쉘터 동료에게 알리고, 치료해 준 사람은 은화 3닢',
       '💕 가족·연인·배우자가 같은 지역에 있으면 피로가 덜 쌓이고, ⚔️ 웬수가 오면 알려 줘요',
       '💐 묘비에 꽃 놓기 (묘비 주인의 일지에 남아요)',
@@ -7720,15 +8032,18 @@
     pack:        { n:'등산 배낭', ic:'🎒', cat:'tool', wt:1, desc:'들고 있으면 가방 +10kg' },
     vitamins:    { n:'비타민', ic:'💛', cat:'med', wt:0.05, hp:3, fat:-30, desc:'체력 +3, 피로 -30' },
     coin:        { n:'은화', ic:'🪙', cat:'tool', wt:0, desc:'떠돌이 상인에게 물건을 팔고 받는 돈 · 상인에게서 반지를 살 수 있다' },
-    ring:        { n:'반지', ic:'💍', cat:'tool', wt:.01, desc:'떠돌이 상인에게 산 반지 · 배우자 신청에 쓴다' }
+    ring:        { n:'반지', ic:'💍', cat:'tool', wt:.01, desc:'떠돌이 상인에게 산 반지 · 배우자 신청에 쓴다' },
+    guitar:      { n:'기타', ic:'🎸', cat:'tool', wt:2, desc:'하루 한 번 연주: 나와 같은 곳 사람들 피로 감소 (소리가 좀비를 부른다)' },
+    harmonica:   { n:'하모니카', ic:'🎵', cat:'tool', wt:.1, desc:'하루 한 번 연주: 나와 같은 곳 사람들 피로 감소 (소리가 좀비를 부른다)' },
+    camera:      { n:'일회용 카메라', ic:'📷', cat:'tool', wt:.2, desc:'같은 곳에 있는 생존자와 기념사진 (1장씩 소모)' }
   };
   const CAT_NAME = { food:'음식', drink:'음료', med:'의료품', tool:'도구·재료' };
   const TOOL_LOOT = {
-    hardware:[.7,['planks','nails','nails','scrap']], warehouse:[.6,['planks','scrap','nails','cloth']], house:[.45,['cloth','matches','lighter','nails']],
-    motel:[.4,['cloth','matches','lighter']], police:[.45,['ammo','ammo','shells','pack']], gunshop:[.8,['ammo','ammo','shells','rifle_ammo']], gas:[.35,['lighter','matches','scrap','fuel']],
-    market:[.3,['matches','lighter','cloth']], studio:[.4,['planks','cloth','scrap','nails']], cabin:[.4,['matches','planks','cloth','pack','rifle_ammo']],
-    lifeguard:[.2,['cloth','pack']], terminal:[.2,['pack','cloth','lighter']], shelter:[.3,['ammo','cloth','matches']], fire:[.3,['cloth','scrap','pack']],
-    school:[.2,['cloth']], office:[.15,['cloth']], church:[.2,['cloth','matches']], park:[.1,['planks']]
+    hardware:[.7,['planks','nails','nails','scrap']], warehouse:[.6,['planks','scrap','nails','cloth']], house:[.45,['cloth','matches','lighter','nails','harmonica','camera']],
+    motel:[.4,['cloth','matches','lighter','guitar','camera']], police:[.45,['ammo','ammo','shells','pack']], gunshop:[.8,['ammo','ammo','shells','rifle_ammo']], gas:[.35,['lighter','matches','scrap','fuel']],
+    market:[.3,['matches','lighter','cloth']], studio:[.4,['planks','cloth','scrap','nails','guitar','camera']], cabin:[.4,['matches','planks','cloth','pack','rifle_ammo']],
+    lifeguard:[.2,['cloth','pack']], terminal:[.2,['pack','cloth','lighter','camera']], shelter:[.3,['ammo','cloth','matches']], fire:[.3,['cloth','scrap','pack']],
+    school:[.2,['cloth','harmonica']], office:[.15,['cloth']], church:[.2,['cloth','matches']], park:[.1,['planks']]
   };
   // 무게: 기본 15kg, 등산 배낭이 있으면 25kg
   const WEAPON_WT = { '각목':1.5, '식칼':0.3, '프라이팬':1.2, '렌치':1, '망치':0.8, '야구방망이':1, '쇠파이프':1.5, '낫':0.8, '골프채':0.6, '경찰봉':0.7, '쇠지렛대':1.6, '삽':2, '손도끼':1, '활':1, '도끼':2, '마체테':0.8, '일본도':1.2, '석궁':2.5, '권총':1, '산탄총':3.5, '사냥용 소총':4 };
@@ -8078,7 +8393,7 @@
     if (memoUnsub) { try { memoUnsub(); } catch(e){} memoUnsub = null; }
     if (graveUnsub) { try { graveUnsub(); } catch(e){} graveUnsub = null; }
     if (noticeUnsub) { try { noticeUnsub(); } catch(e){} noticeUnsub = null; }
-    friendStop(); aidStop();
+    friendStop(); aidStop(); towerStop(); goalStop();
     if (regUnsub) { try { regUnsub(); } catch(e){} regUnsub = null; }
     if (regEvUnsub) { try { regEvUnsub(); } catch(e){} regEvUnsub = null; }
     notices = [];

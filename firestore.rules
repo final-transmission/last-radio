@@ -158,15 +158,39 @@ service cloud.firestore {
       allow delete: if signedIn() && (myKey() in resource.data.m || isAdmin());
     }
 
-    // ---------- 생존자끼리 주고받기 (응급치료·동행·꽃): 보낸 사람은 나, 받는 사람 화면이 적용하고 지운다 ----------
+    // ---------- 생존자끼리 주고받기 (치료·건네기·엄호·업기·태우기·연주·사진·결투·꽃 등): 보낸 사람은 나, 받는 사람 화면이 적용하고 지운다 ----------
     match /aids/{id} {
       allow read: if signedIn() && (resource.data.to == myKey() || resource.data.from == myKey() || isAdmin());
       allow create: if signedIn() && d().from == myKey() && d().to is string && d().to != myKey()
-        && d().kind in ['heal', 'party', 'partyOk', 'flower', 'rest'] && str(d().fromName, 24) && d().ts is number
-        && d().keys().hasOnly(['kind', 'from', 'fromName', 'to', 'item', 'loc', 'ts'])
-        && (!('item' in d()) || str(d().item, 20)) && (!('loc' in d()) || str(d().loc, 30));
+        && d().kind in ['heal', 'give', 'cover', 'carry', 'ride', 'song', 'photo', 'duel', 'duelNo', 'duelRes', 'betray', 'search', 'flower', 'rest']
+        && str(d().fromName, 24) && d().ts is number
+        && d().keys().hasOnly(['kind', 'from', 'fromName', 'to', 'item', 'loc', 'src', 'ts', 'n', 'p', 'ref', 'win', 'until'])
+        && (!('item' in d()) || str(d().item, 30)) && (!('loc' in d()) || str(d().loc, 30)) && (!('src' in d()) || str(d().src, 30))
+        && (!('n' in d()) || (d().n is int && d().n >= 0 && d().n <= 99)) && (!('ref' in d()) || str(d().ref, 20));
       allow update: if false;
       allow delete: if signedIn() && (resource.data.to == myKey() || resource.data.from == myKey() || isAdmin());
+    }
+
+    // ---------- 서버 공동 목표: 처치 수는 한 번에 50까지만 늘고, 목표를 채우면 다음 단계로 ----------
+    match /goals/{id} {
+      allow read: if signedIn();
+      allow create: if signedIn() && id == 'main' && d().keys().hasOnly(['lv', 'n', 'ts']) && d().lv is int && d().lv >= 1 && d().lv <= 2 && d().n is int && d().n >= 0 && d().n <= 50;
+      allow update: if signedIn() && id == 'main' && d().keys().hasOnly(['lv', 'n', 'ts']) && d().lv is int && d().n is int && d().n >= 0
+        && ((d().lv == resource.data.lv && d().n > resource.data.n && d().n <= resource.data.n + 50)
+          || (d().lv == resource.data.lv + 1 && d().n <= 50 && resource.data.n + 50 >= resource.data.lv * 100));
+      allow delete: if isAdmin();
+    }
+
+    // ---------- 무전탑: 지방마다 하나, 재료는 늘기만 하고 한 번 복구되면 그대로 ----------
+    match /towers/{rg} {
+      allow read: if signedIn();
+      allow create: if signedIn() && rg in ['la', 'mojave', 'vegas', 'denver', 'chicago', 'ny'] && d().keys().hasOnly(['m', 'done', 'ts']) && d().m is map;
+      allow update: if signedIn() && d().keys().hasOnly(['m', 'done', 'ts']) && d().m is map
+        && d().m.get('scrap', 0) >= resource.data.m.get('scrap', 0) && d().m.get('nails', 0) >= resource.data.m.get('nails', 0)
+        && d().m.get('planks', 0) >= resource.data.m.get('planks', 0) && d().m.get('fuel', 0) >= resource.data.m.get('fuel', 0)
+        && d().m.get('scrap', 0) <= 20 && d().m.get('nails', 0) <= 30 && d().m.get('planks', 0) <= 15 && d().m.get('fuel', 0) <= 5
+        && (resource.data.get('done', false) == false || d().done == true);
+      allow delete: if isAdmin();
     }
 
     // ---------- 문의·버그 제보: 글쓴이는 나, 답변·상태는 관리자만, 지우기는 글쓴이·관리자 ----------

@@ -84,7 +84,7 @@ try {
   await A.p.waitForTimeout(1500);
   const kb = await A.p.$('#shelterMemberList button[data-kick]');
   ok('대장 화면에 내보내기 버튼', !!kb);
-  if (kb) { await kb.click(); await A.p.click('#shelterMemberList button[data-kick]'); await A.p.waitForTimeout(3000); await B.p.waitForTimeout(2000); }
+  if (kb) { await A.p.click('#shelterMemberList button[data-kick]'); await A.p.click('#shelterMemberList button[data-kick]'); await A.p.waitForTimeout(3000); await B.p.waitForTimeout(2000); }
   const bDoc = await cur(ub.key);
   ok('내보내진 사람이 스스로 쉘터를 나감', bDoc.party === '', 'party=' + bDoc.party);
   await B.p.fill('#partyInput', '피난처'); await B.p.click('#partyBtn'); await B.p.waitForTimeout(1500);
@@ -182,13 +182,27 @@ try {
   await A.p.click('#tabBtnPlay').catch(() => {}); await B.p.click('#tabBtnPlay').catch(() => {});
   await B.p.click('#nearBox button[data-nsos="on"]'); await B.p.waitForTimeout(3000);
   const sosVis = await A.p.isVisible('#nearBox .sos-tag');
-  await A.p.selectOption('#nearMed', 'green_herb'); await A.p.click('#nearBox button[data-nheal="' + ub.key + '"]'); await A.p.waitForTimeout(3500);
+  await A.p.evaluate((k) => { const b = document.querySelector('#nearBox button[data-nsel="' + k + '"]'); if (b) b.click(); }, ub.key); await A.p.waitForTimeout(300);
+  await A.p.evaluate(() => { const s = document.querySelector('#nearBox select[data-nin="med"]'); s.value = 'green_herb'; s.dispatchEvent(new Event('change', { bubbles: true })); document.querySelector('#nearBox button[data-na="heal"]').click(); }); await A.p.waitForTimeout(3500);
   const hB = await cur(ub.key), hA = await cur(ua.key);
   ok('구조 요청·응급치료·보상', sosVis && hB.hp >= 40 && (+hA.inv.coin || 0) >= 3 && !(+hA.inv.green_herb > 1), 'sos ' + sosVis + ' B hp ' + hB.hp + ' A coin ' + hA.inv.coin + ' herb ' + hA.inv.green_herb);
-  await A.p.click('#nearBox button[data-nparty="' + ub.key + '"]'); await B.p.waitForTimeout(3000);
-  await B.p.click('#nearBox button[data-ninv][data-ok]'); await A.p.waitForTimeout(3500);
-  const pA = await cur(ua.key), pB = await cur(ub.key);
-  ok('동행 신청·수락', pA.buddy && pA.buddy.key === ub.key && pB.buddy && pB.buddy.key === ua.key, JSON.stringify([pA.buddy, pB.buddy]));
+  // 함께 하기: 건네주기 · 엄호 · 사진 · 결투
+  await edit(ua.key, d => { d.inv = Object.assign({}, d.inv, { camera: 1, coin: 10, beans: 4 }); d.weapons = ['경찰봉']; d.equip = '경찰봉'; d.wdur = { '경찰봉': 25 }; });
+  await edit(ub.key, d => { d.inv = Object.assign({}, d.inv, { coin: 10 }); });
+  await A.p.waitForTimeout(3000); await B.p.waitForTimeout(500);
+  const nearClick = async (P, sel) => { await P.evaluate((s) => { const b = document.querySelector('#nearBox ' + s); if (b) b.click(); }, sel); await P.waitForTimeout(2500); };
+  await A.p.evaluate(() => { const s = document.querySelector('#nearBox select[data-nin="give"]'); if (s) { s.value = 'i:beans'; s.dispatchEvent(new Event('change', { bubbles: true })); } const q = document.querySelector('#nearBox input[data-nin="qty"]'); if (q) q.value = '2'; });
+  await nearClick(A.p, 'button[data-na="give"]');
+  await nearClick(A.p, 'button[data-na="cover"]');
+  await nearClick(A.p, 'button[data-na="photo"]');
+  await A.p.evaluate(() => { const q = document.querySelector('#nearBox input[data-nin="stake"]'); if (q) q.value = '3'; });
+  await nearClick(A.p, 'button[data-na="duel"]');
+  await B.p.waitForTimeout(2000);
+  await nearClick(B.p, 'button[data-noffer][data-ok]');
+  await A.p.waitForTimeout(3500);
+  const cA = await cur(ua.key), cB = await cur(ub.key);
+  ok('건네주기·엄호·사진', (+cB.inv.beans || 0) >= 2 && cB.cover && cB.cover.n === 2 && (cB.album || []).length === 1 && !(+cA.inv.camera), JSON.stringify([cB.inv.beans, cB.cover, (cB.album || []).length, cA.inv.camera]));
+  ok('결투 내기 (은화 합계 보존)', (+cA.inv.coin) + (+cB.inv.coin) === 20 && Math.abs((+cA.inv.coin) - 10) === 3 && !Object.keys(cA.duelEsc || {}).length, JSON.stringify([cA.inv.coin, cB.inv.coin, cA.duelEsc]));
   const gid = await admin(async db => { await setDoc(doc(db, 'graves/gtest'), { key: ub.key, name: '밥', loc: 'dtla', epitaph: '', turned: false, days: 1, kills: 0, day: 1, ts: Date.now() }); return 'gtest'; });
   await A.p.waitForTimeout(2000); await A.p.click('#tabBtnComm').catch(() => {}); await A.p.waitForTimeout(500);
   await A.p.evaluate((g) => { const b = document.querySelector('button[data-flower="' + g + '"]'); if (b) b.click(); }, gid); await A.p.waitForTimeout(3000);
