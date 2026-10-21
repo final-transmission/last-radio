@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://apis.google.com 'sha256-NzWzSr/JJIt0kS48PXCsqUjn9/ALxUaH31f7sTmbH+s=' 'sha256-XBhYyYOXmyHU+rUeBJm1vZW172xgTyzDLX1SllyaCU8=' 'sha256-Gq8usP2g4eKIf/XrQNr8Aw10zfQ8ebyDGaxNFwwNOHI=' 'sha256-2SyVkQ2M6KN91RVg659kcicj9NnFP3ECPdqN2pOlsdE='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://www.google.com; connect-src 'self' https://*.googleapis.com https://*.firebaseapp.com https://*.firebaseio.com wss://*.firebaseio.com; frame-src https://*.firebaseapp.com; object-src 'none'; base-uri 'self'; form-action 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://apis.google.com 'sha256-NzWzSr/JJIt0kS48PXCsqUjn9/ALxUaH31f7sTmbH+s=' 'sha256-XBhYyYOXmyHU+rUeBJm1vZW172xgTyzDLX1SllyaCU8=' 'sha256-K6gZKYYPB8JOavv6GCK1AImcoKCzRe96XfpBLMiRP2w=' 'sha256-izKojgM69ixadswOWtsb2nDs/utZj2yB+24LuTOi6HI='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://www.google.com; connect-src 'self' https://*.googleapis.com https://*.firebaseapp.com https://*.firebaseio.com wss://*.firebaseio.com; frame-src https://*.firebaseapp.com; object-src 'none'; base-uri 'self'; form-action 'self'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <style id="antiClickjack">html{display:none !important}</style>
 <script>if (window.self === window.top) { var ack = document.getElementById('antiClickjack'); ack.parentNode.removeChild(ack); } else { try { window.top.location = window.self.location.href; } catch (e) {} }</script>
@@ -1008,7 +1008,7 @@
           <details><summary>⏱️ 시간</summary><p>현실 30분이 게임 하루예요. 아침 6시에 하루가 시작되고, 20시~5시는 밤이라 더 위험해요. 행동은 현실 시간으로 1분~1시간이 걸리고, 진행 중엔 다른 행동을 못 해요. 날씨와 무리 습격도 날마다 바뀌어요.</p><p>☀️ 맑음: 물자를 더 잘 찾아요. 🌧️ 비: 좀비를 덜 마주치고 갈증이 덜하지만 물자 찾기가 어려워요. 🌫️ 안개: 이동이 위험하고 물자 찾기가 어려워요. 🥵 폭염: 갈증과 피로가 빨리 오고, 좀비는 굼떠요. 오늘 날씨는 무전 카드 오른쪽 위에 보여요.</p></details>
           <details><summary>🗺️ 지도와 이동</summary><p>처음엔 위험이 낮은 지역 한 곳에서 시작해요. 지도에서 지역을 눌러 정보를 보고, 이웃한 지역으로만 이동할 수 있어요(5~30분). 가본 지역만 이름과 건물이 보이고, 「지역 확대」로 거리와 건물을 자세히 볼 수 있어요.</p></details>
           <details><summary>🏚️ 조사와 이벤트</summary><p>「조사할 구역 고르기」에서 건물을 고르고, 그 안의 지점(주방·창고·사물함…)을 하나씩 뒤져요. 지점마다 나오는 물자와 위험도가 달라요. 뒤진 곳은 5일 동안 거의 비어 있어요.</p><p>조사 중엔 가끔 돌발 이벤트가 생겨요. 선택지가 나오면 고르기 전까지 다른 행동을 할 수 없어요. 어떤 이벤트는 다음 이벤트로 이어지기도 해요.</p></details>
-          <details><summary>🚗 탈것</summary><p>주차장·차고·주유소·터미널 등에서 자전거, 오토바이, 승용차, 스포츠카, 트럭, 버스를 발견할 수 있어요. 시동은 30% 확률로만 걸려요. 자전거 말고는 연료가 필요하고, 휘발유 통 1개 = 연료 5예요. 탈것이 같은 지역에 있으면 이동 시간이 20~60%로 줄어요. 트럭·버스는 가방 한도도 늘려줘요.</p></details>
+          <details><summary>🚗 탈것</summary><p>주차장·차고·주유소·터미널 등에서 자전거, 스쿠터, 오토바이, 승용차, 스포츠카, 트럭, 버스, 소방차(소방서), 말(공원·숲)을 발견할 수 있어요. 시동은 30% 확률로만 걸려요. 자전거·말 말고는 연료가 필요하고, 휘발유 통 1개 = 연료 5예요. 탈것이 같은 지역에 있으면 이동 시간이 20~60%로 줄어요. 트럭·소방차·버스는 가방 한도도 늘려줘요.</p></details>
           <details><summary>🍖 배고픔·갈증·피로</summary><p>시간이 지나면 포만감·수분이 줄고 피로가 쌓여요. 배낭의 음식과 물은 필요할 때 알아서 꺼내 먹어요. 피로는 휴식·잠으로 풀어요. 굶주림·갈증·피로만으로는 죽지 않고 체력 1에서 버텨요. 음식을 먹으면 체력도 조금 차고, 다쳤을 때 포만감을 100까지 채우면 상처가 하루 빨리 아물어요.</p></details>
           <details><summary>🩸 부상과 감염</summary><p>워커와 싸우면 부위별로 타박상·할큄·열상·물림을 입어요. 물리면 감염이 시작되고, 머리·목을 물리면 더 빨리 퍼져요. 감염이 100%가 되면 워커가 돼요. 항생제·혼합 허브로 감염을, 붕대·소독약·봉합 키트로 상처를 치료해요. 아주 드물게 나오는 🧪 실험용 백신은 감염을 완전히 없애고 게임 10일(현실 5시간) 동안 물려도 감염되지 않게 해 줘요. 병동·약품 진열대·무기고, 방호복 좀비, 보급 투하, 치료 임무, 검역 검문소에서 얻을 수 있어요. 캐릭터 탭의 신체 검진표에서 상태를 볼 수 있어요.</p></details>
           <details><summary>🎒 아이템과 제작</summary><p>배낭은 기본 15kg, 등산 배낭이 있으면 25kg까지 들 수 있어요. 신선식품은 하루마다 조금씩 상해요(얻은 날은 상하지 않아요). 좀비와 마주치면 「장착 무기」로 싸워요. 좋은 무기일수록 덜 다치고(상처 없이 넘길 확률 맨손 20% ~ 총 68%) 더 잘 쓰러뜨리며, 가장 많이 쓴 무기가 선호 무기로 기록돼요. 무기는 쓸수록 닳고, 배낭 아래 「무기 수리」에서 고철·못·천 조각으로 고칠 수 있어요. 총(권총·산탄총·사냥용 소총)은 각자 맞는 탄(권총 탄약·산탄·소총탄)이 필요하고 총소리가 좀비를 불러요. 탄이 없으면 개머리로 내려쳐요. 활·석궁은 탄 없이 쏠 수 있어요. 라이터·성냥이 있으면 고기를 굽고 빗물을 끓일 수 있고, 천 조각으로 붕대를 만들 수 있어요. 「무기 분해」로 무기를 부수면 그 무기를 고칠 때 쓰는 재료를 돌려받아요(3단계 이상은 두 배, 반 넘게 닳았으면 절반).</p></details>
@@ -1019,8 +1019,8 @@
           <details><summary>🌆 지역 상태</summary><p>모든 생존자가 같은 LA를 공유하고, 지역은 시간이 지나며 변해요. 지도에서 지역을 누르면 기본 위험도와 지금 위험도, 좀비 밀도, 물자 상태, 환경 상태, 최근 사건이 보여요.</p><p>🔊 총·차·경보 같은 소음은 그 지역에 좀비를 끌어들여요. 좀비 밀도가 70을 넘는 군집은 이웃 지역으로 옮겨 가기도 해요. 좀비를 쓰러뜨리면 밀도가 조금 줄어요.</p><p>📦 많이 털린 지역은 음식·음료가 덜 나와요. 시간이 지나거나 보급 투하·물자 임무로 회복돼요.</p><p>🔥 산불(이동·조사 위험, 일부 지점 폐쇄) · 🌊 침수(지하·주차장 폐쇄, 피로) · ⚡ 정전(어둡고 냉장고 음식이 상함, 고철·휘발유로 직접 복구) · 🚧 도로 봉쇄(그 길로 못 감, 장애물을 치워야 함) · ☣️ 군사 검역(감염되면 못 들어감) · 🏴 대규모 약탈 · 🏕️ 생존자 점령(거래 가능). 상태에 따라 나오는 이벤트도 달라져요.</p></details>
           <details><summary>🧟 좀비 종류</summary><p>워커 말고도 러너(빠르고 아프다), 비명꾼(무리를 부른다), 방호복 좀비(의료품을 지님), 군인 좀비(탄약·전투식량을 지님), 부푼 시체(가스), 크롤러(바닥에서 발목을 잡는다), 브루트(덩치가 크고 아프다), 스피터(검은 액체를 뱉는다), 장갑 좀비(잘 안 쓰러진다), 잠복자(구석에 숨어 있다), 익사체(물가에 나온다)가 있어요. 장소마다 자주 나오는 종류가 달라요.</p></details>
           <details><summary>📈 기술</summary><p>수색(조사), 근접전(사냥·몸싸움), 사격(총·활·석궁), 의술(의료품), 요리(굽기·끓이기), 정비(탈것·무기 수리)가 쓸수록 올라요. 최대 10레벨이고, 다시 시작하면 처음부터예요.</p></details>
-          <details><summary>🤝 동료</summary><p>조사 중 만난 생존자나 동물을 돕거나, 무전 구조 요청에 응답하면 동료가 생길 수 있어요. 동료는 <b>최대 10명</b>까지 함께해요. 이름이 있는 동료는 세상에 한 명뿐이라, 다른 생존자가 먼저 데려간 동료는 영입할 수 없어요(헤어지거나 굶주려 떠나면 다시 만날 수 있어요).</p><p>사람 동료는 특성(간호사·사냥꾼·정비공·경비원·짐꾼·응급 구조사·정찰병·채집 전문가·사격 교관·식물학자·요리사·군인·약사·트럭 운전사·아이·기자·목사·전직 죄수·엔지니어)마다 효과가 있고, 쉴 때·싸울 때·밤·새 지방에서 말을 걸어요. 동물 동료(개 10품종·고양이·새끼 돼지·햄스터·아기 부엉이·족제비·애완 거북이)는 말 대신 행동으로 보여 줘요. 같은 특성 여럿은 효과가 한 번만 적용되고, 다른 특성끼리는 함께 적용돼요.</p><p>동료는 매일 배낭의 음식을 나눠 먹고 사흘 굶으면 떠나요. 자리를 비운 동안은 배고프지 않아요. 동료 칸에서 음식을 골라 직접 먹일 수도 있어요(배고픔이 사라지고 체력 +5, 좋아하는 음식 ★이면 하루 한 번 신뢰 +1). 신뢰가 꽉 찬(♥5) 동료는 굶어도 떠나지 않아요. 덩치 있는 동료는 싸움에서 대신 맞기도 하고, 체력이 0이 되면 죽어요. 하트(♥)는 신뢰도로, 동료와 함께하는 사건에서 오르내리고 0이 되면 떠나요.</p></details>
-          <details><summary>🪂 서버 이벤트</summary><p>현실 6시간마다 한 번, 1시간 동안 모두에게 같은 사건이 일어나요. 군 보급 투하: 그 지역을 조사하면 상자를 한 번 얻어요. 대습격: 날이 바뀔 때 그 지역에 있으면 혼자선 다치지만, 다른 생존자나 동료와 함께면 막아내고 보상을 받아요. 예고는 오늘의 무전과 지도에 떠요.</p></details>
+          <details><summary>🤝 동료</summary><p>조사 중 만난 생존자나 동물을 돕거나, 무전 구조 요청에 응답하면 동료가 생길 수 있어요. 동료는 <b>최대 10명</b>까지 함께해요. 이름이 있는 동료는 세상에 한 명뿐이라, 다른 생존자가 먼저 데려간 동료는 영입할 수 없어요(헤어지거나 굶주려 떠나면 다시 만날 수 있어요).</p><p>사람 동료는 특성(간호사·사냥꾼·정비공·경비원·짐꾼·응급 구조사·정찰병·채집 전문가·사격 교관·식물학자·요리사·군인·약사·트럭 운전사·아이·기자·목사·전직 죄수·엔지니어)마다 효과가 있고, 쉴 때·싸울 때·밤·새 지방에서 말을 걸어요. 동물 동료(개 10품종·고양이 10품종·새끼 돼지·햄스터·아기 부엉이·족제비·애완 거북이·고슴도치·기니피그·레서판다·토끼·라쿤)는 말 대신 행동으로 보여 줘요. 같은 특성 여럿은 효과가 한 번만 적용되고, 다른 특성끼리는 함께 적용돼요.</p><p>동료는 매일 배낭의 음식을 나눠 먹고 사흘 굶으면 떠나요. 자리를 비운 동안은 배고프지 않아요. 동료 칸에서 의약품으로 동료를 치료할 수 있고, 음식을 골라 직접 먹일 수도 있어요(배고픔이 사라지고 체력 +5, 좋아하는 음식 ★이면 하루 한 번 신뢰 +1). 신뢰가 꽉 찬(♥5) 동료는 굶어도 떠나지 않아요. 덩치 있는 동료는 싸움에서 대신 맞기도 하고, 체력이 0이 되면 죽어요. 하트(♥)는 신뢰도로, 동료와 함께하는 사건에서 오르내리고 0이 되면 떠나요.</p></details>
+          <details><summary>🪂 서버 이벤트</summary><p>현실 6시간마다 한 번, 1시간 동안 모두에게 같은 사건이 일어나요. 군 보급 투하: 그 지역에서 조사·채집·사냥·휴식 같은 행동을 끝내거나 도착하면 누구나 한 번 상자를 얻어요(인원 제한 없음). 대습격: 날이 바뀔 때 그 지역에 있으면 혼자선 다치지만, 다른 생존자나 동료와 함께면 막아내고 보상을 받아요. 예고는 오늘의 무전과 지도에 떠요.</p></details>
           <details><summary>📮 문의 · 버그 제보</summary><p>캐릭터 탭 옆 「📮 문의」에서 버그·문의·건의를 남길 수 있어요. 관리자가 답을 달면 같은 글 아래에 보여요. 패치나 공지가 새로 생기면 들어왔을 때 한 번 팝업으로 알려 줘요.</p></details>
           <details><summary>🔔 알림</summary><p>상단의 종 버튼을 켜면, 다른 탭을 보고 있을 때 행동이 끝나거나 선택이 필요한 일이 생기면 알려줘요. 브라우저에서 알림을 허용해야 해요.</p></details>
           <details><summary>🏠 쉘터</summary><p>쉘터를 만들거나 들어가면 동료끼리 쉘터 채팅, 공용 창고, 시설을 함께 써요. 빗물 수집기·텃밭은 3단계까지 강화할 수 있고 날씨에 따라 수확이 달라져요(비 오는 날 더 많이, 폭염엔 줄어요). 약초 화단은 매일 녹색 허브를 줘요. 바리케이드는 무리 습격 피해를 줄여요. 같은 지역에 쉘터 동료가 있으면 조사와 사냥이 더 안전해져요. 창고의 「알아서 꺼내 먹기」를 켜 두면 배고프거나 목마른데 배낭에 먹을 게 없을 때 창고에서 하나씩 꺼내 먹어요(어디에 있든).</p></details>
@@ -1181,7 +1181,7 @@
           <div class="mc-foot">정면 기준 · 그림의 R이 캐릭터의 오른쪽, L이 왼쪽 · 빨간 동그라미 번호는 부상 기록 번호 · 점선 원은 감염이 시작된 부위</div>
         </div>
         <button class="secondary" id="medBtn" type="button" style="margin-top:14px">💊 의약품 사용</button>
-        <div class="muted">응급 처치는 지금 상태에 가장 맞는 의료품을 골라 써요(1분). 붕대·소독약·봉합 키트는 상처, 항생제·혼합 허브는 감염, 허브·진통제는 체력에 써요. 배낭에서 직접 골라 쓸 수도 있어요.</div>
+        <div class="muted">응급 처치는 지금 상태에 가장 맞는 의료품을 골라 써요(1분, 붕대·진통제·비타민·녹색 허브는 바로). 붕대·소독약·봉합 키트는 상처, 항생제·혼합 허브는 감염, 허브·진통제는 체력에 써요. 배낭에서 직접 골라 쓸 수도 있어요.</div>
         <div class="char-msg" id="bodyMsg" role="status"></div>
       </div>
       </div>
@@ -4580,6 +4580,9 @@ const FIREBASE_CONFIG = {
     sports:    { n:'스포츠카', ic:'🏎️', mult:.2, tank:8, use:3, noise:1.5, where:['garage','parking','beverlyhills','malibu','studio'], text:'먼지를 뒤집어쓴 빨간 스포츠카. 문이 열려 있다.', fail:['키가 없다. 직결도 안 된다.','앞바퀴가 통째로 빠져 있다.','계기판에 경고등만 깜빡인다.'] },
     sedan:     { n:'승용차', ic:'🚗', mult:.35, tank:12, use:2, noise:1.1, where:['parking','garage','house','gas','motel'], text:'평범한 승용차. 운전석에 열쇠가 떨어져 있다.', fail:['배터리가 방전됐다.','엔진룸이 다 뜯겨 있다.','뒷바퀴 두 개가 펑크 났다.'] },
     truck:     { n:'트럭', ic:'🛻', mult:.4, tank:16, use:3, noise:1.3, carry:10, where:['warehouse','hardware','parking','garage','vernon'], text:'짐칸이 넓은 픽업트럭. 차 문에 핏자국이 말라 있다.', fail:['라디에이터가 터져 있다.','시동은 걸리는데 바로 꺼진다.','변속기가 고장 났다.'] },
+    firetruck: { n:'소방차', ic:'🚒', mult:.45, tank:24, use:4, noise:2, carry:15, where:['fire','parking','garage'], text:'사다리를 단 소방차가 차고 앞에 멈춰 있다. 호스가 바닥에 늘어져 있다.', fail:['배터리가 완전히 방전됐다.','타이어 두 개가 찢어져 있다.','운전석 계기판이 박살 나 있다.'] },
+    scooter:   { n:'스쿠터', ic:'🛵', mult:.4, tank:4, use:1, noise:.9, where:['house','parking','cafe','school','motel','market'], text:'배달 상자를 단 스쿠터가 인도에 쓰러져 있다.', fail:['키가 부러져 꽂혀 있다.','연료 호스가 새고 있다.','앞바퀴가 휘어 굴러가지 않는다.'] },
+    horse:     { n:'말', ic:'🐎', mult:.45, tank:0, use:0, noise:.5, animal:1, where:['park','trail','cabin','stadium','house'], text:'안장을 얹은 말 한 마리가 울타리 옆에서 풀을 뜯고 있다. 주인은 보이지 않는다.', fail:['다가가자 말이 앞발을 들고 달아났다.','말이 다리를 절고 있다. 태울 수가 없다.','고삐를 잡았지만 말이 꿈쩍도 하지 않는다.'] },
     bus:       { n:'버스', ic:'🚌', mult:.5, tank:20, use:4, noise:1.6, carry:20, where:['terminal','lobby','gate','parking','dtla'], text:'문이 열린 채 서 있는 시내버스. 운전석이 비어 있다.', fail:['앞유리가 박살 나고 핸들이 부러져 있다.','에어 브레이크가 풀리지 않는다.','배터리가 방전됐다.'] }
   };
   function myVeh() { const v = myDoc.vehicle; return v && VEHICLES[v.id] ? v : null; }
@@ -4592,7 +4595,7 @@ const FIREBASE_CONFIG = {
   Object.keys(VEHICLES).forEach(k => {
     const V = VEHICLES[k];
     EVENTS.push({ id:'veh_' + k, w:2.5, where:V.where, title:V.ic + ' ' + V.n + ' 발견', text:V.text + (V.tank ? ' 움직일지는 시동을 걸어봐야 안다.' : ' 탈 수 있을지는 살펴봐야 안다.'),
-      opts:[['try', V.tank ? '시동을 걸어본다' : '살펴본다'], ['leave', '그냥 둔다']],
+      opts:[['try', V.tank ? '시동을 걸어본다' : V.animal ? '천천히 다가가 고삐를 잡는다' : '살펴본다'], ['leave', '그냥 둔다']],
       resolve: kk => {
         if (kk !== 'try') return josa(V.n, '은', '는') + ' 그대로 두고 왔다.';
         gainSkill('mech', 2);
@@ -4600,7 +4603,7 @@ const FIREBASE_CONFIG = {
         const old = myVeh(), fuel = V.tank ? rint(0, Math.ceil(V.tank / 2)) : 0;
         myDoc.vehicle = { id: k, fuel, loc: myDoc.loc };
         return (old ? '타던 ' + josa(VEHICLES[old.id].n, '은', '는') + ' 두고 ' : '') + V.ic + ' ' + josa(V.n, '을', '를') + ' 손에 넣었다!' +
-          (V.tank ? (fuel ? ' 연료가 ' + fuel + '/' + V.tank + ' 남아 있다.' : ' 그런데 연료 탱크가 비어 있다. 휘발유를 구해야 한다.') : ' 연료 없이 달릴 수 있다.');
+          (V.tank ? (fuel ? ' 연료가 ' + fuel + '/' + V.tank + ' 남아 있다.' : ' 그런데 연료 탱크가 비어 있다. 휘발유를 구해야 한다.') : V.animal ? ' 고삐를 잡자 말이 콧김을 내뿜었다. 연료 없이 달릴 수 있다.' : ' 연료 없이 달릴 수 있다.');
       } });
   });
   function refuel() {
@@ -4861,6 +4864,21 @@ const FIREBASE_CONFIG = {
     corgi:     { n:'웰시코기', fx:{ hungerSave:.05 }, d:'동료가 배고파질 확률 -5%' },
     doberman:  { n:'도베르만', big:1, fx:{ dmg:.9 }, d:'받는 피해 ×0.9' }
   };
+  const CAT_BREEDS = {
+    koshort:   { n:'코리안 숏헤어', fx:{ danger:.97 }, d:'좀비와 마주칠 확률 ×0.97' },
+    russian:   { n:'러시안 블루', fx:{ nightDanger:.95 }, d:'밤에 좀비와 마주칠 확률 ×0.95' },
+    persian:   { n:'페르시안', fx:{ heal:1 }, d:'매일 체력 +1' },
+    siamese:   { n:'샴', fx:{ loot:.03 }, d:'물자를 하나 더 찾을 확률 +3%' },
+    mainecoon: { n:'메인쿤', fx:{ hunt:.05 }, d:'사냥 성공률 +5%' },
+    scottish:  { n:'스코티시 폴드', fx:{ hungerSave:.05 }, d:'동료가 배고파질 확률 -5%' },
+    bengal:    { n:'벵갈', fx:{ hunt:.05 }, d:'사냥 성공률 +5%' },
+    norwegian: { n:'노르웨이 숲', fx:{ dmg:.95 }, d:'받는 피해 ×0.95' },
+    abyssinian:{ n:'아비시니안', fx:{ forage:1 }, d:'채집 음식 +1' },
+    ragdoll:   { n:'랙돌', fx:{ heal:1 }, d:'매일 체력 +1' }
+  };
+  // 품종이 있는 동물 (개·고양이)
+  const BREEDS = { dog: DOG_BREEDS, cat: CAT_BREEDS };
+  function breedOf(c) { return c && BREEDS[c.trait] && BREEDS[c.trait][c.breed] || null; }
   // fx: danger·dmg·fuel·nightDanger는 곱하고(0.6까지), 나머지는 더한다. 같은 특성 여럿은 한 번만 친다
   const COMP_TRAITS = {
     nurse:      { n:'전직 간호사', fx:{ heal:2 }, d:'매일 체력 +2' },
@@ -4889,7 +4907,12 @@ const FIREBASE_CONFIG = {
     hamster:    { n:'햄스터', fx:{ loot:.05 }, d:'물자를 하나 더 찾을 확률 +5%', animal:1, noTank:1, food:['crackers','berries','apple'] },
     owlet:      { n:'아기 부엉이', fx:{ nightDanger:.85 }, d:'밤에 좀비와 마주칠 확률 ×0.85', animal:1, noTank:1, food:['raw_meat'] },
     weasel:     { n:'족제비', fx:{ hunt:.08 }, d:'사냥 성공률 +8%', animal:1, noTank:1, food:['raw_meat','jerky'] },
-    turtle:     { n:'애완 거북이', fx:{ heal:1 }, d:'매일 체력 +1 (곁에 있으면 마음이 놓인다)', animal:1, noTank:1, food:['veggies','apple','berries'] }
+    turtle:     { n:'애완 거북이', fx:{ heal:1 }, d:'매일 체력 +1 (곁에 있으면 마음이 놓인다)', animal:1, noTank:1, food:['veggies','apple','berries'] },
+    hedgehog:   { n:'고슴도치', fx:{ dmg:.95 }, d:'받는 피해 ×0.95 (가시를 세워 경고한다)', animal:1, noTank:1, food:['dogfood','raw_meat','berries','apple'] },
+    guinea:     { n:'기니피그', fx:{ hungerSave:.08 }, d:'동료가 배고파질 확률 -8% (작은 소리로 모두를 달랜다)', animal:1, noTank:1, food:['veggies','apple','berries'] },
+    redpanda:   { n:'레서판다', fx:{ loot:.04 }, d:'물자를 하나 더 찾을 확률 +4% (높은 곳을 잘 뒤진다)', animal:1, noTank:1, food:['berries','apple','veggies','bread'] },
+    rabbit:     { n:'토끼', fx:{ danger:.92 }, d:'좀비와 마주칠 확률 ×0.92 (귀가 밝다)', animal:1, noTank:1, food:['veggies','apple','berries'] },
+    raccoon:    { n:'라쿤', fx:{ loot:.06 }, d:'물자를 하나 더 찾을 확률 +6% (쓰레기통 전문가)', animal:1, noTank:1, food:['crackers','chips','bread','pizza','burger','berries','apple'] }
   };
   const HUMAN_TRAITS = Object.keys(COMP_TRAITS).filter(t => !COMP_TRAITS[t].animal);
   const ANIMAL_NAMES = ['나비','초코','보리','콩이','두부','망고','호두','깜이','별이','구름','쿠키','모카','라떼','감자','찹쌀','몽이','토리','해피','뭉치','루루','밤이','치즈','도토리','알밤','솜이','단비','하루','봄이','코코','레오'];
@@ -4909,7 +4932,7 @@ const FIREBASE_CONFIG = {
   };
   let COMP_LINES_BY = {};
   function isAnimal(c) { return !!(c && COMP_TRAITS[c.trait] && COMP_TRAITS[c.trait].animal); }
-  function compKind(c) { return c.trait === 'dog' && DOG_BREEDS[c.breed] ? DOG_BREEDS[c.breed].n : COMP_TRAITS[c.trait].n; }
+  function compKind(c) { const B = breedOf(c); return B ? B.n + (c.trait === 'cat' ? ' 고양이' : '') : COMP_TRAITS[c.trait].n; }
   function compSay(c, kind) {
     const own = COMP_LINES_BY[c.trait] && COMP_LINES_BY[c.trait][kind];
     if (isAnimal(c)) { const l = own && own.length ? own : ANIMAL_LINES[kind]; return l && l.length ? ' ' + pick(l) : ''; }
@@ -4934,7 +4957,7 @@ const FIREBASE_CONFIG = {
     const MUL = ['danger', 'dmg', 'fuel', 'nightDanger'], seen = new Set();
     let v = MUL.includes(key) ? 1 : 0;
     comps().forEach(c => {
-      [[c.trait, COMP_TRAITS[c.trait].fx], c.trait === 'dog' && DOG_BREEDS[c.breed] ? ['dog:' + c.breed, DOG_BREEDS[c.breed].fx] : null].forEach(s => {
+      [[c.trait, COMP_TRAITS[c.trait].fx], breedOf(c) ? [c.trait + ':' + c.breed, breedOf(c).fx] : null].forEach(s => {
         if (!s || seen.has(s[0] + key) || s[1][key] == null) return;
         seen.add(s[0] + key);
         v = MUL.includes(key) ? v * s[1][key] : v + s[1][key];
@@ -4968,8 +4991,8 @@ const FIREBASE_CONFIG = {
   }
   function releaseNpc(c) { if (db && c && c.id && (!npcClaims[c.id] || npcClaims[c.id].by === myKey)) { delete npcClaims[c.id]; db.doc('npcClaims/' + c.id).delete().catch(() => {}); } }
   function freeName(kind, pool) {
-    const mine = new Set(comps().map(c => c.id));
-    const ok = n => { const id = claimIdOf(kind, n); return !claimedByOther(id) && !mine.has(id); };
+    const mine = new Set(comps().map(c => c.id)), names = new Set(comps().map(c => c.name));
+    const ok = n => { const id = claimIdOf(kind, n); return !claimedByOther(id) && !mine.has(id) && !names.has(n); };
     const shuffled = pool.slice().sort(() => Math.random() - .5);
     let n = shuffled.find(ok);
     if (n) return n;
@@ -5001,10 +5024,11 @@ const FIREBASE_CONFIG = {
   function recruitAnimal(trait, breed, want) {
     if (comps().length >= COMP_MAX) return compFullText();
     trait = COMP_TRAITS[trait] && COMP_TRAITS[trait].animal ? trait : 'dog';
-    if (trait === 'dog') breed = DOG_BREEDS[breed] ? breed : pick(Object.keys(DOG_BREEDS));
-    const kind = trait === 'dog' ? 'dog-' + breed : trait;
+    const BR = BREEDS[trait];
+    if (BR) breed = BR[breed] ? breed : pick(Object.keys(BR));
+    const kind = BR ? trait + '-' + breed : trait;
     const name = want && !claimedByOther(claimIdOf(kind, want)) && !comps().some(c => c.id === claimIdOf(kind, want)) ? want : freeName(kind, ANIMAL_NAMES);
-    const c = { id: claimIdOf(kind, name), name, trait, breed: trait === 'dog' ? breed : undefined, hp: 100, hunger: 0, trust: 2, since: myDoc.day };
+    const c = { id: claimIdOf(kind, name), name, trait, breed: BR ? breed : undefined, hp: 100, hunger: 0, trust: 2, since: myDoc.day };
     if (c.breed === undefined) delete c.breed;
     comps().push(c); claimNpc(c);
     return ' 🐾 ' + compKind(c) + ' ' + josa(name, '이', '가') + ' 동료가 됐다.' + compSay(c, 'join');
@@ -5055,17 +5079,30 @@ const FIREBASE_CONFIG = {
       else addLog('🍽️ ' + c.name + (isAnimal(c) ? '이(가)' + compSay(c, 'hungry') : ':' + compSay(c, 'hungry')) + ' 나눠줄 음식이 없다.');
     });
   }
-  function compIcon(c) { return ({ dog:'🐕', cat:'🐈', piglet:'🐖', hamster:'🐹', owlet:'🦉', weasel:'🦦', turtle:'🐢', child:'🧒' })[c.trait] || '🧑'; }
+  function compIcon(c) { return ({ dog:'🐕', cat:'🐈', piglet:'🐖', hamster:'🐹', owlet:'🦉', weasel:'🦦', turtle:'🐢', hedgehog:'🦔', guinea:'🐾', redpanda:'🐼', rabbit:'🐇', raccoon:'🦝', child:'🧒' })[c.trait] || '🧑'; }
   function renderComp() {
-    const l = comps(), el = $('compBox'), foods = Object.keys(invOf(myDoc)).filter(k => ITEMS[k] && ITEMS[k].cat === 'food' && inv(k) > 0);
+    const l = comps(), el = $('compBox'), foods = Object.keys(invOf(myDoc)).filter(k => ITEMS[k] && ITEMS[k].cat === 'food' && inv(k) > 0), meds = Object.keys(COMP_MED).filter(k => inv(k) > 0);
     // 먹일 음식을 고르는 중엔 다시 그리지 않는다
     if (el.contains(document.activeElement) && document.activeElement.tagName === 'SELECT') return;
     el.innerHTML = l.length ? `<div class="muted" style="margin:0 0 6px">함께하는 동료 ${l.length}/${COMP_MAX}</div>` + l.map(c => {
-      const T = COMP_TRAITS[c.trait], d = c.trait === 'dog' && DOG_BREEDS[c.breed] ? T.d + ' · ' + DOG_BREEDS[c.breed].d : T.d, tr = c.trust == null ? 2 : c.trust;
-      return `<div class="comp"><span class="comp-ic">${compIcon(c)}</span><div><b>${escapeHtml(c.name)}</b> <small>${escapeHtml(compKind(c))} · ${'♥'.repeat(tr)}${'♡'.repeat(5 - tr)}</small><div class="bar-bg" style="margin:4px 0"><div class="bar-fill${c.hp < 40 ? ' low' : ''}" style="width:${c.hp}%"></div></div><small>${d}${c.hunger ? ' · 🍽️ 배고픔 ' + c.hunger + '/3' : ''}${tr >= 5 ? ' · 💞 굶어도 떠나지 않아요' : ''}</small>${foods.length ? `<div class="comp-feed"><select data-feedsel="${escapeHtml(c.id)}" aria-label="먹일 음식">${foods.map(k => `<option value="${k}"${(T.food || []).includes(k) ? ' selected' : ''}>${ITEMS[k].ic} ${ITEMS[k].n} ${inv(k)}${(T.food || []).includes(k) ? ' ★' : ''}</option>`).join('')}</select><button class="secondary" type="button" data-feed="${escapeHtml(c.id)}"${myDoc.status === 'dead' ? ' disabled' : ''}>먹이기</button></div>` : ''}</div><button class="secondary" type="button" data-bye="${escapeHtml(c.id)}">헤어지기</button></div>`;
+      const T = COMP_TRAITS[c.trait], d = breedOf(c) ? T.d + ' · ' + breedOf(c).d : T.d, tr = c.trust == null ? 2 : c.trust;
+      return `<div class="comp"><span class="comp-ic">${compIcon(c)}</span><div><b>${escapeHtml(c.name)}</b> <small>${escapeHtml(compKind(c))} · ${'♥'.repeat(tr)}${'♡'.repeat(5 - tr)}</small><div class="bar-bg" style="margin:4px 0"><div class="bar-fill${c.hp < 40 ? ' low' : ''}" style="width:${c.hp}%"></div></div><small>${d}${c.hunger ? ' · 🍽️ 배고픔 ' + c.hunger + '/3' : ''}${tr >= 5 ? ' · 💞 굶어도 떠나지 않아요' : ''}</small>${foods.length ? `<div class="comp-feed"><select data-feedsel="${escapeHtml(c.id)}" aria-label="먹일 음식">${foods.map(k => `<option value="${k}"${(T.food || []).includes(k) ? ' selected' : ''}>${ITEMS[k].ic} ${ITEMS[k].n} ${inv(k)}${(T.food || []).includes(k) ? ' ★' : ''}</option>`).join('')}</select><button class="secondary" type="button" data-feed="${escapeHtml(c.id)}"${myDoc.status === 'dead' ? ' disabled' : ''}>먹이기</button></div>` : ''}${meds.length && c.hp < 100 ? `<div class="comp-feed"><select data-medsel="${escapeHtml(c.id)}" aria-label="쓸 의약품">${meds.map(k => `<option value="${k}">${ITEMS[k].ic} ${ITEMS[k].n} ${inv(k)} · 체력 +${COMP_MED[k]}</option>`).join('')}</select><button class="secondary" type="button" data-cmed="${escapeHtml(c.id)}"${myDoc.status === 'dead' ? ' disabled' : ''}>치료</button></div>` : ''}</div><button class="secondary" type="button" data-bye="${escapeHtml(c.id)}">헤어지기</button></div>`;
     }).join('') : '<div class="muted" style="margin:0">함께하는 동료가 없어요. 무전 구조 요청에 응답하거나, 조사 중 만난 생존자·동물을 도우면 동료가 생길 수 있어요. 최대 10명까지 함께할 수 있어요.</div>';
   }
+  // 동료 치료: 의약품마다 되살리는 체력 (동료는 상처 종류 없이 체력만 있다)
+  const COMP_MED = { first_aid:40, mixed_herb:25, suture:15, disinfectant:12, bandage:10, green_herb:10, antibiotics:10, painkillers:8, vitamins:5 };
   $('compBox').addEventListener('click', async (e) => {
+    const mb = e.target.closest('button[data-cmed]');
+    if (mb) {
+      const c = comps().find(x => x.id === mb.dataset.cmed), sel = $('compBox').querySelector('select[data-medsel="' + mb.dataset.cmed + '"]'), k = sel && sel.value;
+      if (!c || !k || !COMP_MED[k] || inv(k) <= 0 || c.hp >= 100 || myDoc.status === 'dead') return;
+      addItem(k, -1);
+      gainSkill('medic', 1);
+      const n = Math.min(100 - c.hp, COMP_MED[k] + 2 * skillLv('medic'));
+      addLog('🩹 ' + c.name + '에게 ' + josa(ITEMS[k].n, '을', '를') + ' 썼다.' + compHeal(c, n));
+      sfx('heal'); renderStatus(); await saveDoc();
+      return;
+    }
     // 고른 음식을 먹인다: 배고픔이 사라지고 체력 +5, 좋아하는 음식(★)이면 하루 한 번 호감도 +1
     const fb = e.target.closest('button[data-feed]');
     if (fb) {
@@ -5486,6 +5523,26 @@ const FIREBASE_CONFIG = {
       resolve: k => k === 'water' ? (evUse(['water','rainwater']) ? '물이 차오르자 거북이가 천천히 고개를 내밀었다.' + recruitAnimal('turtle') : '부어 줄 물이 없었다.')
         : k === 'take' ? (ch(.6) ? '주머니에 넣자 거북이가 조용히 고개를 내밀었다.' + recruitAnimal('turtle') : '거북이는 끝내 고개를 내밀지 않았다. 조심히 수조에 돌려놓았다.')
         : '수조 유리에 손바닥을 한 번 대고 돌아섰다.' },
+    { id:'hedgehog_hedge', w:1.5, where:['park','house','trail','cabin','shed','church'], title:'🦔 덤불 속 고슴도치', text:'마른 덤불 아래에서 작은 고슴도치가 가시를 잔뜩 세운 채 몸을 웅크리고 있다. 콧등이 쉴 새 없이 씰룩인다.', opts:[['food','먹을 걸 내려놓는다'],['cloth','천으로 감싸 든다'],['leave','지나간다']],
+      resolve: k => k === 'food' ? (evUse(['dogfood','raw_meat','berries','apple']) ? '고슴도치가 가시를 눕히고 먹이를 오물거렸다. 다 먹고는 신발 옆에 붙어 앉았다.' + recruitAnimal('hedgehog') : '내려놓을 먹이가 없었다. 고슴도치는 더 깊이 웅크렸다.')
+        : k === 'cloth' ? (evUse(['cloth']) ? '천 조각으로 감싸 들어 올렸다. 가시가 천을 뚫고 손바닥을 찔렀지만 놓지 않았다.' + evHurt(1, 2, 'scratch') + recruitAnimal('hedgehog') : '맨손으로 들어 보려다 가시에 찔렸다.' + evHurt(1, 3, 'scratch'))
+        : '고슴도치는 끝까지 공처럼 웅크린 채였다.' },
+    { id:'guinea_cage', w:1.5, where:['school','classroom','house','bedroom','market','pharmacy'], title:'🐾 교실 뒤편의 기니피그', text:'교실 뒤 사육장에서 기니피그 한 마리가 "뀨잇, 뀨잇" 하고 운다. 물병은 바싹 말라 있다.', opts:[['water','물을 채워 준다'],['take','안고 간다'],['leave','두고 간다']],
+      resolve: k => k === 'water' ? (evUse(['water','rainwater']) ? '물을 할짝이던 기니피그가 손가락에 코를 비볐다.' + recruitAnimal('guinea') : '부어 줄 물이 없었다.')
+        : k === 'take' ? (ch(.7) ? '품에 안자 작게 뀨잇 하더니 조용해졌다.' + recruitAnimal('guinea') : '버둥대다 사육장 구석으로 숨어 버렸다.')
+        : '뒤에서 뀨잇 하는 소리가 한참 이어졌다.' },
+    { id:'redpanda_zoo', w:1.2, where:['park','trail','cabin','stadium','griffith'], title:'🐼 나무 위의 레서판다', text:'부서진 동물원 우리를 빠져나온 레서판다 한 마리가 나뭇가지 위에서 꼬리를 늘어뜨리고 내려다본다.', opts:[['food','과일을 흔들어 본다'],['climb','나무에 올라간다'],['leave','지나간다']],
+      resolve: k => k === 'food' ? (evUse(['apple','berries','bread','veggies']) ? '레서판다가 쪼르르 내려와 과일을 받아 들고 두 발로 섰다.' + recruitAnimal('redpanda') : '흔들 과일이 없었다. 레서판다는 하품을 했다.')
+        : k === 'climb' ? (ch(.45) ? '가지 끝까지 올라가자 레서판다가 어깨 위로 폴짝 올라탔다.' + evFat(6) + recruitAnimal('redpanda') : '가지가 부러져 떨어졌다.' + evHurt(3, 8, 'bruise'))
+        : '붉은 꼬리가 나뭇잎 사이로 사라졌다.' },
+    { id:'rabbit_garden', w:1.5, where:['park','house','trail','cabin','church','school'], title:'🐇 텃밭의 토끼', text:'버려진 텃밭에서 하얀 토끼가 상추를 갉아먹다가 귀를 쫑긋 세운다. 목에 작은 리본이 묶여 있다.', opts:[['food','채소를 내민다'],['catch','살금살금 다가간다'],['leave','지나간다']],
+      resolve: k => k === 'food' ? (evUse(['veggies','apple','berries']) ? '토끼가 코를 씰룩이며 다가와 손바닥 위의 채소를 다 먹었다.' + recruitAnimal('rabbit') : '내밀 채소가 없었다. 토끼는 다시 상추를 갉았다.')
+        : k === 'catch' ? (ch(.4) ? '토끼가 도망치지 않고 품에 안겼다.' + recruitAnimal('rabbit') : '토끼가 번개처럼 울타리 밑으로 사라졌다. 대신 텃밭에서 채소를 조금 챙겼다.' + evLoot(['veggies'], 2))
+        : '토끼의 귀가 풀숲 너머로 사라졌다.' },
+    { id:'raccoon_trash', w:1.5, where:['market','diner','burger','pizza','motel','house','parking','gas'], title:'🦝 쓰레기통의 라쿤', text:'뒤집힌 쓰레기통 속에서 라쿤 한 마리가 과자 봉지를 뒤지다 눈이 마주쳤다. 도망칠 생각은 없어 보인다.', opts:[['food','과자를 던져 준다'],['shoo','쫓아낸다'],['leave','지나간다']],
+      resolve: k => k === 'food' ? (evUse(['crackers','chips','bread','pizza','burger','chocolate']) ? '라쿤이 두 손으로 과자를 받아 들고 씻는 시늉을 했다. 그러고는 졸졸 따라왔다.' + recruitAnimal('raccoon') : '던져 줄 게 없었다. 라쿤이 실망한 듯 쓰레기통으로 돌아갔다.')
+        : k === 'shoo' ? '라쿤이 달아난 자리에 녀석이 모아 둔 물건이 있었다.' + evLoot(['chips','crackers','cloth','matches'], 2)
+        : '등 뒤에서 봉지 부스럭대는 소리가 이어졌다.' },
     { id:'lost_puppy', w:2.5, where:['house','park','gas','market','motel','parking','trail'], title:'🐶 목줄 끊긴 강아지', text:'목줄이 끊어진 강아지가 차 밑에서 낑낑대고 있다. 이름표는 지워져 읽을 수 없다.', opts:[['call','쪼그려 앉아 부른다'],['food','먹이를 내민다'],['leave','지나간다']],
       resolve: k => k === 'call' ? (ch(.6) ? '강아지가 꼬리를 흔들며 기어 나왔다.' + recruitAnimal('dog') : '강아지는 겁에 질려 더 깊이 숨어 버렸다.')
         : k === 'food' ? (evUse(['dogfood','jerky','raw_meat','beans']) ? '먹이를 다 먹은 강아지가 다리에 몸을 비볐다.' + recruitAnimal('dog') : '내밀 먹이가 없었다.')
@@ -5557,7 +5614,8 @@ const FIREBASE_CONFIG = {
     if (day > g.end) return '';
     const what = g.type === 'drop' ? '🪂 군 보급 투하' : '🧟 대습격';
     if (day < g.start) { const h = Math.round(((g.start - day) * WORLD_DAY_MS - (WORLD_DAY_MS - msToNextDay())) / 36e5 * 10) / 10; return what + ' 예고 · ' + D.n + ' · 약 ' + (h >= 1 ? h + '시간' : Math.max(1, Math.round(h * 60)) + '분') + ' 뒤'; }
-    return what + ' 진행 중 · ' + D.n + (g.type === 'drop' ? ' · 그 지역을 조사하면 보급 상자를 찾을 수 있어요' : ' · 그 지역에 두 명 이상 모이면 함께 막아내요');
+    const got = myDoc && myDoc.gevClaim === g.slot;
+    return what + ' 진행 중 · ' + D.n + (g.type === 'drop' ? (got ? ' · ✔ 보급 상자를 이미 받았어요' : ' · 그 지역에서 행동을 끝내면 누구나 한 번 보급 상자를 받아요') : ' · 그 지역에 두 명 이상 모이면 함께 막아내요');
   }
   // 보급 투하: 진행 중에 그 지역을 조사하면 한 번 상자를 얻는다
   function gevDropCheck() {
@@ -6339,6 +6397,8 @@ const FIREBASE_CONFIG = {
         else if (t === 'craft') doCraft(b.arg, b.paid);
         else if (t === 'repair') doRepair(b.arg, b.paid);
         else if (t === 'fixenv') doFixEnv(b.arg);
+        // 군 보급: 조사 말고 다른 행동(채집·사냥·휴식·도착 등)을 끝내도 그 지역에 있으면 상자를 찾는다
+        if (t !== 'explore' && myDoc.status !== 'dead') { const drop = gevDropCheck(); if (drop) addLog(drop.trim()); }
         const lb = Object.keys(leftBehind);
         if (lb.length) addLog('🎒 가방이 꽉 차서 두고 왔다: ' + lb.map(k => k + ' ' + leftBehind[k]).join(', '));
         activityCost(b.min || 0, t === 'rest' || t === 'sleep');
@@ -6887,6 +6947,7 @@ const FIREBASE_CONFIG = {
     const cats = { food:'음식', drink:'음료', med:'의료품', tool:'도구·재료' };
     let h = Object.keys(cats).map(c => `<optgroup label="${cats[c]}">` + Object.keys(ITEMS).filter(k => ITEMS[k].cat === c).map(k => `<option value="i:${k}">${ITEMS[k].ic} ${escapeHtml(ITEMS[k].n)}</option>`).join('') + '</optgroup>').join('');
     h += '<optgroup label="필기구">' + STATIONERY_ITEMS.map(it => `<option value="s:${it.k}">${it.ic} ${it.n}</option>`).join('') + '</optgroup>';
+    h += '<optgroup label="탈것">' + Object.keys(VEHICLES).map(v => `<option value="v:${v}">${VEHICLES[v].ic} ${VEHICLES[v].n}</option>`).join('') + '</optgroup>';
     h += '<optgroup label="무기">' + Object.keys(WEAPON_TIER).filter(w => w !== '맨손').map(w => `<option value="w:${escapeHtml(w)}">🗡️ ${escapeHtml(w)}</option>`).join('') + '</optgroup>';
     return h;
   }
@@ -6895,10 +6956,11 @@ const FIREBASE_CONFIG = {
     const alive = docs.filter(d => d.status !== 'dead');
     $('giftTargets').innerHTML = alive.map(d => { const k = escapeHtml(keyOf(d)); return `<label><input type="checkbox" data-gk="${k}"${giftSel.has(keyOf(d)) ? ' checked' : ''}> <b>${escapeHtml(d.name)}</b>${isMe(d) ? ' (나)' : ''} <small class="muted" style="margin:0">♥${Math.max(0, +d.hp || 0)} · 생존 ${survDays(d)}일</small></label>`; }).join('') || '<div class="muted">살아 있는 생존자가 없어요.</div>';
   }
-  function giftLabel(v, n) { const [t, id] = [v.slice(0, 1), v.slice(2)]; return t === 'i' ? ITEMS[id].n + ' ' + n + '개' : t === 's' ? STATIONERY_ITEMS.find(x => x.k === id).n + ' ' + n + '개' : id; }
+  function giftLabel(v, n) { const [t, id] = [v.slice(0, 1), v.slice(2)]; return t === 'i' ? ITEMS[id].n + ' ' + n + '개' : t === 's' ? STATIONERY_ITEMS.find(x => x.k === id).n + ' ' + n + '개' : t === 'v' ? VEHICLES[id].n : id; }
   function giftApply(t, v, n) {
     const [kind, id] = [v.slice(0, 1), v.slice(2)];
     if (kind === 'i') { t.inv = t.inv && typeof t.inv === 'object' ? t.inv : {}; t.inv[id] = (+t.inv[id] || 0) + n; }
+    else if (kind === 'v') { if (VEHICLES[id] && DISTRICTS[t.loc]) t.vehicle = { id, fuel: VEHICLES[id].tank, loc: t.loc }; }
     else if (kind === 's') { t.items = t.items && typeof t.items === 'object' ? t.items : {}; t.items[id] = (+t.items[id] || 0) + n; }
     else { t.weapons = Array.isArray(t.weapons) ? t.weapons : []; if (!t.weapons.includes(id)) t.weapons.push(id); t.wdur = t.wdur || {}; t.wdur[id] = WEAPON_DUR[id] || 20; }
   }
@@ -7143,6 +7205,12 @@ const FIREBASE_CONFIG = {
   // 업데이트할 때마다 맨 위에 추가한다
   const PATCH_NOTES = [
     { d:'10.21', items:[
+      '🩹 동료를 의약품으로 치료할 수 있어요 (캐릭터 탭 동료 칸)',
+      '💛 비타민: 피로 -30',
+      '⚡ 붕대·진통제·비타민·녹색 허브는 기다리지 않고 바로 써요 (다른 행동 중에도)',
+      '🪂 군 보급 상자: 조사 말고 채집·사냥·휴식·도착으로도 받아요 (인원 제한 없음, 이미 받았으면 표시)',
+      '🐾 새 동물 동료: 고슴도치·기니피그·레서판다·토끼·라쿤, 고양이 10품종',
+      '🚒 새 탈것: 소방차·스쿠터·말',
       '🛠 접속했을 때 진행이 예전 시점으로 돌아가던(롤백) 문제 대응: 저장 방식을 가볍게 바꿔 서버 사용량을 줄였어요',
       '⚠️ 진행이 저장되지 않으면 화면 맨 위에 빨간 경고가 떠요 (「다시 저장」 버튼)'
     ] },
@@ -7467,7 +7535,7 @@ const FIREBASE_CONFIG = {
     scrap:       { n:'고철', ic:'⚙️', cat:'tool', wt:1, desc:'쉘터 건설 재료' },
     fuel:        { n:'휘발유 통', ic:'⛽', cat:'tool', wt:1, desc:'탈것 연료 +5 · 보트·발전기에도 쓴다' },
     pack:        { n:'등산 배낭', ic:'🎒', cat:'tool', wt:1, desc:'들고 있으면 가방 +10kg' },
-    vitamins:    { n:'비타민', ic:'💛', cat:'med', wt:0.05, hp:3, fat:-3, desc:'체력 +3' },
+    vitamins:    { n:'비타민', ic:'💛', cat:'med', wt:0.05, hp:3, fat:-30, desc:'체력 +3, 피로 -30' },
     coin:        { n:'은화', ic:'🪙', cat:'tool', wt:0, desc:'떠돌이 상인에게 물건을 팔고 받는 돈 · 상인에게서 반지를 살 수 있다' },
     ring:        { n:'반지', ic:'💍', cat:'tool', wt:.01, desc:'떠돌이 상인에게 산 반지 · 배우자 신청에 쓴다' }
   };
@@ -7601,6 +7669,8 @@ const FIREBASE_CONFIG = {
     if (!quiet) addLog(text);
     return text;
   }
+  // 효과가 작은 의료품은 기다리지 않고 바로 쓴다 (붕대·진통제·비타민·녹색 허브)
+  function quickMed(id) { const it = ITEMS[id]; return !!it && it.cat === 'med' && !it.inf && !it.healAll && !it.vaccine && (it.hp || 0) <= 10 && (!it.heal || it.heal.every(h => h === 'scratch' || h === 'bruise')); }
   // 의료품 사용 (1분 걸리는 행동의 결과)
   function canUseMed(id) {
     const it = ITEMS[id];
@@ -7709,8 +7779,8 @@ const FIREBASE_CONFIG = {
       return `<div class="bag-cat">${CAT_NAME[cat]}</div>` + list.map(k => {
         const it = ITEMS[k];
         const eff = it.cat === 'med' ? it.desc : [it.sat ? '포만감 ' + (it.sat > 0 ? '+' : '') + it.sat : '', it.hyd ? '수분 ' + (it.hyd > 0 ? '+' : '') + it.hyd : '', it.fat ? '피로 ' + it.fat : '', it.sick ? '배탈 주의' : ''].filter(Boolean).join(' · ');
-        const label = it.cat === 'food' ? '먹기' : it.cat === 'drink' ? '마시기' : '사용 · 1분';
-        const off = dead || (it.cat === 'med' ? (busy || !canUseMed(k)) : false);
+        const label = it.cat === 'food' ? '먹기' : it.cat === 'drink' ? '마시기' : quickMed(k) ? '사용' : '사용 · 1분';
+        const off = dead || (it.cat === 'med' ? ((busy && !quickMed(k)) || !canUseMed(k)) : false);
         const btn = (it.cat === 'tool' ? '' : `<button class="secondary" type="button" data-use="${k}"${off ? ' disabled' : ''}>${label}</button>`) + `<button class="secondary bag-drop" type="button" data-drop="${k}"${dead ? ' disabled' : ''} aria-label="${it.n} 버리기">버리기</button>`;
         return `<div class="bag-row"><span class="bic">${it.ic}</span><div class="bnm">${it.n} <b>×${v[k]}</b><small>${eff || it.desc || ''} · ${Math.round((it.wt || 0) * v[k] * 10) / 10}kg</small></div>${btn}</div>`;
       }).join('');
@@ -7738,13 +7808,14 @@ const FIREBASE_CONFIG = {
     if (!b || b.disabled || !myDoc) return;
     const id = b.dataset.use, it = ITEMS[id];
     if (!it) return;
+    if (it.cat === 'med' && quickMed(id)) { if (canUseMed(id)) { useMed(id); sfx('heal'); renderStatus(); await saveDoc(); } return; }
     if (it.cat === 'med') { startAction('med', id); return; }
     if (it.cat === 'tool') return;
     const t = consumeItem(id, false, false);
     if (t) { sfx('eat'); $('bagMsg').textContent = t; renderStatus(); await saveDoc(); }
   });
 
-  $('medBtn').addEventListener('click', () => { const id = bestMed(); if (id) startAction('med', id); });
+  $('medBtn').addEventListener('click', async () => { const id = bestMed(); if (!id) return; if (quickMed(id) && myDoc.status !== 'dead') { useMed(id); sfx('heal'); renderStatus(); await saveDoc(); } else startAction('med', id); });
   buildBody();
 
   let bioDirty = false;
@@ -7882,7 +7953,7 @@ const FIREBASE_CONFIG = {
 </div>
 <script>
 (function(){
-  var BUILD_ID = '20261020233436';
+  var BUILD_ID = '20261021111311';
   function check(){
     fetch('version.txt?t=' + Date.now(), { cache: 'no-store' }).then(function(r){ return r.ok ? r.text() : ''; }).then(function(v){
       v = (v || '').trim();
