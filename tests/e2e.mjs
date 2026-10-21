@@ -175,6 +175,27 @@ try {
   const sA2 = await cur(ua.key);
   ok('무기 분해', !sA2.weapons.includes('야구방망이') && (+sA2.inv.scrap || 0) === scrap0 + 1, JSON.stringify([sA2.weapons, sA2.inv.scrap]));
   await closePops();
+  // 생존자끼리: 구조 요청 → 응급치료(보상) · 동행 · 묘비 꽃
+  await edit(ub.key, d => { d.hp = 30; d.loc = 'dtla'; d.busy = null; d.event = null; });
+  await edit(ua.key, d => { d.inv = Object.assign({}, d.inv, { bandage: 3, green_herb: 2 }); d.loc = 'dtla'; d.busy = null; d.event = null; });
+  await A.p.reload(); await B.p.reload(); await A.p.waitForTimeout(2500); await B.p.waitForTimeout(500);
+  await A.p.click('#tabBtnPlay').catch(() => {}); await B.p.click('#tabBtnPlay').catch(() => {});
+  await B.p.click('#nearBox button[data-nsos="on"]'); await B.p.waitForTimeout(3000);
+  const sosVis = await A.p.isVisible('#nearBox .sos-tag');
+  await A.p.selectOption('#nearMed', 'green_herb'); await A.p.click('#nearBox button[data-nheal="' + ub.key + '"]'); await A.p.waitForTimeout(3500);
+  const hB = await cur(ub.key), hA = await cur(ua.key);
+  ok('구조 요청·응급치료·보상', sosVis && hB.hp >= 40 && (+hA.inv.coin || 0) >= 3 && !(+hA.inv.green_herb > 1), 'sos ' + sosVis + ' B hp ' + hB.hp + ' A coin ' + hA.inv.coin + ' herb ' + hA.inv.green_herb);
+  await A.p.click('#nearBox button[data-nparty="' + ub.key + '"]'); await B.p.waitForTimeout(3000);
+  await B.p.click('#nearBox button[data-ninv][data-ok]'); await A.p.waitForTimeout(3500);
+  const pA = await cur(ua.key), pB = await cur(ub.key);
+  ok('동행 신청·수락', pA.buddy && pA.buddy.key === ub.key && pB.buddy && pB.buddy.key === ua.key, JSON.stringify([pA.buddy, pB.buddy]));
+  const gid = await admin(async db => { await setDoc(doc(db, 'graves/gtest'), { key: ub.key, name: '밥', loc: 'dtla', epitaph: '', turned: false, days: 1, kills: 0, day: 1, ts: Date.now() }); return 'gtest'; });
+  await A.p.waitForTimeout(2000); await A.p.click('#tabBtnComm').catch(() => {}); await A.p.waitForTimeout(500);
+  await A.p.evaluate((g) => { const b = document.querySelector('button[data-flower="' + g + '"]'); if (b) b.click(); }, gid); await A.p.waitForTimeout(3000);
+  const gd = await admin(async db => (await getDoc(doc(db, 'graves/gtest'))).data());
+  const bLog = await B.p.evaluate(() => [...document.querySelectorAll('#myLog .txt')].slice(0, 6).map(x => x.textContent).join(' | '));
+  ok('묘비 꽃 (받는 사람 일지)', gd.flowers === 1 && /꽃을 놓고/.test(bLog), 'flowers ' + gd.flowers + ' / ' + bLog.slice(0, 160));
+  await closePops();
   // 저장 실패 경고: 연결이 끊기면 15초 뒤 경고, 다시 연결되면 사라진다
   await B.p.click('#tabBtnPlay').catch(() => {});
   await B.p.evaluate(() => firebase.firestore().disableNetwork());

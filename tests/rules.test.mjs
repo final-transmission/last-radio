@@ -116,6 +116,16 @@ await ok('friend rel req', setDoc(doc(A, F), Object.assign({}, fr, { st: 'ok', r
 await ok('friend rel accept', setDoc(doc(B, F), Object.assign({}, fr, { st: 'ok', rel: 'spouse', req: null })));
 await no('friend bad rel', setDoc(doc(B, F), Object.assign({}, fr, { st: 'ok', rel: 'boss' })));
 await ok('friend delete', deleteDoc(doc(B, F)));
+await ok('aid send', setDoc(doc(A, 'aids/a1'), { kind: 'heal', from: 'uid-alice', fromName: '앨리스', to: 'uid-bob', item: 'bandage', loc: 'dtla', ts: 1 }));
+await no('aid fake from', setDoc(doc(B, 'aids/a2'), { kind: 'heal', from: 'uid-alice', fromName: '앨리스', to: 'uid-bob', item: 'bandage', ts: 1 }));
+await no('aid to self', setDoc(doc(A, 'aids/a3'), { kind: 'heal', from: 'uid-alice', fromName: '앨리스', to: 'uid-alice', item: 'bandage', ts: 1 }));
+await no('aid bad kind', setDoc(doc(A, 'aids/a4'), { kind: 'steal', from: 'uid-alice', fromName: '앨리스', to: 'uid-bob', ts: 1 }));
+await ok('aid read by receiver', getDoc(doc(B, 'aids/a1')));
+await ok('aid delete by receiver', deleteDoc(doc(B, 'aids/a1')));
+await ok('grave for flowers', setDoc(doc(A, 'graves/g1'), { key: 'uid-alice', name: '앨리스', loc: 'dtla', ts: 1 }));
+await ok('flower +1', updateDoc(doc(B, 'graves/g1'), { flowers: 1 }));
+await no('flower +5', updateDoc(doc(B, 'graves/g1'), { flowers: 6 }));
+await no('grave edit by other', updateDoc(doc(B, 'graves/g1'), { epitaph: 'x' }));
 await ok('report create', setDoc(doc(A, 'reports/r1'), { cat: 'bug', text: '버그', author: '앨리스', authorKey: 'uid-alice', ts: 1, status: 'open' }));
 await no('report fake author', setDoc(doc(B, 'reports/r2'), { cat: 'bug', text: 'x', author: '앨리스', authorKey: 'uid-alice', ts: 1, status: 'open' }));
 await no('report self-answer', setDoc(doc(A, 'reports/r1'), { cat: 'bug', text: '버그', author: '앨리스', authorKey: 'uid-alice', ts: 1, status: 'done', reply: '해결' }));

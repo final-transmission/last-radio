@@ -96,11 +96,12 @@ service cloud.firestore {
       allow delete: if isAdmin();
     }
 
-    // ---------- 묘비: 내 묘비만 새긴다 ----------
+    // ---------- 묘비: 내 묘비만 새긴다. 꽃(flowers)은 누구나 한 송이씩만 더한다 ----------
     match /graves/{id} {
       allow read: if signedIn();
       allow create: if signedIn() && ((d().key == myKey() && str(d().name, 24) && (!('epitaph' in d()) || str(d().epitaph, 80))) || isAdmin());
-      allow update: if isAdmin();
+      allow update: if isAdmin() || (signedIn() && d().diff(resource.data).affectedKeys().hasOnly(['flowers'])
+        && d().flowers is int && d().flowers == resource.data.get('flowers', 0) + 1);
       allow delete: if isAdmin();
     }
 
@@ -155,6 +156,17 @@ service cloud.firestore {
         && (d().st == resource.data.st || (resource.data.st == 'wait' && d().st == 'ok' && resource.data.from != myKey()))
         && (d().st == 'ok' || (d().rel == 'friend' && d().req == null));
       allow delete: if signedIn() && (myKey() in resource.data.m || isAdmin());
+    }
+
+    // ---------- 생존자끼리 주고받기 (응급치료·동행·꽃): 보낸 사람은 나, 받는 사람 화면이 적용하고 지운다 ----------
+    match /aids/{id} {
+      allow read: if signedIn() && (resource.data.to == myKey() || resource.data.from == myKey() || isAdmin());
+      allow create: if signedIn() && d().from == myKey() && d().to is string && d().to != myKey()
+        && d().kind in ['heal', 'party', 'partyOk', 'flower'] && str(d().fromName, 24) && d().ts is number
+        && d().keys().hasOnly(['kind', 'from', 'fromName', 'to', 'item', 'loc', 'ts'])
+        && (!('item' in d()) || str(d().item, 20)) && (!('loc' in d()) || str(d().loc, 30));
+      allow update: if false;
+      allow delete: if signedIn() && (resource.data.to == myKey() || resource.data.from == myKey() || isAdmin());
     }
 
     // ---------- 문의·버그 제보: 글쓴이는 나, 답변·상태는 관리자만, 지우기는 글쓴이·관리자 ----------
