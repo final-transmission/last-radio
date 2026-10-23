@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://apis.google.com 'sha256-NzWzSr/JJIt0kS48PXCsqUjn9/ALxUaH31f7sTmbH+s=' 'sha256-XBhYyYOXmyHU+rUeBJm1vZW172xgTyzDLX1SllyaCU8=' 'sha256-dGlJkmzhttnhtXg5cwUp4JKSSSfMTs+T15yDdvmkkU8=' 'sha256-zOm5ZBkhV6Mz+5KpluzH84YgCwY9cRMz6MxE7cw57F0='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://www.google.com; connect-src 'self' https://*.googleapis.com https://*.firebaseapp.com https://*.firebaseio.com wss://*.firebaseio.com; frame-src https://*.firebaseapp.com; object-src 'none'; base-uri 'self'; form-action 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://apis.google.com 'sha256-NzWzSr/JJIt0kS48PXCsqUjn9/ALxUaH31f7sTmbH+s=' 'sha256-XBhYyYOXmyHU+rUeBJm1vZW172xgTyzDLX1SllyaCU8=' 'sha256-J1pW1rxNfwK6aMBUFaJC7YBjuhjnFNtfm7BiFftK2Rc=' 'sha256-p3K440YBooZBoChrhetRkxXFa+VYWLVT/T8NYKry+0I='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://www.google.com; connect-src 'self' https://*.googleapis.com https://*.firebaseapp.com https://*.firebaseio.com wss://*.firebaseio.com; frame-src https://*.firebaseapp.com; object-src 'none'; base-uri 'self'; form-action 'self'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <style id="antiClickjack">html{display:none !important}</style>
 <script>if (window.self === window.top) { var ack = document.getElementById('antiClickjack'); ack.parentNode.removeChild(ack); } else { try { window.top.location = window.self.location.href; } catch (e) {} }</script>
@@ -5717,6 +5717,119 @@ const FIREBASE_CONFIG = {
   );
 
 
+  // ---------- 라스베이거스 전용 조사 이벤트 확장 (70종: 즉시 35 · 선택 35, 도박·거래 중심) ----------
+  // 판돈처럼 물건이 있어야 하는 선택은 evNeed: 있으면 쓰고 결과를, 없으면 판에 끼지 못한다
+  function evNeed(id, n, fn) { if (inv(id) < n) return ' (' + ITEMS[id].n + '이(가) ' + n + '개 있어야 했다. 판에 끼지 못하고 물러났다)'; addItem(id, -n); return ' (' + ITEMS[id].n + ' -' + n + ')' + fn(); }
+  function evPick(br, other) { let r = Math.random(); for (const [p, f] of br) { if (r < p) return f(); r -= p; } return other(); }
+  EVENTS.push(
+    { id:"vegas_detail_strip_find_01", rg:'vegas', w:2, where:["southstrip"], run: () => "정전된 카지노에서 슬롯머신 한 대만 당첨음을 냈다. 배출구에는 칩 대신 누군가 말아 넣은 붕대가 걸려 있었다." + evPick([[0.6, () => evGive({"bandage": 2})]], () => evHurt(8, 8, "scratch")) },
+    { id:"vegas_detail_downtown_find_02", rg:'vegas', w:3, where:["meddistrict"], run: () => "환전창구 유리에는 현금보다 물이 비싸다는 글씨가 새겨져 있었다. 금고 바닥에 생수병이 굴러다녔다." + evPick([[0.55, () => evGive({"water": 2})]], () => evFat(6)) },
+    { id:"vegas_detail_fremont_find_03", rg:'vegas', w:1, where:["fremont"], run: () => "프리몬트의 거대한 전광판이 켜졌다 꺼지며 피난 방송을 내보냈다. 전광판 아래에서 누군가 던진 식량 봉지가 터졌다." + evPick([[0.55, () => evGive({"crackers": 2})]], () => evHurt(7, 7, "bruise")) },
+    { id:"vegas_detail_paradise_find_04", rg:'vegas', w:2, where:["northstrip"], run: () => "공연장 커튼 뒤에서 발이 끌리는 소리가 났다. 무대 바닥에는 구급상자가 반쯤 열려 있었다." + evPick([[0.5, () => evGive({"first_aid": 1})]], () => evHurt(11, 11, "scratch")) },
+    { id:"vegas_detail_winchester_find_05", rg:'vegas', w:3, where:["speedway"], run: () => "사설 베팅장 벽에는 어젯밤의 생존자 수가 배당률처럼 적혀 있었다. 책상 아래에는 탄약이 떨어져 있었다." + evPick([[0.5, () => evGive({"ammo": 3})]], () => evHurt(9, 9, "human")) },
+    { id:"vegas_detail_springvalley_find_06", rg:'vegas', w:1, where:["springvalley"], run: () => "비어 있는 리조트 수영장 바닥에 객실 열쇠가 흩어져 있었다. 배수구 근처에서 비상 식량 상자를 찾았다." + evPick([[0.6, () => evGive({"mre": 1})]], () => evHurt(7, 7, "bruise")) },
+    { id:"vegas_detail_summerlin_find_07", rg:'vegas', w:2, where:["summerlin"], run: () => "고급 주택 단지의 견본 주택에 누군가 실제로 살았던 흔적이 있었다. 식탁 서랍에 통조림이 숨겨져 있었다." + evPick([[0.6, () => evGive({"beans": 2})]], () => evHurt(6, 6, "scratch")) },
+    { id:"vegas_detail_henderson_find_08", rg:'vegas', w:3, where:["henderson"], run: () => "상가 약국의 셔터는 반쯤 내려와 있었다. 셔터 아래로 약품 포장지와 피가 섞여 흘러나왔다." + evPick([[0.45, () => evGive({"antibiotics": 1})]], () => evHurt(10, 10, "wound")) },
+    { id:"vegas_detail_northvegas_find_09", rg:'vegas', w:1, where:["northlv"], run: () => "트럭 계량대의 숫자가 마지막 차량 무게에서 멈춰 있었다. 운전석 아래에 연료통이 있었다." + evPick([[0.6, () => evGive({"fuel": 1})]], () => evFat(8)) },
+    { id:"vegas_detail_sunrise_find_10", rg:'vegas', w:2, where:["sunrise"], run: () => "도로변 자동판매기 유리가 깨져 있었다. 안쪽에는 녹아내린 초콜릿과 멀쩡한 음료가 섞여 있었다." + evPick([[0.65, () => evGive({"soda": 2})]], () => evHurt(5, 5, "wound")) },
+    { id:"vegas_detail_enterprise_find_11", rg:'vegas', w:3, where:["enterprise"], run: () => "배송 창고의 대형 냉장고 문이 안쪽에서 막혀 있었다. 문 옆 보급 목록에는 남은 전투식량 수량이 적혀 있었다." + evPick([[0.5, () => evGive({"mre": 2})]], () => evHurt(12, 12, "scratch")) },
+    { id:"vegas_detail_boulder_find_12", rg:'vegas', w:1, where:["bouldercity"], run: () => "볼더시티의 작은 카지노 비상구가 의자로 막혀 있었다. 뒤쪽 사무실에는 밀봉된 식량이 남았다." + evPick([[0.6, () => evGive({"tuna": 2})]], () => evFat(5)) },
+    { id:"vegas_detail_hooverdam_find_13", rg:'vegas', w:2, where:["hooverdam"], run: () => "발전소 직원 사물함에 출입증이 꽂혀 있었다. 주인 없는 작업복 주머니에서 소독약을 찾았다." + evPick([[0.55, () => evGive({"disinfectant": 1})]], () => evHurt(9, 9, "bruise")) },
+    { id:"vegas_detail_redrock_find_14", rg:'vegas', w:3, where:["redrock"], run: () => "협곡의 바위틈에서 거울 조각이 햇빛을 반사했다. 그 아래에는 등산객의 구급낭이 걸려 있었다." + evPick([[0.55, () => evGive({"bandage": 1, "water": 1})]], () => evHyd(-9) + evFat(5)) },
+    { id:"vegas_detail_nellis_find_15", rg:'vegas', w:1, where:["nellis"], run: () => "기지 외곽 격납고에서 무인 경고 방송이 울렸다. 버려진 보급 상자에는 식량이 들어 있었다." + evPick([[0.45, () => evGive({"mre": 2})]], () => evHurt(13, 13, "fight")) },
+    { id:"vegas_detail_airport_find_16", rg:'vegas', w:2, where:["airport"], run: () => "공항 수하물 벨트 위에서 캐리어가 제자리만 맴돌았다. 가방 안에는 멀쩡한 생수가 들어 있었다." + evPick([[0.6, () => evGive({"water": 2})]], () => evHurt(8, 8, "scratch")) },
+    { id:"vegas_detail_convention_find_17", rg:'vegas', w:3, where:["greenvalley"], run: () => "컨벤션 센터 안내판에 임시 진료소 화살표가 남아 있었다. 접이식 침대 밑에서 약품 상자를 꺼냈다." + evPick([[0.5, () => evGive({"bandage": 2, "painkillers": 1})]], () => evHurt(9, 9, "scratch")) },
+    { id:"vegas_detail_unlv_find_18", rg:'vegas', w:1, where:["unlv"], run: () => "대학 식당에 배급 식권이 쌓여 있었다. 주방 안쪽에서는 냉장고 문이 규칙적으로 두드려졌다." + evPick([[0.55, () => evGive({"ramen": 2})]], () => evHurt(8, 8, "scratch")) },
+    { id:"vegas_detail_artsdistrict_find_19", rg:'vegas', w:2, where:["artsdistrict"], run: () => "갤러리 벽화에 누군가 피난 경로를 덧그렸다. 화구 상자 아래에 천과 소독약이 있었다." + evPick([[0.55, () => evGive({"cloth": 2, "disinfectant": 1})]], () => evHurt(6, 6, "wound")) },
+    { id:"vegas_detail_chinatown_find_20", rg:'vegas', w:3, where:["lvchinatown"], run: () => "식당 주방에는 배달 주문표가 줄지어 걸려 있었다. 가장 마지막 주문 봉지 안에서 식량을 찾았다." + evPick([[0.6, () => evGive({"ramen": 2, "water": 1})]], () => evHurt(8, 8, "scratch")) },
+    { id:"vegas_detail_lake_mead_find_21", rg:'vegas', w:1, where:["boulderbypass"], run: () => "호수의 선착장 기둥에 여러 날짜의 수위선이 표시되어 있었다. 버려진 낚시 상자에 통조림이 있었다." + evPick([[0.6, () => evGive({"tuna": 2})]], () => evHyd(-8) + evFat(4)) },
+    { id:"vegas_detail_strip_find_22", rg:'vegas', w:2, where:["southstrip"], run: () => "VIP 룸 바닥에 황금색 칩이 흩어져 있었다. 칩 보관함 뒤에 탄약을 숨긴 이중 벽이 있었다." + evPick([[0.5, () => evGive({"shells": 3})]], () => evHurt(10, 10, "human")) },
+    { id:"vegas_detail_downtown_find_23", rg:'vegas', w:3, where:["meddistrict"], run: () => "숫자 복권 가게 전광판에 같은 번호만 반복됐다. 매표소에는 생수와 종이 영수증이 남았다." + evPick([[0.6, () => evGive({"water": 1, "crackers": 1})]], () => evHurt(6, 6, "scratch")) },
+    { id:"vegas_detail_fremont_find_24", rg:'vegas', w:1, where:["fremont"], run: () => "거리 마술 공연용 상자가 열린 채 놓여 있었다. 이중 바닥에 감춰진 구급품을 발견했다." + evPick([[0.55, () => evGive({"bandage": 1, "painkillers": 1})]], () => evHurt(7, 7, "bruise")) },
+    { id:"vegas_detail_paradise_find_25", rg:'vegas', w:2, where:["northstrip"], run: () => "웨딩 채플의 장식은 그대로였지만 의자에는 피 묻은 손수건이 널려 있었다. 축의금 상자 아래에 초콜릿이 있었다." + evPick([[0.6, () => evGive({"chocolate": 2})]], () => evHurt(7, 7, "scratch")) },
+    { id:"vegas_detail_winchester_find_26", rg:'vegas', w:3, where:["speedway"], run: () => "낡은 경마 베팅장에는 환급되지 않은 전표가 쌓여 있었다. 보안실의 방탄함에서 탄약을 찾았다." + evPick([[0.5, () => evGive({"rifle_ammo": 2})]], () => evHurt(10, 10, "human")) },
+    { id:"vegas_detail_springvalley_find_27", rg:'vegas', w:1, where:["springvalley"], run: () => "호텔 복도 얼음 기계 옆에 빈 물병이 쌓여 있었다. 관리실에는 밀봉된 생수가 남아 있었다." + evPick([[0.6, () => evGive({"water": 2})]], () => evHurt(7, 7, "scratch")) },
+    { id:"vegas_detail_henderson_find_28", rg:'vegas', w:2, where:["henderson"], run: () => "버스 터미널에 시동을 켠 채 버려진 버스가 있었다. 운전석 보관함에서 연료 쿠폰 대신 식량을 발견했다." + evPick([[0.55, () => evGive({"crackers": 2})]], () => evHurt(8, 8, "bruise")) },
+    { id:"vegas_detail_northvegas_find_29", rg:'vegas', w:3, where:["northlv"], run: () => "철망에 매달린 종이에는 식량 한 개에 못 열 개라고 적혀 있었다. 주인 없는 거래함에 부품이 남았다." + evPick([[0.55, () => evGive({"nails": 3, "scrap": 1})]], () => evHurt(8, 8, "human")) },
+    { id:"vegas_detail_hooverdam_find_30", rg:'vegas', w:1, where:["hooverdam"], run: () => "터빈실 점검표 마지막 칸에는 물이 아니라 사람이 새고 있다고 적혀 있었다. 공구함에 고철이 남았다." + evPick([[0.55, () => evGive({"scrap": 3})]], () => evHurt(12, 12, "bruise")) },
+    { id:"vegas_detail_nellis_find_31", rg:'vegas', w:2, where:["nellis"], run: () => "기지 식당의 자동 배급 장치가 전원 없이 열려 있었다. 내부에는 포장된 전투식량이 있었다." + evPick([[0.55, () => evGive({"mre": 2})]], () => evHurt(11, 11, "scratch")) },
+    { id:"vegas_detail_airport_find_32", rg:'vegas', w:3, where:["airport"], run: () => "공항 면세점 쇼윈도가 깨져 있었다. 진열대 뒤 창고에서 생수와 에너지 음료를 찾았다." + evPick([[0.6, () => evGive({"water": 1, "energy": 1})]], () => evHurt(7, 7, "wound")) },
+    { id:"vegas_detail_convention_find_33", rg:'vegas', w:1, where:["greenvalley"], run: () => "비상용 발전기 시연 부스에 사용 설명서가 흩어져 있었다. 전시 상자에는 작은 부품이 남아 있었다." + evPick([[0.6, () => evGive({"scrap": 2})]], () => evHurt(8, 8, "bruise")) },
+    { id:"vegas_detail_artsdistrict_find_34", rg:'vegas', w:2, where:["artsdistrict"], run: () => "네온사인 제작소에 깨진 유리관이 가득했다. 작업대 아래에서 고철과 못을 모았다." + evPick([[0.55, () => evGive({"scrap": 2, "nails": 2})]], () => evHurt(8, 8, "wound")) },
+    { id:"vegas_detail_lake_mead_find_35", rg:'vegas', w:3, where:["boulderbypass"], run: () => "대여 보트 매표소에 빨간 비상 상자가 달려 있었다. 안에는 오래된 구급품이 들어 있었다." + evPick([[0.55, () => evGive({"first_aid": 1})]], () => evHurt(8, 8, "scratch")) },
+    { id:"vegas_detail_strip_choice_01", rg:'vegas', w:2, where:["southstrip"], title:"🎰 마지막 슬롯머신", text:"카지노 한복판에서 슬롯머신이 혼자 돌아갔다. 레버 옆에는 칩 대신 물병을 넣으라는 종이가 붙어 있었다.", opts:[["o0", "물 한 병을 건다"], ["o1", "기계를 뜯는다"], ["o2", "판을 떠난다"]],
+      resolve: k => k === 'o0' ? "릴이 멈추자 딜러가 금고를 열었다." + evNeed('water', 1, () => evPick([[0.35, () => evGive({"water": 3})]], () => '')) : k === 'o1' ? "동전통 대신 응급품이 들어 있었다." + evPick([[0.55, () => evGive({"bandage": 2})]], () => evHurt(8, 8, "wound")) : "당첨음이 한 번 더 울렸다." + '' },
+    { id:"vegas_detail_downtown_choice_02", rg:'vegas', w:3, where:["meddistrict"], title:"🃏 블랙잭 21", text:"다운타운의 생존자 딜러가 낡은 카드 두 장을 밀었다. 판돈은 통조림 한 개였고 패배자는 빈손으로 돌아가야 했다.", opts:[["o0", "한 판 승부"], ["o1", "딜러와 거래"], ["o2", "테이블을 피한다"]],
+      resolve: k => k === 'o0' ? "딜러가 마지막 카드를 뒤집었다." + evNeed('beans', 1, () => evPick([[0.42, () => evGive({"mre": 2})]], () => '')) : k === 'o1' ? "서로 카드 대신 물품을 확인했다." + evNeed('crackers', 1, () => evGive({"water": 1})) : "딜러는 카드만 정리했다." + '' },
+    { id:"vegas_detail_fremont_choice_03", rg:'vegas', w:1, where:["fremont"], title:"🎡 죽음의 룰렛", text:"프리몬트 거리의 룰렛판에는 숫자 대신 식량·탄약·빈손·함정이 적혀 있었다. 딜러는 마지막 남은 배급품을 판돈으로 요구했다.", opts:[["o0", "룰렛을 돌린다"], ["o1", "판을 뒤집는다"], ["o2", "자리를 뜬다"]],
+      resolve: k => k === 'o0' ? "구슬이 금속 테두리를 따라 돌았다." + evNeed('crackers', 1, () => evPick([[0.3, () => evGive({"ammo": 3})], [0.3, () => evGive({"water": 2})]], () => evHurt(8, 8, "human"))) : k === 'o1' ? "경비가 달려들었다." + evHurt(12, 12, "human") + evGive({"crackers": 1}) : "구슬 소리가 등 뒤에서 이어졌다." + '' },
+    { id:"vegas_detail_paradise_choice_04", rg:'vegas', w:2, where:["northstrip"], title:"🎤 마지막 앙코르", text:"무대 스피커에서 박수 소리가 재생됐다. 분장실 안에서는 실제 사람이 구조를 요청했다.", opts:[["o0", "분장실을 연다"], ["o1", "음향을 끈다"], ["o2", "무대를 지나친다"]],
+      resolve: k => k === 'o0' ? "무대 감독을 끌어냈다." + evPick([[0.4, () => recruit(null, "scout")]], () => evGive({"bandage": 1})) : k === 'o1' ? "워커들이 박수 소리에서 고개를 돌렸다." + evXp('mech', 3) + ' (정비 경험 +3)' : "박수는 끝나지 않았다." + '' },
+    { id:"vegas_detail_winchester_choice_05", rg:'vegas', w:3, where:["speedway"], title:"🎲 주사위의 가격", text:"주사위 테이블 주인이 두 눈금의 합으로 보급품을 나누겠다고 했다. 바닥에는 이전 참가자의 이름표가 있었다.", opts:[["o0", "주사위를 던진다"], ["o1", "사기 여부 조사"], ["o2", "그냥 떠난다"]],
+      resolve: k => k === 'o0' ? "두 개의 주사위가 컵 안에서 부딪혔다." + evNeed('jerky', 1, () => evPick([[0.45, () => evGive({"water": 2, "beans": 1})]], () => '')) : k === 'o1' ? "컵 밑바닥에서 자석을 발견했다." + evXp('scav', 3) + ' (수색 경험 +3)' : "딜러는 주사위를 다시 흔들었다." + '' },
+    { id:"vegas_detail_springvalley_choice_06", rg:'vegas', w:1, where:["springvalley"], title:"🏨 스위트룸의 문", text:"호텔 최상층 스위트룸에 사람 목소리가 들렸다. 복도에는 방 번호를 따라 배치한 피 묻은 카드가 놓여 있었다.", opts:[["o0", "노크한다"], ["o1", "카드를 살핀다"], ["o2", "계단으로 내려간다"]],
+      resolve: k => k === 'o0' ? "방 안의 생존자가 문을 열었다." + evPick([[0.55, () => evGive({"soup": 2})]], () => evHurt(9, 9, "scratch")) : k === 'o1' ? "안전한 방 번호를 알아냈다." + evXp('scav', 2) + ' (수색 경험 +2)' : "엘리베이터 문이 뒤에서 열렸다." + evFat(3) },
+    { id:"vegas_detail_summerlin_choice_07", rg:'vegas', w:2, where:["summerlin"], title:"🏘️ 동네의 추첨함", text:"고급 주택가 자경단이 물 배급권을 추첨하고 있었다. 번호표를 뽑으려면 남은 식량을 내야 했다.", opts:[["o0", "추첨에 참가"], ["o1", "배급 규칙 묻기"], ["o2", "돌아선다"]],
+      resolve: k => k === 'o0' ? "당첨 번호가 불렸다." + evNeed('beans', 1, () => evPick([[0.35, () => evGive({"water": 3})]], () => '')) : k === 'o1' ? "자경단이 빈집 위치를 알려 주었다." + evXp('scav', 2) + ' (수색 경험 +2)' : "문이 닫혔다." + '' },
+    { id:"vegas_detail_henderson_choice_08", rg:'vegas', w:3, where:["henderson"], title:"💊 약품을 건 포커", text:"약국 창고에서 네 사람이 포커를 치고 있었다. 가장 큰 판돈은 항생제 한 병이었다.", opts:[["o0", "한 판 끼어든다"], ["o1", "카드 뒷면 확인"], ["o2", "창고를 빠져나간다"]],
+      resolve: k => k === 'o0' ? "마지막 카드가 펼쳐졌다." + evNeed('painkillers', 1, () => evPick([[0.3, () => evGive({"antibiotics": 2})]], () => '')) : k === 'o1' ? "무늬가 미묘하게 다른 카드들을 찾아냈다." + evXp('scav', 3) + ' (수색 경험 +3)' : "딜러가 의자를 끌었다." + '' },
+    { id:"vegas_detail_northvegas_choice_09", rg:'vegas', w:1, where:["northlv"], title:"🚚 운전사의 내기", text:"화물차 운전자가 막힌 도로를 뚫을 수 있느냐고 내기를 걸었다. 성공하면 연료를 나눠 주겠다고 했다.", opts:[["o0", "도로를 정리한다"], ["o1", "내기에 응한다"], ["o2", "차를 피한다"]],
+      resolve: k => k === 'o0' ? "차량을 밀어 길을 열었다." + evFat(8) + evGive({"fuel": 1}) : k === 'o1' ? "트럭 시동이 걸렸다." + evPick([[0.4, () => evGive({"fuel": 2})]], () => evHurt(8, 8, "bruise")) : "엔진 소리가 멀어졌다." + '' },
+    { id:"vegas_detail_sunrise_choice_10", rg:'vegas', w:2, where:["sunrise"], title:"🌄 지붕 위의 깃발", text:"주택 옥상에 깃발을 흔드는 사람이 있었다. 아래층에서는 워커들이 계단을 밀어붙였다.", opts:[["o0", "옥상 구조"], ["o1", "계단을 막는다"], ["o2", "우회한다"]],
+      resolve: k => k === 'o0' ? "생존자를 사다리로 내려 보냈다." + evPick([[0.45, () => recruit(null, "guard")]], () => evGive({"water": 1})) : k === 'o1' ? "책장을 밀어 통로를 막았다." + evFat(6) + evXp('melee', 2) + ' (근접전 경험 +2)' : "깃발이 시야에서 사라졌다." + '' },
+    { id:"vegas_detail_enterprise_choice_11", rg:'vegas', w:3, where:["enterprise"], title:"📦 물류센터의 봉인", text:"배송 창고 문에는 긴급 배급 봉인 스티커가 붙어 있었다. 누군가 봉인을 뜯었다가 다시 붙인 흔적이 보였다.", opts:[["o0", "상자를 연다"], ["o1", "봉인 흔적 조사"], ["o2", "창고를 떠난다"]],
+      resolve: k => k === 'o0' ? "밀봉된 식량을 챙겼다." + evPick([[0.55, () => evGive({"mre": 2})]], () => evHurt(10, 10, "scratch")) : k === 'o1' ? "위조된 배급 스티커를 알아냈다." + evXp('scav', 2) + ' (수색 경험 +2)' : "철문이 뒤에서 흔들렸다." + '' },
+    { id:"vegas_detail_boulder_choice_12", rg:'vegas', w:1, where:["bouldercity"], title:"♠️ 작은 카지노의 왕", text:"볼더시티의 작은 카지노에서 한 노인이 카드 한 벌로 물 배급을 결정했다. 그는 세 번 이기면 동료가 되어 주겠다고 했다.", opts:[["o0", "승부를 건다"], ["o1", "말로 설득한다"], ["o2", "판을 거절한다"]],
+      resolve: k => k === 'o0' ? "노인이 카드를 천천히 내려놓았다." + evPick([[0.4, () => recruit(null, "marksman")]], () => evLoseText('food', 1)) : k === 'o1' ? "노인은 남쪽 길의 워커 무리를 경고했다." + evXp('scav', 2) + ' (수색 경험 +2)' : "노인은 혼자 카드를 섞었다." + '' },
+    { id:"vegas_detail_hooverdam_choice_13", rg:'vegas', w:2, where:["hooverdam"], title:"⚡ 터빈실의 교환", text:"댐 터빈실에서 작업자가 차단기 열쇠를 쥐고 있었다. 그는 고철을 가져오면 물길을 열어 주겠다고 했다.", opts:[["o0", "고철을 건넨다"], ["o1", "밸브를 직접 연다"], ["o2", "작업자를 피한다"]],
+      resolve: k => k === 'o0' ? "작업자가 밸브를 열었다." + evNeed('scrap', 2, () => evGive({"water": 2})) : k === 'o1' ? "압력계가 붉은 선을 넘었다." + evPick([[0.45, () => evGive({"water": 2})]], () => evHurt(14, 14, "bruise")) : "기계음이 뒤에서 울렸다." + '' },
+    { id:"vegas_detail_redrock_choice_14", rg:'vegas', w:3, where:["redrock"], title:"🪨 붉은 바위의 신호", text:"협곡 전망대에서 거울 신호가 세 번 반짝였다. 바위 아래에는 워커들이 모여 있었다.", opts:[["o0", "신호를 따라간다"], ["o1", "먼저 주변을 살핀다"], ["o2", "내려간다"]],
+      resolve: k => k === 'o0' ? "등산객을 바위틈에서 끌어냈다." + evPick([[0.4, () => recruit(null, "hunter")]], () => evGive({"jerky": 2})) : k === 'o1' ? "우회 가능한 등산로를 찾았다." + evXp('scav', 3) + ' (수색 경험 +3)' : "자갈이 미끄러졌다." + evFat(4) },
+    { id:"vegas_detail_nellis_choice_15", rg:'vegas', w:1, where:["nellis"], title:"🪖 보급품 경매", text:"기지 외곽에서 생존 군인들이 보급품을 경매하고 있었다. 가장 높은 입찰자는 탄약을 가져갈 수 있었다.", opts:[["o0", "식량을 입찰"], ["o1", "경매장을 살핀다"], ["o2", "물러난다"]],
+      resolve: k => k === 'o0' ? "군인은 식량을 확인하고 상자를 밀었다." + evNeed('mre', 1, () => evPick([[0.5, () => evGive({"rifle_ammo": 4})]], () => '')) : k === 'o1' ? "위장한 약탈자들의 위치를 알아냈다." + evXp('scav', 3) + ' (수색 경험 +3)' : "입찰 소리가 멀어졌다." + '' },
+    { id:"vegas_detail_airport_choice_16", rg:'vegas', w:2, where:["airport"], title:"✈️ 출국장 추첨", text:"공항 대합실에서 남은 생존자들이 비상 식량을 추첨하고 있었다. 당첨 번호는 탑승권 뒷면에 적혀 있었다.", opts:[["o0", "추첨권을 받는다"], ["o1", "수하물 검사"], ["o2", "대합실을 떠난다"]],
+      resolve: k => k === 'o0' ? "번호가 불리자 사람들이 일어났다." + evPick([[0.45, () => evGive({"mre": 2})]], () => evFat(5)) : k === 'o1' ? "가방 속 물자를 찾았다." + evPick([[0.55, () => evGive({"water": 2})]], () => evHurt(8, 8, "scratch")) : "안내 방송만 계속됐다." + '' },
+    { id:"vegas_detail_convention_choice_17", rg:'vegas', w:3, where:["greenvalley"], title:"🎟️ 마지막 입장권", text:"컨벤션 센터에 생존자들이 입장권을 배급표로 쓰고 있었다. 위조 표를 내면 경비가 붙잡는다고 했다.", opts:[["o0", "표를 교환한다"], ["o1", "표의 진위 조사"], ["o2", "전시장을 빠져나간다"]],
+      resolve: k => k === 'o0' ? "경비가 식량을 건넸다." + evNeed('crackers', 1, () => evGive({"soup": 2})) : k === 'o1' ? "위조 표에 찍힌 도장을 찾아냈다." + evXp('scav', 2) + ' (수색 경험 +2)' : "사람들의 줄이 더 길어졌다." + '' },
+    { id:"vegas_detail_unlv_choice_18", rg:'vegas', w:1, where:["unlv"], title:"📚 시험지의 답", text:"대학 강의실 칠판에 생존자들이 약품 창고의 비밀번호를 문제로 남겼다. 틀린 답 옆에는 피가 묻어 있었다.", opts:[["o0", "문제를 푼다"], ["o1", "강의실 수색"], ["o2", "칠판을 지운다"]],
+      resolve: k => k === 'o0' ? "서랍 속 비밀번호를 찾아냈다." + evPick([[0.6, () => evGive({"first_aid": 1})]], () => evFat(5)) : k === 'o1' ? "남은 식량을 발견했다." + evGive({"ramen": 2}) : "숫자가 사라졌다." + '' },
+    { id:"vegas_detail_artsdistrict_choice_19", rg:'vegas', w:2, where:["artsdistrict"], title:"🎨 예술가의 경매", text:"아츠 디스트릭트 갤러리에서 한 화가가 그림과 식량을 교환하고 있었다. 그림 뒷면에는 탈출로가 그려져 있었다.", opts:[["o0", "식량으로 산다"], ["o1", "뒷면을 조사한다"], ["o2", "전시장을 떠난다"]],
+      resolve: k => k === 'o0' ? "화가는 지도 대신 물자를 내밀었다." + evNeed('beans', 1, () => evGive({"bandage": 2})) : k === 'o1' ? "피난로와 약탈자 위치를 읽었다." + evXp('scav', 3) + ' (수색 경험 +3)' : "화가는 그림을 다시 걸었다." + '' },
+    { id:"vegas_detail_chinatown_choice_20", rg:'vegas', w:3, where:["lvchinatown"], title:"🥢 식당의 마지막 손님", text:"식당 주방에 요리사가 홀로 남아 있었다. 그는 음식을 줄 테니 뒷문을 막아 달라고 했다.", opts:[["o0", "문을 막는다"], ["o1", "함께 떠나자"], ["o2", "자리를 뜬다"]],
+      resolve: k => k === 'o0' ? "요리사는 남은 음식을 건넸다." + evFat(5) + evGive({"cooked_meat": 2}) : k === 'o1' ? "요리사는 앞치마를 벗었다." + evPick([[0.45, () => recruit(null, "cook")]], () => evGive({"ramen": 1})) : "주방에서 칼 소리가 났다." + '' },
+    { id:"vegas_detail_lake_mead_choice_21", rg:'vegas', w:1, where:["boulderbypass"], title:"🚤 호수의 뱃삯", text:"호숫가의 뱃사공이 식수 두 병을 뱃삯으로 요구했다. 맞은편 부두에서는 연기가 올라왔다.", opts:[["o0", "뱃삯을 낸다"], ["o1", "직접 노를 젓는다"], ["o2", "육로를 택한다"]],
+      resolve: k => k === 'o0' ? "뱃사공이 물길을 건넜다." + evNeed('water', 2, () => evGive({"tuna": 3})) : k === 'o1' ? "바람에 보트가 밀렸다." + evPick([[0.5, () => evGive({"tuna": 2})]], () => evHurt(10, 10, "bruise")) : "호수를 돌아 걸었다." + evFat(6) },
+    { id:"vegas_detail_strip_choice_22", rg:'vegas', w:2, where:["southstrip"], title:"🃏 죽은 자의 포커", text:"카지노 VIP룸에 살아 있는 딜러 한 명과 의자에 묶인 워커 세 마리가 앉아 있었다. 딜러는 패를 펼치며 동료가 될 자격을 시험했다.", opts:[["o0", "포커에 참가"], ["o1", "워커를 풀어준다"], ["o2", "조용히 나간다"]],
+      resolve: k => k === 'o0' ? "딜러가 패를 뒤집었다." + evNeed('jerky', 1, () => evPick([[0.35, () => recruit(null, "exconvict")]], () => evHurt(8, 8, "human"))) : k === 'o1' ? "의자들이 한꺼번에 쓰러졌다." + evHurt(15, 15, "scratch") + evKills(2) : "딜러는 눈을 마주치지 않았다." + '' },
+    { id:"vegas_detail_downtown_choice_23", rg:'vegas', w:3, where:["meddistrict"], title:"💵 돈 대신 탄약", text:"환전소 앞에서 생존자들이 탄약을 화폐로 썼다. 매입표에는 물 한 병당 권총탄 두 발이라고 적혀 있었다.", opts:[["o0", "탄약을 교환"], ["o1", "환전소를 뒤진다"], ["o2", "떠난다"]],
+      resolve: k => k === 'o0' ? "점원이 생수를 내밀었다." + evNeed('ammo', 2, () => evGive({"water": 1})) : k === 'o1' ? "계산대 밑에서 숨겨 둔 탄약을 찾았다." + evPick([[0.4, () => evGive({"ammo": 3})]], () => evHurt(10, 10, "human")) : "뒤에서 교환 비율을 두고 싸움이 났다." + '' },
+    { id:"vegas_detail_fremont_choice_24", rg:'vegas', w:1, where:["fremont"], title:"🎲 조작된 크랩스", text:"거리의 크랩스 테이블에서 같은 숫자만 반복해서 나왔다. 딜러는 손을 떨며 계속 주사위를 굴렸다.", opts:[["o0", "판돈을 건다"], ["o1", "주사위를 조사"], ["o2", "딜러를 추궁"]],
+      resolve: k => k === 'o0' ? "주사위가 이상한 각도로 멈췄다." + evNeed('water', 1, () => evPick([[0.2, () => evGive({"mre": 3})]], () => '')) : k === 'o1' ? "한쪽 면에 납이 박혀 있었다." + evXp('scav', 3) + ' (수색 경험 +3)' : "딜러 뒤에서 약탈자가 나타났다." + evHurt(10, 10, "human") },
+    { id:"vegas_detail_paradise_choice_25", rg:'vegas', w:2, where:["northstrip"], title:"💍 신랑 없는 예식", text:"웨딩 채플에 신부 차림의 생존자가 앉아 있었다. 그는 반지를 찾아 주면 의료품을 나누겠다고 했다.", opts:[["o0", "반지를 찾는다"], ["o1", "밖을 경계한다"], ["o2", "그냥 떠난다"]],
+      resolve: k => k === 'o0' ? "의자 밑에서 반지를 찾아 건넸다." + evGive({"bandage": 2}) : k === 'o1' ? "채플 입구의 워커를 막았다." + evKills(2) + evFat(5) : "신부는 문을 닫았다." + '' },
+    { id:"vegas_detail_winchester_choice_26", rg:'vegas', w:3, where:["speedway"], title:"🏇 마지막 경주", text:"사설 경마장에서는 달리는 말 대신 무인 드론의 귀환을 놓고 내기를 걸었다. 드론에는 의료품이 매달려 있었다.", opts:[["o0", "귀환에 건다"], ["o1", "드론을 회수한다"], ["o2", "관전만 한다"]],
+      resolve: k => k === 'o0' ? "드론이 울타리 위로 나타났다." + evNeed('crackers', 1, () => evPick([[0.4, () => evGive({"first_aid": 1})]], () => '')) : k === 'o1' ? "배터리가 터지며 불꽃이 튀었다." + evPick([[0.45, () => evGive({"scrap": 2})]], () => evHurt(9, 9, "wound")) : "드론은 먼지 속으로 사라졌다." + '' },
+    { id:"vegas_detail_springvalley_choice_27", rg:'vegas', w:1, where:["springvalley"], title:"🏊 수영장의 금고", text:"호텔 수영장 바닥에 금고가 놓여 있었다. 누군가 물을 빼면서 금고를 숨기려 한 흔적이 보였다.", opts:[["o0", "금고를 연다"], ["o1", "배수구를 조사"], ["o2", "건드리지 않는다"]],
+      resolve: k => k === 'o0' ? "잠금장치가 열리며 안쪽이 드러났다." + evPick([[0.45, () => evGive({"water": 2, "ammo": 2})]], () => evHurt(8, 8, "bruise")) : k === 'o1' ? "수영장 관리실 열쇠를 찾았다." + evXp('scav', 2) + ' (수색 경험 +2)' : "빈 수영장을 돌아 나왔다." + '' },
+    { id:"vegas_detail_summerlin_choice_28", rg:'vegas', w:2, where:["summerlin"], title:"🔒 HOA의 투표", text:"주택 단지 주민들이 피난민 입장 여부를 투표하고 있었다. 찬성표를 얻으려면 먼저 식량을 기부해야 했다.", opts:[["o0", "식량을 기부"], ["o1", "대신 경비를 선다"], ["o2", "입장을 포기한다"]],
+      resolve: k => k === 'o0' ? "주민이 보급품을 나눠 주었다." + evNeed('beans', 1, () => evGive({"water": 2})) : k === 'o1' ? "밤새 워커 접근을 막았다." + evFat(8) + evPick([[0.45, () => recruit(null, "guard")]], () => evGive({"crackers": 1})) : "철문이 닫혔다." + '' },
+    { id:"vegas_detail_henderson_choice_29", rg:'vegas', w:3, where:["henderson"], title:"🚑 가짜 구급차", text:"약국 앞 구급차에서 의료진 복장의 사람이 도움을 청했다. 차량 번호판에는 진흙이 두껍게 발려 있었다.", opts:[["o0", "상처를 치료"], ["o1", "번호판을 확인"], ["o2", "차를 피한다"]],
+      resolve: k => k === 'o0' ? "차 안에 숨어 있던 약탈자가 덮쳤다." + evPick([[0.5, () => evGive({"antibiotics": 1})]], () => evHurt(12, 12, "human")) : k === 'o1' ? "도난 차량임을 알아챘다." + evXp('scav', 3) + ' (수색 경험 +3)' : "구급차의 경광등이 켜졌다." + '' },
+    { id:"vegas_detail_northvegas_choice_30", rg:'vegas', w:1, where:["northlv"], title:"🔧 폐차장의 판돈", text:"폐차장 주인이 시동 걸리는 차를 맞히면 연료를 주겠다고 했다. 틀리면 고철을 가져가겠다고 했다.", opts:[["o0", "차를 고른다"], ["o1", "직접 정비한다"], ["o2", "내기를 거절한다"]],
+      resolve: k => k === 'o0' ? "엔진이 덜컹거리며 돌아갔다." + evNeed('scrap', 1, () => evPick([[0.45, () => evGive({"fuel": 2})]], () => '')) : k === 'o1' ? "끊어진 전선을 이어 붙였다." + evXp('mech', 3) + ' (정비 경험 +3)' : "주인은 보닛을 다시 닫았다." + '' },
+    { id:"vegas_detail_sunrise_choice_31", rg:'vegas', w:2, where:["sunrise"], title:"☀️ 그늘의 자리", text:"도로변 천막 아래 생존자들이 그늘 자리를 추첨했다. 밖에 서 있던 사람들은 갈증으로 말이 없었다.", opts:[["o0", "번호표를 뽑는다"], ["o1", "물을 나눈다"], ["o2", "그냥 지나간다"]],
+      resolve: k => k === 'o0' ? "당첨자들이 천막 안으로 들어갔다." + evPick([[0.45, () => evHyd(8)]], () => evHyd(-6)) : k === 'o1' ? "누군가 자신의 자리를 내줬다." + evNeed('water', 1, () => evFat(-5)) : "열기가 뒤통수를 눌렀다." + evHyd(-4) },
+    { id:"vegas_detail_enterprise_choice_32", rg:'vegas', w:3, where:["enterprise"], title:"📡 보급 드론의 추락", text:"창고 지붕에 배송 드론이 걸려 있었다. 컨테이너 사이에서는 워커들이 금속을 긁었다.", opts:[["o0", "드론을 끌어내린다"], ["o1", "신호를 끊는다"], ["o2", "창고를 떠난다"]],
+      resolve: k => k === 'o0' ? "상자가 지붕 아래로 떨어졌다." + evPick([[0.5, () => evGive({"mre": 2})]], () => evHurt(9, 9, "bruise")) : k === 'o1' ? "드론 경고음이 멎었다." + evXp('mech', 2) + ' (정비 경험 +2)' : "경고음이 오래도록 울렸다." + '' },
+    { id:"vegas_detail_boulder_choice_33", rg:'vegas', w:1, where:["bouldercity"], title:"🎯 병뚜껑 사격", text:"볼더시티의 작은 술집에서 생존자들이 병뚜껑 사격으로 식량을 나눴다. 총성 때문에 밖에 워커들이 모여 있었다.", opts:[["o0", "사격에 도전"], ["o1", "총성을 막는다"], ["o2", "떠난다"]],
+      resolve: k => k === 'o0' ? "병뚜껑이 튀어 올랐다." + evNeed('ammo', 1, () => evPick([[0.5, () => evGive({"beans": 2})]], () => '')) : k === 'o1' ? "창문을 천으로 가렸다." + evNeed('cloth', 1, () => evXp('scav', 2) + ' (수색 경험 +2)') : "술집에서 총성이 다시 났다." + '' },
+    { id:"vegas_detail_hooverdam_choice_34", rg:'vegas', w:2, where:["hooverdam"], title:"🌊 물문을 열어라", text:"댐 통제실에 수문을 열라는 메모가 붙어 있었다. 아래쪽 통로에는 생존자들이 갇혀 있었다.", opts:[["o0", "수문을 연다"], ["o1", "대피로를 찾는다"], ["o2", "통제실을 떠난다"]],
+      resolve: k => k === 'o0' ? "물살이 통로를 뒤흔들었다." + evPick([[0.35, () => evGive({"water": 3})]], () => evHurt(14, 14, "bruise")) : k === 'o1' ? "잠긴 비상계단을 열었다." + evXp('scav', 3) + ' (수색 경험 +3)' : "철문 너머 두드림이 이어졌다." + '' },
+    { id:"vegas_detail_redrock_choice_35", rg:'vegas', w:3, where:["redrock"], title:"🦂 협곡의 거래", text:"협곡 주차장에서 생존자가 약품과 식수를 바꾸자고 했다. 그 뒤의 차에서는 기침 소리가 났다.", opts:[["o0", "약품을 교환"], ["o1", "차 안을 확인"], ["o2", "거래를 거절한다"]],
+      resolve: k => k === 'o0' ? "생존자가 물병을 건넸다." + evNeed('bandage', 1, () => evGive({"water": 2})) : k === 'o1' ? "열이 오른 환자를 발견했다." + evPick([[0.5, () => evGive({"painkillers": 1})]], () => evHurt(8, 8, "scratch")) : "차 문이 닫혔다." + '' }
+  );
+
+
   // ---------- 동물 동료 영입 이벤트 ----------
   EVENTS.push(
     { id:'stray_cat', w:2.5, where:['house','motel','bedroom','basement','storeroom'], title:'🐈 상자 속 고양이', text:'젖은 종이 상자 안에서 마른 고양이가 이쪽을 노려본다. 도망가지 않고 꼬리만 천천히 흔든다.', opts:[['feed','참치를 나눠 준다'],['pet','손을 내밀어 본다'],['leave','그냥 둔다']],
@@ -7878,6 +7991,7 @@ const FIREBASE_CONFIG = {
   // 업데이트할 때마다 맨 위에 추가한다
   const PATCH_NOTES = [
     { d:'10.23', items:[
+      '🎰 라스베이거스 전용 조사 이벤트 70종 추가 (도박·거래·카지노·댐·사막 도시)',
       '🚶 이동 시간 절반: 가까운 곳 3분 · 보통 5분 · 먼 곳 15분 · 다른 지방 30분 (탈것은 여기서 더 줄어요)',
       '🚗 탈것 개편: 휘발유 통 1개 = 연료 10, 이동 한 번에 연료 1(버스·소방차 2), 다른 지방은 두 배',
       '⛽ 주유소·차고·주차장에서 휘발유가 잘 나와요 · 🧪 연료 빼 오기(하루 한 번, 5분) 추가',
@@ -8656,7 +8770,7 @@ const FIREBASE_CONFIG = {
 </div>
 <script>
 (function(){
-  var BUILD_ID = '20261023180509';
+  var BUILD_ID = '20261023181014';
   function check(){
     fetch('version.txt?t=' + Date.now(), { cache: 'no-store' }).then(function(r){ return r.ok ? r.text() : ''; }).then(function(v){
       v = (v || '').trim();
